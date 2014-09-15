@@ -1,0 +1,1664 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- Version Info : 7.2.2 -->
+<title>::::::::: 서강대 웹 메일 시스템 :::::::::</title>
+
+<link rel="stylesheet" type="text/css" href="/design/common/css/font_ko.css"/>
+<link rel="stylesheet" type="text/css" href="/design/common/css/common.css"/>
+<link rel="stylesheet" type="text/css" href="/design/default/css/layout.css"/>
+
+<link rel="stylesheet" type="text/css" href="/design/common/css/style1/ui.core.css" />
+<link rel="stylesheet" type="text/css" href="/design/common/css/style1/ui.tabs.css" />
+<link rel="stylesheet" type="text/css" href="/design/common/css/style1/ui.resizable.css" />
+<link rel="stylesheet" type="text/css" href="/design/common/css/style1/ui.dialog.css" />
+
+<script type="text/javascript" src="/dwr/engine.js"> </script>
+<script type="text/javascript" src="/dwr/util.js"> </script>
+
+
+	<script type="text/javascript" src="/js/core-lib/prototype.js"></script>
+	<script type="text/javascript" src="/js/core-lib/jquery-1.3.2.js"></script>
+	<script type="text/javascript" src="/js/common-lib/common.js"></script>
+	<script type="text/javascript" src="/js/common-lib/common-base64.js"></script>
+	<script type="text/javascript" src="/js/common-lib/common-editor.js"></script>
+	<script type="text/javascript" src="/js/common-lib/validate.js"></script>
+	<script type="text/javascript" src="/js/ext-lib/jquery.ui.js"></script>
+	<script type="text/javascript" src="/js/ext-lib/jcookie.js"></script>
+	<script type="text/javascript" src="/js/ext-lib/jquery.util.js"></script>
+	<script type="text/javascript" src="/js/ext-lib/jquery.history.js"></script>
+	<script type="text/javascript" src="/js/ext-lib/noclick.js"></script>
+
+
+<script type="text/javascript" src="/js/ocx/ocx_load.js"></script>
+
+<script type="text/javascript" src="/i18n?bundle=common&var=comMsg&locale=ko"></script>
+
+
+
+
+
+
+
+<script type="text/javascript" >
+var LMENU_USE = "disable";
+var TMENU_USE = "enable";
+var IS_TMENU_USE = (TMENU_USE == "disable")?false:true;
+var IS_LMENU_USE = (LMENU_USE == "disable")?false:true;
+var hostInfo = this.location.protocol + "//" + this.location.host;
+var myhostInfo = this.location.protocol + "//127.0.0.1"; //tmp
+var USEREMAIL = "moon@sogang.ac.kr";
+var USERID = "moon";
+var LOCALE = "ko";
+var USER_PAGEBASE = "15";
+var CURRENT_PAGE_NAME = "NORMAL";
+var STIME_OUT = 30;
+var MENU_STATUS = {"setting":"on","mail":"on","webfolder":"on","addr":"on","bbs":"on","calendar":"on"};
+var notIntervalCheckLoad = true;
+var DEBUGMODE = "disable";
+var activeXMake = true;
+var activeXUse = false;
+var PDEBUGLOGGING = false;
+var RENDERMODE = "html";
+var noteUse = false;
+var skin = "default";
+
+function setTitleBar(title){
+	document.title=title;
+}
+
+try{
+if(IS_TMENU_USE)top.setTitleBar('::::::::: 서강대 웹 메일 시스템 :::::::::');
+}catch(e){}
+
+var isDwrLoad = false;
+dwr.engine.setPreHook(function() {
+	//if(!PageMainLoadingManager.isWork){
+		isDwrLoad = true;
+		jQuery("#mainLoaddingMessage").show();
+
+		var msgFrame = jQuery("#mainLoadMessage");
+		var bHeight = jQuery(window).height();
+		var bWidth = jQuery(window).width();
+
+		msgFrame.css("top",(bHeight/2 - msgFrame.height()/2)+"px");
+		msgFrame.css("left",(bWidth/2 - msgFrame.width()/2)+"px");
+		msgFrame.show();
+	//}
+});
+dwr.engine.setPostHook(function() {
+	jQuery("#mainLoaddingMessage").hide();
+	setTimeout(function(){isDwrLoad = false;},100);
+});
+
+
+function errorHandler (errorString, exception) {
+	var msg = "";
+
+	if(errorString && errorString != "" && errorString.length > 0){
+		msg = errorString;
+	} else {
+		msg = comMsg.error_default;
+	}
+	alert(msg);
+}
+
+dwr.engine.setErrorHandler(errorHandler);
+
+function viewHelp() {
+	var url = "/help/"+LOCALE+"/index.htm";
+	var option = "width=770,height=700,status=yes,scrollbars=no,resizable=no";
+	window.open(url, "help", option);
+}
+
+var alrimFolderlist = [];
+var existAlrimFolderlist = false;
+function loadFolderInfo(){
+	var param = {};
+	jQuery.post("/mail/folderInfo.do", param, newMailAlrim, "json");
+}
+
+function loadNoteCheck() {
+	var param = {};
+	jQuery.post("/dynamic/note/noteInfo.do", param, noteCheckResult, "json");
+}
+
+var orgNoteCount = 0;
+var isNoteFirstLoad = true;
+function noteCheckResult(data) {
+	var count = "("+data.unSeenCount+")";
+	jQuery("#unseen_note_count").text(count);
+	jQuery("#unseen_note_count_left").text(count);
+
+	if (orgNoteCount < data.unSeenCount) {
+		if (isNoteFirstLoad) {
+			orgNoteCount = data.unSeenCount;
+		} else {
+			viewNewNoteAlrim();
+		}
+	}
+
+	var interval = Number(data.alrimInteval) * 60 * 1000;
+	if(interval > 0){
+		setTimeout("loadNoteCheck()",interval + 10000);
+	}
+	isNoteFirstLoad = false;
+}
+
+function viewNewNoteAlrim() {
+	var contents = "<a href='/dynamic/note/noteCommon.do' class='new_message'>"+comMsg.note_msg_065+"</a>";
+	showAlrimMessage("noticeSystemMessage",contents);
+}
+
+var alWriteMode = false;
+var alMailMode = false;
+function viewNewMailAlrim(folder){
+	var contents = "";
+	if(alMailMode){
+		if(alWriteMode){
+			contents = "<a href='javascript:;'"+
+			"class='new_message' "+
+			"onclick='closeAlrim(\"noticeSystemMessage\");goConfirmFolder(\""+folder.encName+"\")'"+
+			">"+comMsg.comn_newmail_001+"</a>";
+		} else {
+			contents = "<a href='javascript:;'"+
+			"class='new_message' "+
+			"onclick='closeAlrim(\"noticeSystemMessage\");goFolder(\""+folder.encName+"\")'"+
+			">"+comMsg.comn_newmail_001+"</a>";
+		}
+
+	} else {
+		contents = "<a href='/dynamic/mail/mailCommon.do?"+
+					"workName=list&folder="+
+					encodeURI(folder.encName)+
+					"' class='new_message'>"+comMsg.comn_newmail_001+"</a>";
+	}
+
+	showAlrimMessage("noticeSystemMessage",contents);
+}
+
+function closeAlrim(layerId){
+	jQuery("#"+layerId).hide();
+}
+function viewQuotaOverAlrim(quota){
+	var contents = "";
+	if(alMailMode){
+		if(alWriteMode){
+			contents = "<a href='javascript:;'"+
+			"class='quotaover_message' "+
+			"onclick='closeAlrim(\"noticeSystemMessage\");goConfirmFolder(\"Inbox\")'"+
+			">"+msgArgsReplace(comMsg.comn_quotaover_001,[quota])+"</a>";
+		} else {
+			contents = "<a href='javascript:;'"+
+			"onclick='closeAlrim(\"noticeSystemMessage\");goFolder(\"Inbox\")'"+
+			"class='quotaover_message' "+
+			">"+msgArgsReplace(comMsg.comn_quotaover_001,[quota])+"</a>";
+		}
+
+	} else {
+		contents = "<a href='/dynamic/mail/mailCommon.do?"+
+					"workName=list&folder="+
+					encodeURI("Inbox")+
+					"' class='quotaover_message'>"+msgArgsReplace(comMsg.comn_quotaover_001,[quota])+"</a>";
+	}
+
+	showAlrimMessage("noticeSystemMessage",contents);
+}
+
+function newMailAlrim(data, textStatus){
+	if(textStatus == "success"){
+		var interval;
+		if(Number(data.quotaInfo) > 90){
+			alrimFolderlist = data.folderInfo;
+			viewQuotaOverAlrim(data.quotaInfo);
+			interval = 30 * 1000;
+		} else {
+			if(!existAlrimFolderlist){
+				makeFolderInfoList(alrimFolderlist,data.folderInfo);
+				existAlrimFolderlist = true;
+			} else {
+				checkNewMailAlrim(data.folderInfo);
+			}
+
+			interval = Number(data.alrimInteval) * 60 * 1000;
+		}
+
+		if(interval > 0){
+			setTimeout("loadFolderInfo()",interval);
+		}
+	}
+}
+
+function checkNewMailAlrim(folderList){
+	var mailListArray = [];
+	var keyList = [];
+	makeFolderInfoList(mailListArray,folderList,keyList);
+
+	for (var i = 0 ; i < keyList.length ; i++) {
+		var nfolderName = keyList[i];
+		var compareFolder = alrimFolderlist[nfolderName];
+		if(compareFolder){
+			var currentFolder = mailListArray[nfolderName];
+			if((compareFolder.fullName != "Drafts" &&
+					compareFolder.fullName != "Sent" &&
+					compareFolder.fullName != "Reserved" &&
+					compareFolder.fullName != "Spam" &&
+					compareFolder.fullName != "Trash") &&
+					Number(currentFolder.unseenCnt) > Number(compareFolder.unseenCnt)){
+				viewNewMailAlrim(currentFolder);
+				isCheck = true;
+				break;
+			}
+		}
+	}
+	//alrimFolderlist = folderList;
+}
+
+function makeFolderInfoList(arrayList,folderList,keyList){
+	var folder;
+	for ( var i = 0; i < folderList.length; i++) {
+		folder = folderList[i];
+		if(folder.child && folder.child.length > 0){
+			arrayList[folder.fullName] = folder;
+			if(keyList)keyList.push(folder.fullName);
+			makeFolderInfoList(arrayList,folder.child);
+		} else {
+			arrayList[folder.fullName] = folder;
+			if(keyList)keyList.push(folder.fullName);
+		}
+	}
+}
+
+
+function showAlrimMessage(layerId,contents){
+	jQuery("#systemNoticeContent").html(contents);
+	jQuery("#"+layerId).slideDown("slow");
+	setTimeout("hideAlrimMessage('"+layerId+"')",10000);
+
+	jQuery("#noticeCloseBtn").click(function(){closeAlrim(layerId);});
+}
+
+function hideAlrimMessage(layerId){
+	jQuery("#"+layerId).slideUp("slow");
+}
+
+function setAlWriteMode(val){
+	alWriteMode = val;
+}
+function setAlMailMode(val){
+	alMailMode = val;
+}
+
+function resultCheckSessionTime(data, textStatus){
+	if(textStatus == "success"){
+		if(data.isOverSession){
+			document.location = "/common/logout.do?timeout=on&stime="+STIME_OUT;
+		}
+	}
+
+	if(STIME_OUT != 0 ){
+		setTimeout("checkSessionTimeout()",STIME_OUT * 60 * 1000);
+	}
+}
+function checkSessionTimeout(){
+	if(STIME_OUT != 0 && !alWriteMode){
+		jQuery.post("/common/checkSessionTimeout.do", {}, resultCheckSessionTime, "json");
+	}
+}
+
+function topLink(id, link, target){
+	if(alWriteMode && alMailMode){
+		if(isWriteModify()){
+			if(!confirm(mailMsg.confirm_escapewrite)){
+				return;
+			} else {
+				alWriteMode = false;
+			}
+		}
+	}
+
+	if(id == "mail" && alMailMode){
+		if(LayoutInfo.mode == "manage"){
+			escapeManageMode();
+		}
+		goFolder('Inbox');
+
+	} else {
+		if(target != "new"){
+			if (target == 'top') {
+				top.location.href = link;
+			} else if (target == 'self') {
+				self.location.href = link;
+			} else {
+				this.location.href = link;
+			}
+		} else {
+			var nwin = window.open("","","");
+			nwin.location.href = link;
+		}
+	}
+}
+
+function toogleSideMenu(event){
+	var eventTarget = (event.target) ? jQuery(event.target) : jQuery(event.srcElement);
+
+	if(eventTarget.attr("id") != "sideHelpBtn"){
+		var content = jQuery("#leftSideMenuContent");
+		var smenu = jQuery("#leftSideMenu");
+		var smenuBox = jQuery("#leftSideMenuBox");
+		var smenuBtn = jQuery("#leftSideMenuBtn");
+		if(smenu.attr("viewmenu") == "show"){
+			smenu.animate({height: "25px",bottom:"0px"}, 500,function(){jQuery("#leftSideMenuBox").empty();resizeLeftMenuSize();setCookie("SME","F",365);});
+			smenu.attr("viewmenu","hide");
+			smenu.css({bottom:"0px"});
+			smenuBtn.removeClass("TM_sideMenuDown");
+			smenuBtn.addClass("TM_sideMenuUp");
+			smenuBox.empty();
+			smenuBox.hide();
+		} else if(smenu.attr("viewmenu") == "hide"){
+			smenuBox.show();
+			smenu.show();
+			smenuBox.html(content.html());
+			smenu.css({bottom:"10px"});
+			smenu.animate({height: "207px",bottom:"0px"}, 500, function(){resizeLeftMenuSize();setCookie("SME","T",365);});
+			smenu.attr("viewmenu","show");
+			smenuBtn.removeClass("TM_sideMenuUp");
+			smenuBtn.addClass("TM_sideMenuDown");
+		}
+	}
+}
+
+function loadSideMenu(){
+	var content = jQuery("#leftSideMenuContent");
+	var smenu = jQuery("#leftSideMenu");
+	var smenuBox = jQuery("#leftSideMenuBox");
+	var smenuBtn = jQuery("#leftSideMenuBtn");
+	var isSideMenu = getCookie("SME");
+	smenu.css({bottom:"0px"});
+	if(!isSideMenu || isSideMenu == "T"){
+		smenuBox.html(content.html());
+		smenu.css({height: "207px"});
+		smenu.attr("viewmenu","show");
+		smenuBtn.removeClass("TM_sideMenuUp");
+		smenuBtn.addClass("TM_sideMenuDown");
+	} else if(isSideMenu == "F"){
+		smenuBox.empty();
+		smenu.css({height: "25px"});
+		smenu.attr("viewmenu","hide");
+		smenuBtn.removeClass("TM_sideMenuDown");
+		smenuBtn.addClass("TM_sideMenuUp");
+	}
+}
+
+jQuery().ready(function(){
+
+	if(!opener && notIntervalCheckLoad){
+		loadFolderInfo();
+		checkSessionTimeout();
+		if (noteUse) {
+			loadNoteCheck();
+		}
+		//PageMainLoadingManager.clearLoad();
+	}
+
+
+if(PDEBUGLOGGING){
+	jQuery("body").append("<div id='pdebuglogging'>");
+}
+});
+</script>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/design/default/css/mail.css" />
+
+<script type="text/javascript" src="/js/ext-lib/jquery.colorpicker.js"></script>
+<script type="text/javascript" src="/js/ext-lib/jquery.datepick.js"></script>
+<script type="text/javascript" src="/js/ext-lib/jquery.popup.js"></script>
+<script type="text/javascript" src="/js/ext-lib/jquery.dftree.js"></script>
+<script type="text/javascript" src="/js/ext-lib/jquery.form.js"></script>
+<script type="text/javascript" src="/js/ext-lib/menuToolBar.js"></script>
+<script type="text/javascript" src="/js/common-lib/common-menuLayer.js"></script>
+<script type="text/javascript" src="/js/common-lib/common-form.js"></script>
+<script type="text/javascript" src="/js/ext-lib/jquery.swfupload.js"></script>
+<script type="text/javascript" src="/js/swfupload-lib/swfupload.js"></script>
+
+<script type="text/javascript" src="/dwr/interface/MailFolderService.js"></script>
+<script type="text/javascript" src="/dwr/interface/MailMessageService.js"></script>
+<script type="text/javascript" src="/dwr/interface/MailTagService.js"></script>
+<script type="text/javascript" src="/dwr/interface/MailSearchFolderService.js"></script>
+<script type="text/javascript" src="/dwr/interface/MailCommonService.js"></script>
+<script type="text/javascript" src="/dwr/interface/AddressBookService.js"></script>
+
+<script type="text/javascript" src="/i18n?bundle=mail&locale=ko"></script>
+<script type="text/javascript" src="/i18n?bundle=setting&locale=ko"></script>
+<script type="text/javascript" src="/i18n?bundle=addr&var=addrMsg&locale=ko"></script>
+<script type="text/javascript" src="/js/mail-lib/layoutRenderer.js"></script>
+<script type="text/javascript" src="/js/mail-lib/folderManageScript.js"></script>
+<script type="text/javascript" src="/js/mail-lib/mailCommon.js"></script>
+<script type="text/javascript" src="/js/mail-lib/mailBasicCommon.js"></script>
+<script type="text/javascript" src="/js/mail-lib/mailAction.js"></script>
+<script type="text/javascript" src="/js/mail-lib/mailMenuBar.js"></script>
+<script type="text/javascript" src="/js/mail-lib/mailBasicMenuBar.js"></script>
+<script type="text/javascript" src="/js/mail-lib/layoutRenderer.js"></script>
+<script type="text/javascript" src="/js/ocx/ocx_localMail.js"></script>
+
+<style type="text/css">html {*overflow-y:scroll;}</style>
+<script type="text/javascript">
+setAlMailMode(true);
+
+
+
+
+
+
+
+
+
+
+
+
+var IS_USE_EXPRESS_E = (isMsie && false);
+var IS_USE_WECURE_WEB = (isMsie && false);
+var mailSearchConfig = {bodySearch:'on',attachSearch:'off'};
+var isPopupWrite = false;
+var isWriteNoti = false;
+var isLocalMail = false;
+
+paneMode = "n";
+LayoutInfo.mode = "read";
+mainInitFunc();
+readMsgData = {
+	folderFullName:'Inbox',
+	folderEncName:'Inbox',
+	uid:'30440',
+	preUid:'-1',
+	nextUid:'29883',
+	fid:'Inbox_30440',
+	sharedFlag:'user',
+	sharedUserSeq:'0',
+	sharedFolderName:'',
+	size:'5713924',
+	filesLength:'2',
+	hiddenImg:false};
+
+function init() {
+
+	setTopMenu('mail');
+
+	if(!menuBar || menuBar.getMode() != "list"){
+		loadListToolBar();
+	}
+	
+	if(!MENU_STATUS.setting || MENU_STATUS.setting != "on") {
+		jQuery("#folder_manage_link").hide();
+	}
+	
+	var readParam = '{"sharedUserSeq":"0","folder":"Inbox","category":"","flag":"","sortBy":"arrival","page":"1","sharedFolderName":"","sharedFlag":"user","sortDir":"desc","keyWord":"정재환","adv":""}'.evalJSON();
+	if(!readParam.page){
+		readParam.page = 1;	
+	}
+
+	currentFolderType = "inbox";
+	isMDNSend = 'false';
+
+	var sharedParam  = {};
+	var sharedFlag = readParam.sharedFlag;
+	mailRealtionListControl = new MailRealtionListControl();
+	
+	sharedParam.isShared = (sharedFlag == 'shared') ? true : false;
+	sharedParam.sharedFlag = sharedFlag;
+	sharedParam.sharedUserSeq = readParam.sharedUserSeq;
+	sharedParam.sharedFolderName = readParam.sharedFolderName;
+
+	var searchParam = {};
+	searchParam.keyWord = readParam.keyWord;
+	searchParam.adv = readParam.adv;
+	searchParam.category = readParam.category;
+
+	mailControl.setSharedParam(sharedParam);
+	mailControl.setSearchParam(searchParam);
+	mailControl.setListParam(readParam);	
+
+	setSearchStatus(readParam.keyWord, readParam.adv);
+
+	folderInitLoad();
+	loadHtmlMessageReadPage();
+}
+
+</script>
+
+</head>
+<body>
+	<div id="mbodyLoadMask" class="loadBody"></div>
+<div id="noticeSystemMessage" class="noticePop_warp">
+	<div class="noticePop">
+	<div style="position: absolute;right:0;top:-5px;">
+		<a class="btn_X" href="javascript:;" id="noticeCloseBtn">닫기</a>
+	</div>
+	<dl>
+		<dt>
+		시스템알림			
+		</dt>
+		<dd id="systemNoticeContent"></dd>
+	</dl>
+	</div>
+</div>
+<div id="storeData" style="display:none"></div>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">	
+	<tr><td style="padding:0px 15px 0px 15px">	 	
+	<img src="/design/common/image/blank.gif" style="width:968px;height:1px"/><br/>		
+		
+
+<div id="logo">
+	<table class="TB_topMenu">
+		<tbody>
+		<tr>
+			<td>
+				<!-- logo -->
+				<div class="logo">
+					<div class="logo_area">
+						<a href="/common/welcome.do">
+						
+						
+						<img src="https://mail.sogang.ac.kr:443/design/common/image/attaches//1186686904707420_logo.png" height="33px"/>
+						
+						</a>
+					</div>
+				</div>
+			</td>
+			<td class="menu">
+				<!-- menu -->
+				<div id="topMenu">
+					<div id="topMenu_left">
+						<ul>
+							
+								<li id="mtop_menu_mail"><a href="#" onclick="topLink('mail','/mail/listMessage.do','self')">메일</a></li>				
+							
+								<li id="mtop_menu_addr"><a href="#" onclick="topLink('addr','/dynamic/addr/addrCommon.do','self')">주소록</a></li>				
+							
+								<li id="mtop_menu_calendar"><a href="#" onclick="topLink('calendar','/dynamic/scheduler/schedulerCommon.do','self')">일정관리</a></li>				
+							
+								<li id="mtop_menu_setting"><a href="#" onclick="topLink('setting','/setting/viewSetting.do','self')">환경설정</a></li>				
+							
+								<li id="mtop_menu_bbs"><a href="#" onclick="topLink('bbs','/bbs/listContent.do','self')">게시판</a></li>				
+							
+								<li id="mtop_menu_webfolder"><a href="#" onclick="topLink('webfolder','/webfolder/webfolder.do','self')">자료실</a></li>				
+							
+						</ul>
+					</div>
+					<div id="topMenu_right">
+						<div class="area">
+							<a id="user_setting" href="/setting/viewUserInfoAuth.do" title="moon">Jung Ryul Moon</a>
+							<span>|</span>
+							
+							<a href="/common/logout.do">로그아웃</a>
+							<!-- <a class="btn_topMenu_help" href="javascript:viewHelp()"></a> -->						
+						</div>		
+					</div>
+				</div>
+			</td>
+		</tr>
+		</tbody>
+	</table>	
+</div>
+
+
+<script type="text/javascript">
+if(MENU_STATUS.setting && MENU_STATUS.setting == "on") {}
+else {jQuery("#user_setting").attr("href","javascript:;");}
+</script>
+	<table width="100%" cellpadding="0" cellspacing="0" class="TM_html_m_table">
+		<tr>
+			<td class="TM_m_leftMenu" style="width:220px;vertical-align:top;min-width:220px;white-space:nowrap;" nowrap>
+				<script type="text/javascript">
+function gotoSpam(spamLevel) {
+	if (spamLevel == 'spam1') {
+		var url = "http://ccsun20.sogang.ac.kr:80/sso.do?email=CE6954E31E894B0F76786D400169CCBAADA7EC9414F698F2&forward2=quarantine";
+		window.open(url, "SpamNewWindows","");
+	} else if (spamLevel == 'spam2') {
+		goFolder('Spam');
+	}
+}
+</script>
+<div id="ml_btnFMain">				
+	<div class="TM_topLeftMain">					
+		<div class="mainBtn">					
+			<table cellspacing="0" cellpadding="0" border="0" class="TM_mainBtn_bg">
+				<tr>
+					<td nowrap style="white-space: nowrap;" >
+						<div class="TM_t_left_btn"><a href="javascript:;" onclick="goWrite();" class="TM_mainBtn_split" ><div class="TM_mainWriteBtn">메일쓰기</div></a></div>
+					</td>						
+					<td nowrap style="white-space: nowrap;" >
+						<div class="TM_t_right_btn"><a href="javascript:;" onclick="goMDNList();" ><div class="TM_mainReceiveNotiBtn">수신확인</div></a></div>
+					</td>
+				</tr>
+			</table>					
+		</div>					
+		<div id="ml_quotaBox">				
+			<div class="TM_graphBox">
+				<div id="ml_quotaGraphBar" class="TM_graphBar" ></div>
+				<div class="TM_capacity">
+					<span id="ml_quotaUseAge" class="TM_quotaUsage">0M</span> / <span id="ml_quotaTotal">0M</span>
+				</div>
+				&nbsp;					
+			</div>
+		</div>
+	</div>
+</div>
+
+<div style="position:relative;padding-bottom:30px;overflow:auto;" id="leftMenuRcontentWrapper">	
+	<div>			
+		<div style="width:218px;" id="m_defultFolder" >
+			<div style="clear: both;"></div>		
+			<div id="df_Inbox"  fname="Inbox"  fullname="Inbox" class="TM_ml_defaultFolder TM_df_inbox">
+				<a href="javascript:;" onclick="goFolder('Inbox')" id="link_folder_Inbox">받은메일함</a>
+				<span id="mf_Inbox_newCnt"></span>
+				<a id="folder_manage_link" href="#"  onclick="goFolderManage()" class="TM_ml_sideBtn jpf">관리</a>
+			</div>				
+			<div id="df_Sent"  fname="Sent"  fullname="Sent" class="TM_ml_defaultFolder TM_df_sent">
+				<a href="javascript:;" onclick="goFolder('Sent')" id="link_folder_Sent">보낸메일함</a>
+				<span id=mf_Sent_newCnt></span>
+			</div>
+			<div id="df_Drafts"  fname="Drafts"  fullname="Drafts" class="TM_ml_defaultFolder TM_df_drafts">
+				<a href="javascript:;" onclick="goFolder('Drafts')" id="link_folder_Drafts">임시보관함</a>
+				<span id="mf_Drafts_newCnt"></span>
+			</div>
+			<div id="df_Reserved"  fname="Reserved"  fullname="Reserved" class="TM_ml_defaultFolder TM_df_reserved">
+				<a href="javascript:;" onclick="goFolder('Reserved')" id="link_folder_Reserved">예약메일함</a>
+				<span id="mf_Reserved_newCnt"></span>
+			</div>
+			<div id="df_Spam" fname="Spam"  fullname="Spam" class="TM_ml_defaultFolder TM_df_spam">
+				<a href="javascript:;" onclick="goFolder('Spam')" id="link_folder_Spam">스팸메일함</a>
+				<span id="mf_Spam_newCnt"></span>
+				<a href="javascript:;"  onclick="emptyFolder('Spam')" class="TM_ml_sideBtn jpf">비우기</a>
+			</div>
+			<div id="df_Spam" fname="Spam"  fullname="Spam" class="TM_ml_defaultFolder TM_df_spam">
+				<a href="javascript:;" onclick="gotoSpam('spam1')" id="link_folder_Spam">스팸 센터</a>
+			</div>			
+			<div id="df_Trash" fname="Trash"  fullname="Trash"  class="TM_ml_defaultFolder TM_df_trash">
+				<a href="javascript:;" onclick="goFolder('Trash')" id="link_folder_Trash">휴지통</a>
+				<span id="mf_Trash_newCnt"></span>
+				<a href="javascript:;" onclick="emptyFolder('Trash')" class="TM_ml_sideBtn jpf">비우기</a>
+			</div>
+			
+			<div id="df_Quotaviolate" fname="Quotaviolate"  fullname="Quotaviolate"  class="TM_ml_defaultFolder TM_df_quotaviolate">
+				<a href="javascript:;" onclick="goFolder('Quotaviolate')" id="link_folder_Quotaviolate">용량초과함</a>
+				<span id="mf_Quotaviolate_newCnt"></span>					
+			</div>	
+
+		</div>
+		
+		
+		
+				
+					
+		<div class="TM_ml_defaultFolder TM_df_outermail">				
+			<a href="javascript:;" onclick="pop3Win()">외부메일 가져오기</a>
+		</div>
+		
+						
+		
+		
+		<div class="TM_ml_MenuTitle">
+			<a href="javascript:;" onclick="toggleMenu('m_userFolderTree');"><img src="/design/common/image/btn_menu_mius.gif" id="m_userFolderTree_view"></a>
+			<a href="#" onclick="toggleMenu('m_userFolderTree')">개인메일함</a>
+			<a href="javascript:;" onclick="addNode('m_userFolderTree')" class="TM_ml_sideBtn jpf">추가</a>				
+		</div>		
+		<div style="width:218px;" id="m_userFolderTree"></div>	
+		
+		<div style="height: 2px; clear: both;"><div class="TM_ml_line"></div></div>			
+		
+		<div class="TM_ml_MenuTitle">
+			<a href="javascript:;" onclick="toggleMenu('m_userTag');"><img src="/design/common/image/btn_menu_mius.gif" id="m_userTag_view"></a>
+			<a href="#" onclick="toggleMenu('m_userTag')">태그</a>
+			<a href="javascript:;" onclick="addTag()" class="TM_ml_sideBtn jpf">추가</a>				
+		</div>			
+		<div style="width:218px;"id="m_userTag" ></div>
+
+		<div style="height: 2px; clear: both;"><div class="TM_ml_line"></div></div>	
+		
+		<div class="TM_ml_MenuTitle">
+			<a href="javascript:;" onclick="toggleMenu('m_searchFolderWrapper');"><img src="/design/common/image/btn_menu_mius.gif" id="m_searchFolderWrapper_view"></a>
+			<a href="#" onclick="toggleMenu('m_searchFolderWrapper')">검색메일함</a>
+			<a href="javascript:;" onclick="addSearchFolder()" class="TM_ml_sideBtn jpf">추가</a>				
+		</div>
+		<div id="m_searchFolderWrapper" >		
+			<div>
+				<div class="TM_tree_wrapper">
+					<a href="javascript:;" class="TM_searchFolder_basic btn_iconMenu1" onclick="viewQuickList('flaged',true,true)">중요메일</a>
+				</div>
+				<div class="TM_tree_wrapper">
+					<a href="javascript:;" class="TM_searchFolder_basic btn_iconMenu2" onclick="viewQuickList('attached',true,true)">첨부메일</a>
+				</div>
+				<div class="TM_tree_wrapper">
+					<a href="javascript:;" class="TM_searchFolder_basic btn_iconMenu3" onclick="viewQuickList('unseen',true,true)">안읽은메일</a>
+				</div>
+				<div class="TM_tree_wrapper">
+					<a href="javascript:;" class="TM_searchFolder_basic btn_iconMenu4" onclick="viewQuickList('seen',true,true)">읽은메일</a>
+				</div>
+				<div class="TM_tree_wrapper">
+					<a href="javascript:;" class="TM_searchFolder_basic btn_iconMenu5" onclick="viewQuickList('yesterday',true,true)">어제온메일</a>
+				</div>
+				<div class="TM_tree_wrapper">
+					<a href="javascript:;" class="TM_searchFolder_basic btn_iconMenu6" onclick="viewQuickList('today',true,true)">오늘온메일</a>
+				</div>
+			</div>
+			<div style="width:218px;" id="m_userSearchFolder" ></div>
+		</div>
+		
+		<div style="height: 2px; clear: both;"><div class="TM_ml_line"></div></div>	
+		
+		<div class="TM_ml_MenuTitle">
+			<a href="javascript:;" onclick="toggleMenu('m_userSharringFolder')"><img src="/design/common/image/btn_menu_mius.gif" id="m_userSharringFolder_view"></a>
+			<a href="#"  onclick="toggleMenu('m_userSharringFolder')">공유메일함</a>								
+		</div>
+		<div style="width:218px;" id="m_userSharringFolder" ></div>
+
+		<div style="height: 2px; clear: both;"><div class="TM_ml_line"></div></div>		
+	</div>						
+	</div>			
+</div>
+
+				
+			</td>
+			<td class="mainvsplitbar" style="min-width:7px;white-space:nowrap;" nowrap>&nbsp;</td>
+			<td class="TM_main_hframe">
+				<div class="posr">
+				<div style="z-index:101;position: absolute; right:10px;">
+					<div id="adSearchBox"  class="popup_style2 TM_advsearch_box">
+						<form id="adsearchForm">
+						<div class="title">
+							<span>상세검색</span>
+							<a class="btn_X" href="#" onclick="hiddenAdsearchBox()">닫기</a>
+						</div>
+						
+						<table cellpadding="0" cellspacing="0" style='width:100%' class="jq_innerTable">
+							<col width="100px"></col>
+							<col></col>
+							<col width="100px"></col>
+							<col></col>			
+							
+							<tr>
+							<th class="lbout">검색메일함</th>
+							<td colspan="3">
+							<div id="adSfolderSelect"></div>
+							</td>					
+							</tr>					
+							<tr>
+							<th class="lbout">검색어</th>
+							<td colspan="3">
+								<div style="float: left;"><div id="adConditionSelect"></div></div>
+								<div style="float: left;margin-left:3px;">
+								<input type="text" id="sdkeyWord" class="IP100px" onKeyPress="(keyEvent(event) == 13) ? adSearchMessage() : '';"/>
+								</div>
+							</td>
+							</tr>					
+							<tr>
+							<th class="lbout">보낸사람</th>
+							<td><input type="text" id="adFrom" class="IP100px" onKeyPress="(keyEvent(event) == 13) ? adSearchMessage() : '';"/></td>
+							<th>받는사람</th>
+							<td><input type="text" id="adTo" class="IP100px" onKeyPress="(keyEvent(event) == 13) ? adSearchMessage() : '';"/></td>
+							</tr>								
+							<tr>
+							<th class="lbout">검색기간</th>
+							<td colspan="3">
+								<input type="text" class="IP100px"  id="adStartDate" readonly="readonly"/>
+								<span>~</span>
+								<input type="text" class="IP100px"  id="adEndDate"  readonly="readonly"/>
+							</td>					
+							</tr>
+							
+						</table>				
+						<div class="btnArea">
+							<a class="btn_style3" href="#" onclick="adSearchMessage();"><span>검색</span></a>
+						</div>
+						</form>
+					</div>
+				</div>
+				<div class="TM_folderInfo posr">				
+					<img class="TM_barLeft" src="/design/common/image/blank.gif">								
+					<div class="TM_finfo_data" id="workTitle"></div>
+					<div class="TM_finfo_search" id="siSearchBox">
+						<div class="TM_mainSearch">
+							<input type="text" class="searchBox"  id="skword"  onKeyPress="(keyEvent(event) == 13) ? searchMessage() : '';" /><a href="#" onclick="cancelSearch()"><img src="/design/common/image/blank.gif" id="mailSearchCancel" class="TM_search_cancel"></a><a href="#" onclick="searchMessage()" class="TM_search_btn"><span>검색</span></a><a href="#" onclick="showAdsearchBox()" id="adSearchBoxBtn" class="TM_advsearch_btn"><span>상세검색</span></a>
+							<input type="text" name="_tmp" style="width:0px;height:0px;display:none"/>
+						</div>	
+					</div>						
+					<img class="TM_barRight" src="/design/common/image/blank.gif">
+				</div>
+				<div class="TM_topContentSplitWrapper"><div class="TM_topContentSplit"></div></div>
+				<div class="TM_mainContent">
+					<div id="mailMenubar" >			
+						<div class="mail_body_tabmenu posr">
+							<div class="mail_body_tab" id="menuBarTab"></div>
+							<div>
+								<div id="processMessageContent" class="TM_processMessage"></div>
+							</div>
+							<div id="pageNavi"  class="mail_body_navi">				
+							</div>
+						</div>		
+						<div class="mail_body_menu">
+							<div class="menu_main_unit" id="menuBarContent"></div>
+						</div>
+					</div>
+					<div id="readWrapper" class="TM_content_wrapper" style="width: 100%;">
+					<form id="readMessageForm" name="readMessageForm">
+						<input type="hidden" id="chk_30440" femail="jaychris@naver.com" temail="&#034;Moon-Ryul Jung&#034;&lt;moon@sogang.ac.kr&gt;"/>	
+						<input type="hidden" id="page" name="page" value="1"/>
+						<div class="TM_mail_content">
+							<table cellspacing="0" cellpadding="0" border="0" class="TM_r_table">
+								<col width="80px"><col>
+								<tbody>
+								<tr>
+									<td class="TM_r_subject" colspan="2">
+										<span id="msg_subject_30440">
+											
+											도시배경 수정 파일 입니다.
+											
+											
+										</span>
+										<a href="#" onclick="viewSource('Inbox','30440')"><img src="/design/common/image/blank.gif" class="TM_r_source" title="원문보기" align="absmiddle"></a>
+										&nbsp; &nbsp;<a href="javascript:;" onclick="viewRelationMsg('Inbox','30440')"><img src="/design/common/image/icon/ic_arrow_sort.gif" id="btnRelation" align="absmiddle" /> 관련메일 보기</a>
+										<div id="relationMsgPane" class="TM_relation_list"></div>
+									</td>
+								</tr>
+								<tr>
+									<td class="TM_rh_index">
+										<div style='float:left;padding-right:3px;'><a href="#none" onclick="toggleHeaderInfo()"><img src="/design/common/image/blank.gif" align="absmiddle" id="btnRcptInfo" class="closeRcptBtn"></a></div>
+										보낸사람 :				
+									</td>
+									<td class='TM_rh_content' valign="top">
+										<a href="#"  onclick="writeMessage('&#034;정재환&#034;&lt;jaychris@naver.com&gt;')">&#034;정재환&#034;&lt;jaychris@naver.com&gt;</a>			  		
+										<input type="hidden" name="fromAddAddr"  value="&#034;정재환&#034;&lt;jaychris@naver.com&gt;">				
+										<a id="add_from_addr" href="#" onclick="addAddr('from')" class="TM_rh_func">주소록에 추가</a>
+									</td>
+								</tr>
+								</tbody>
+							</table>
+							<table cellpadding="0" cellspacing="0" border="0" class="TM_r_table" id="rmsg_info" style="display:none">
+								<col width="80px"></col>
+								<col></col>				
+								<tr>
+								<td class='TM_rh_index_ex'>보낸날짜 :</td>
+								<td class='TM_rh_content' valign="top">2014/02/26 수요일 오전 4:08:12</td>				
+								</tr>
+								
+								<tr>
+								<td class='TM_rh_index_ex' valign="top">받는사람 :</td>
+								<td class='TM_rh_content' valign="top">
+									<span id="toAddrContents"></span>
+									<a id="add_to_addr" href="#"  onclick="addAddr('to')" class="TM_rh_func">주소록에 추가</a>
+								</td>				
+								</tr>
+								
+								
+								
+														
+							</table>		
+							<table cellpadding="0" cellspacing="0" border="0" class="TM_r_atable">
+								<col></col>
+								<col width="180px"></col>
+								<tr>
+									<td class='TM_ra_l'>
+									
+									
+										2 개의 첨부파일이 있습니다.
+									
+									</td>
+									<td class='TM_ra_r'>
+										
+										<a href="#" class="btn_basic" id="attSaveAllBtn"  allpart="" onclick="downloadAllAttach('30440','Inbox')"><span>모두저장</span></a>
+										<a href="#" class="btn_basic" onclick="toggleAttachInfo()"><span>목록보기</span></a>
+										
+										
+									</td>
+								</tr>
+								
+								<tr>
+									<td id="attachList" class='TM_ra_c' colspan="2">
+														
+											
+																				 
+											
+																				 
+												  
+											
+											
+									   											   			
+									   			
+									   				
+									   											   				
+									   			
+								   			
+								   			
+								   			
+							                  	<a href="#" onclick="downLoadAttach('30440','Inbox','1')" class="rdown">						
+								   				<img src="/design/common/image/icon/ic_att_unknown.gif" alt="ma" align="absmiddle"/>&nbsp
+								   				city 02.ma <span id="attachSizeL_1"></span>
+												</a>
+												
+											
+												
+											
+									   		    <script language=javascript>
+													$('attachSizeL_1').innerHTML='['+ printSize(Math.round( 3631952.0636549997 ) ) +']';					
+													jQuery("#attSaveAllBtn").attr("allpart",jQuery("#attSaveAllBtn").attr("allpart")+"1_");				
+									   		    </script>
+
+
+
+									   		    		   		    			   		    
+									   		    	<a href="#" onclick="deleteAttachFile('30440','Inbox','1');" class="rdown"><img src="/design/common/image/blank.gif" class='TM_ra_del' align="absmiddle"></a>
+								   		    	
+								   		    
+								   		    
+								   		    
+								   		    <br>
+														
+											
+																				 
+											
+																				 
+												  
+											
+											
+									   											   			
+									   			
+									   				
+									   											   				
+									   			
+								   			
+								   			
+								   			
+							                  	<a href="#" onclick="downLoadAttach('30440','Inbox','2')" class="rdown">						
+								   				<img src="/design/common/image/icon/ic_att_unknown.gif" alt="tga" align="absmiddle"/>&nbsp
+								   				road middle.tga <span id="attachSizeL_2"></span>
+												</a>
+												
+											
+												
+											
+									   		    <script language=javascript>
+													$('attachSizeL_2').innerHTML='['+ printSize(Math.round( 495232.109124 ) ) +']';					
+													jQuery("#attSaveAllBtn").attr("allpart",jQuery("#attSaveAllBtn").attr("allpart")+"2_");				
+									   		    </script>
+
+
+
+									   		    		   		    			   		    
+									   		    	<a href="#" onclick="deleteAttachFile('30440','Inbox','2');" class="rdown"><img src="/design/common/image/blank.gif" class='TM_ra_del' align="absmiddle"></a>
+								   		    	
+								   		    
+								   		    
+								   		    
+								   		    <br>
+														
+										
+												
+									</td>
+								</tr>
+								
+								
+								
+								
+							</table>
+							
+							<textarea id="messageText" style="display:none;">
+								
+&lt;div style=&#034;width:100%;max-width:980px&#034;&gt;
+&lt;table width=&#034;100%&#034; cellpadding=&#034;0&#034; cellspacing=&#034;0&#034; border=&#034;0&#034; style=&#034;table-layout:fixed&#034;&gt;
+&lt;tr&gt;
+	&lt;td&gt;&lt;img src=&#034;https://ssl.pstatic.net/static/pwe/mail/deskhome/ico_att_clip.gif&#034; width=&#034;7&#034; height=&#034;10&#034; alt=&#034;&#034;&gt;&amp;nbsp;
+		&lt;strong&gt;대용량 첨부파일&lt;/strong&gt;&amp;nbsp;&lt;span style=&#034;color:#38b601&#034;&gt;1개&lt;/span&gt;(21MB)&lt;/td&gt;
+	&lt;td align=&#034;right&#034; style=&#034;font-size:11px;letter-spacing:-1px;color:#666&#034;&gt;
+		대용량 첨부 파일은 &lt;span style=&#034;letter-spacing:0;color:#ff3300;&#034;&gt;30일간 보관&lt;/span&gt; / 
+		&lt;span style=&#034;letter-spacing:0;color:#ff3300;&#034;&gt;100회까지&lt;/span&gt; 다운로드 가능
+	&lt;/td&gt;&lt;/tr&gt;
+	&lt;td height=&#034;5&#034; style=&#034;height:5px;font-size:0&#034;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;table width=&#034;100%&#034; cellpadding=&#034;0&#034; cellspacing=&#034;0&#034; border=&#034;0&#034; style=&#034;table-layout:fixed&#034;&gt;
+&lt;tr&gt;&lt;td colspan=&#034;2&#034; style=&#034;border:1px solid #ededee;border-bottom:0&#034;&gt;
+	
+&lt;table width=&#034;100%&#034; height=&#034;100%&#034; cellpadding=&#034;0&#034; cellspacing=&#034;0&#034; border=&#034;0&#034; style=&#034;border-bottom:1px solid #ededee;table-layout:fixed&#034;&gt;
+&lt;tr&gt;
+	&lt;td valign=&#034;middle&#034; align=&#034;right&#034; width=&#034;20&#034; style=&#034;width:20px&#034;&gt;&lt;a target=&#039;_blank&#039; target=&#039;_blank&#039; href=&#034;http://bigfile.mail.naver.com/bigfileupload/download?fid=IXeZ1zFlM6cwFCYZHXFGFqEra3YZKAudKAUZFogdKA2maIYwKqvrKAu/FqvlHqp4M4UdMqg9KrumFogmaxurMrElM4i4M4EdMxM9potw&#034;&gt;
+		&lt;img src=&#034;https://ssl.pstatic.net/static/pwe/nm/btn_savepc.png&#034; width=&#034;17&#034; height=&#034;17&#034; alt=&#034;PC로 저장&#034; border=&#034;0&#034; style=&#034;vertical-align:top&#034; &gt;&lt;/a&gt;&lt;/td&gt;
+	&lt;!--endpcsavetd--&gt;
+	&lt;td valign=&#034;middle&#034; align=&#034;right&#034; width=&#034;20&#034; style=&#034;width:20px&#034;&gt;
+		&lt;a target=&#039;_blank&#039; target=&#039;_blank&#039; class=&#034;_c1(mcCore|downloadBigfileNdrive|http://ndrive.naver.com/downloadfile.nhn?attachtype=bigfile&amp;availableShare=true&amp;filehost=bigfile.mail.naver.com&amp;filekey=IXeZ1zFlM6cwFCYZHXFGFqEra3YZKAudKAUZFogdKA2maIYwKqvrKAu/FqvlHqp4M4UdMqg9KrumFogmaxurMrElM4i4M4EdMxM9potw) _stopDefault&#034; 
+			href=&#034;http://ndrive.naver.com/downloadfile.nhn?attachtype=bigfile&amp;availableShare=true&amp;filehost=bigfile.mail.naver.com&amp;filekey=IXeZ1zFlM6cwFCYZHXFGFqEra3YZKAudKAUZFogdKA2maIYwKqvrKAu/FqvlHqp4M4UdMqg9KrumFogmaxurMrElM4i4M4EdMxM9potw&#034;&gt;
+			&lt;img src=&#034;https://ssl.pstatic.net/static/pwe/nm/btn_savendr.png&#034; width=&#034;17&#034; height=&#034;17&#034; alt=&#034;N드라이브 저장&#034; border=&#034;0&#034; style=&#034;vertical-align:top&#034; &gt;&lt;/a&gt;&lt;/td&gt;
+	&lt;td width=&#034;*&#034; style=&#034;width: auto; line-height: 17px; padding: 3px 7px&#034;&gt;
+		&lt;a target=&#039;_blank&#039; target=&#039;_blank&#039; href=&#034;http://bigfile.mail.naver.com/bigfileupload/download?fid=IXeZ1zFlM6cwFCYZHXFGFqEra3YZKAudKAUZFogdKA2maIYwKqvrKAu/FqvlHqp4M4UdMqg9KrumFogmaxurMrElM4i4M4EdMxM9potw&#034; title=&#034;city 02 with cars.ma&#034; style=&#034;color: #333; font-size: 12px; display: block; text-overflow: ellipsis; white-space: nowrap; width: 100%; overflow: hidden; text-decoration:none&#034;&gt;
+			city 02 with cars.ma &lt;span style=&#034;font-family:tahoma;font-size:11px;color:#999;&#034;&gt;21MB&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+	&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+	&lt;td colspan=&#034;2&#034; height=&#034;26&#034; style=&#034;font-size:11px;letter-spacing:-1px;&#034;&gt;&amp;nbsp;&amp;nbsp;다운로드 기간 : &lt;span style=&#034;letter-spacing:0;color:#ff3300&#034;&gt;
+	2014/02/26 ~ 2014/03/28&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+	&lt;!--대용량 첨부파일 종료선--&gt;
+	&lt;table width=&#034;100%&#034; cellpadding=&#034;0&#034; cellspacing=&#034;0&#034; border=&#034;0&#034; style=&#034;table-layout:fixed&#034;&gt;
+	&lt;tr&gt;&lt;td height=&#034;7&#034;&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td height=&#034;1&#034; bgcolor=&#034;#ececec&#034; style=&#034;background-color: #ececec; height: 1px; width: 100%&#034;&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td height=&#034;20&#034;&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;/table&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div style=&#034;font-size:10pt; font-family:Gulim;&#034;&gt;&lt;p&gt;도시배경 수정 파일입니다.&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;road middle.tga 파일을    문서&amp;gt;maya&amp;gt;projects&amp;gt;defult&amp;gt;sourceimage 폴더안으로&amp;nbsp;넣어 주시고요&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;city 02.ma 파일 scenes 폴더안에 넣으신 후 실행 하시면 됩니다.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;city 02 with cars.ma 파일은&amp;nbsp; city 02 파일과 똑같은 배경 이지만 길거리가 조금 삭막해 보여서&amp;nbsp; 자동차를 몇대 넣었습니다.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;무지개 렌더시&amp;nbsp;걸리적 거리면 city 02.ma 파일을 사용 하시면 됩니다.&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;보시고 연락 부탁 드립니다......&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;br&gt;&amp;nbsp;&lt;/p&gt;&lt;div id=&#034;content-wrap&#034; style=&#034;padding: 10px 0px;&#034;&gt;&lt;table width=&#034;99%&#034; border=&#034;0&#034; cellspacing=&#034;0&#034; cellpadding=&#034;0&#034;&gt;&lt;caption style=&#034;left: 0px; top: 0px; width: 0px; height: 0px; line-height: 0; overflow: hidden; font-size: 0px; visibility: hidden;&#034;&gt;블로그서명&lt;/caption&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td height=&#034;16&#034; style=&#039;background: url(&#034;https://ssl.pstatic.net/static/mail4/blog_dotline.gif&#034;) repeat-x;&#039; colspan=&#034;2&#034;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td width=&#034;29&#034; align=&#034;left&#034; valign=&#034;top&#034;&gt;&lt;a target=&#039;_blank&#039; target=&#039;_blank&#039; hidefocus=&#034;&#034; href=&#034;http://blog.naver.com/jaychris.do&#034; target=&#034;_blank&#034;&gt;&lt;img width=&#034;21&#034; height=&#034;16&#034; alt=&#034;블로그&#034; src=&#034;https://ssl.pstatic.net/static/mail4/blog_img.gif&#034; border=&#034;0&#034;&gt;&lt;/a&gt;&lt;/td&gt;&lt;td align=&#034;left&#034; valign=&#034;top&#034; style=&#034;line-height: 16px; padding-top: 3px;&#034;&gt;&lt;a target=&#039;_blank&#039; target=&#039;_blank&#039; style=&#034;color: black; font-family: dotum; font-size: 9pt; font-weight: bold; text-decoration: none; margin-bottom: 4px; float: left;&#034; hidefocus=&#034;&#034; href=&#034;http://blog.naver.com/jaychris.do&#034; target=&#034;_blank&#034;&gt;차사랑&lt;/a&gt;&lt;br&gt;&lt;a target=&#039;_blank&#039; target=&#039;_blank&#039; title=&#034;차사랑&#034; class=&#034;c&#034; style=&#034;color: rgb(102, 102, 102); line-height: 15px; clear: both; font-family: dotum; font-size: 9pt; font-weight: normal; text-decoration: none; float: left;&#034; hidefocus=&#034;&#034; href=&#034;http://blog.naver.com/jaychris.do&#034; target=&#034;_blank&#034;&gt;안녕하세요.&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;table style=&#034;display:none&#034;&gt;&lt;tr&gt;&lt;td&gt;&lt;img src=&#034;http://mail.naver.com/readReceipt/notify/?img=IlRZ1zFlM6clKzuYaXFGp6U%2FpoJCFAkvKqK9M6E%2Fa6JopAivFzFvMqFStzFXp6UwFLl5WLl51zlqDBFdp6d5MreRhoRRWre5tHFTprJ5pZlCMZlOb2%3D%3D.gif&#034; border=&#034;0&#034;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+								
+									
+							</textarea>
+		
+							<table cellpadding="0" cellspacing="0" border="0" class="TM_r_ctable">
+								<tr>
+									<td align="center" class="TM_r_content">			
+										<iframe frameborder="0" width="100%" height="300px" src="/classic/mail/messageContent.html" id="messageContentFrame"></iframe>
+									</td>
+								</tr>
+							</table>	
+						</div>
+					</form>
+					</div>
+				</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div id="copyRight" style="display:block;">
+	<div>Copyright 2008 Sogang University. All rights reserved.</div>
+</div>
+
+</td></tr>
+</table>
+
+<div id="modalDialog" style="width:100%; display:none">
+	<div style="text-align: center">
+		<span id="msgContent"></span>
+	</div>
+</div>
+<div id="historyStack"></div>
+
+
+
+
+
+
+	
+	<div id="m_sourceView"  title="원문보기" style="width:100%; display:none">
+		<table cellpadding="0" cellspacing="0" class="jq_innerTable">		
+			<col></col>	
+			<tr>		
+			<td height="400px"><iframe name="sourceFrame" id="sourceFrame" src="about:blank" frameborder="0" width="100%" height="400px" style="height:400px;"></iframe></td>
+			</tr>
+		</table>	
+	</div>
+	
+	<iframe name="hidden_frame" id="reqFrame" src="about:blank" frameborder="0" width="0" height="0" style="display:none;"></iframe>
+
+	<form name="popupReadForm" id="popupReadForm">
+		<input type="hidden" name="uid"/>
+		<input type="hidden" name="folder"/>
+		<input type="hidden" name="readType"/>
+		<input type="hidden" name="sharedFlag"/>
+		<input type="hidden" name="sharedUserSeq"/>
+		<input type="hidden" name="sharedFolderName"/>
+		<input type="hidden" name="part"/>
+		<input type="hidden" name="nestedPart"/>
+	</form>
+	<form name="popupWriteForm" id="popupWriteForm"></form>
+	
+	
+		
+	
+	
+	<div id="m_tagForm"  title="태그설정" style="display:none">
+<form id="tagForm" >
+	<table cellpadding="0" cellspacing="0" class="jq_innerTable">
+		<col width="80px"></col>
+		<col></col>
+		<tr>
+		<th class="lbout">태그명</th>
+		<td><input type="text" id="tagName" name="tagName"/></td>
+		</tr>
+		<tr>
+		<th class="lbout">태그색</th>
+		<td><input id="tagColor" name="tagColor" value="#ff0000" /></td>
+		</tr>
+	</table>
+	<input type="hidden" name="oldTagId" id="oldTagId" value="-1"/> 
+</form>	
+</div>
+
+
+<div id="m_searchFolderForm"  title="검색메일함 설정" style="display:none">
+<form id="searchFolderForm" >
+	<table cellpadding="0" cellspacing="0" class="jq_innerTable">
+		<col width="100px"></col>
+		<col></col>
+		<col width="100px"></col>
+		<col></col>		
+		<tr>
+		<th class="lbout">검색메일함명</th>
+		<td colspan="3"><input type="text" id="searchFolderName" name="searchFolderName" class="IP300"/></td>
+		</tr>		
+		<tr>
+		<th class="lbout">검색메일함</th>
+		<td colspan="3">
+		<div id="s2folderSelect"></div>
+		</td>					
+		</tr>		
+		<tr>
+		<th class="lbout">검색어</th>
+		<td colspan="3">			
+			<div style="float: left;"><div id="searchFolderConditionSelect"></div></div>			
+			<div style="float: left; margin-left:3px;">
+			<input type="text" id="searchFolderPattern" name="searchFolderPattern" class="IP100px"/>
+			</div>		
+		</td>
+		</tr>				
+		<tr>
+		<th class="lbout">보낸사람</th>
+		<td><input type="text" id="searchFolderFrom" class="IP100px"/></td>
+		<th>받는사람</th>
+		<td><input type="text" id="searchFolderTo" class="IP100px"/></td>
+		</tr>			
+	</table>
+	<input type="hidden" name="oldSFolderId" id="oldSFolderId"/> 
+</form>	
+</div>
+
+<div id="bigAttachManager"  title="대용량 첨부관리" style="display:none">		
+	<div><div id="bigAttachContents"></div></div>
+</div>
+
+<div id="spamRuleRegist"  title="스팸신고" style="display:none">
+<form name="spamRuleForm" id="spamRuleForm">
+	<table cellpadding="0" cellspacing="0" class="jq_innerTable">		
+		<col></col>		
+		<tr>
+		<th class="lable"><strong>* 관리자에게 스팸메일을 신고합니다.</strong></th>		
+		</tr>
+		<tr>		
+		<td style="padding-left:10px;">
+			<div id="add_spam_area">
+			<input type="checkbox"  name="addspam" id="addspam"  checked/>
+			<label for='addspam'>
+			보낸 사람을 수신거부 목록에 추가
+			</label>
+			</div>
+			
+			<div id="move_trash_area">
+			<input type="checkbox"  name="movetrash" id="movetrash"  checked/>
+			<label for='gotrash'>
+			신고한 메일을 휴지통으로 이동
+			</label>
+			</div>					
+		</td>
+		</tr>		
+	</table>	
+</form>
+</div>
+
+<div id="whiteRuleRegist"  title="정상신고" style="display:none">
+<form name="whiteRuleForm" id="whiteRuleForm">
+	<table cellpadding="0" cellspacing="0" class="jq_innerTable">		
+		<col></col>		
+		<tr>
+		<th class="lable"><strong>* 관리자에게 정상메일을 신고합니다.</strong></th>		
+		</tr>
+		<tr>		
+		<td style="padding-left:10px;">
+			<input type="checkbox"  name="addwhite" id="addwhite" checked/>
+			<label for='addwhite'>
+			보낸 사람을 수신 허용에 추가
+			</label>				
+			<br/>
+			
+			<input type="checkbox"  name="moveinbox" id="moveinbox" checked/>
+			<label for='moveinbox'>
+			신고한 메일을 받은메일함으로 이동
+			</label>					
+		</td>
+		</tr>		
+	</table>	
+</form>
+</div>
+
+<div id="autoRuleRegist"  title="자동분류 규칙" style="display:none">
+<form name="autoRuleForm" id="autoRuleForm">
+<input type="hidden" name="policy"  id="policy">
+<input type="hidden" name="parentFolder" id="parentFolder">
+
+	<table cellpadding="0" cellspacing="0" class="jq_innerTable">
+		<col width="200px"></col>
+		<col></col>		
+		<tr>
+		<th class="lbout">보낸이(From)가</th>
+		<td>
+			<input type="checkbox"  id="ruleSenderCheck" name="ruleSenderCheck" />
+			<input type="text"  class="IP200"  maxlength="64" id="ruleSender" name="ruleSender" />
+			을(를) 포함할 때  (또는)
+		</td>
+		</tr>
+		<tr>
+		<th class="lbout">(함께)받는이(To/Cc)가</th>
+		<td>
+			<input type="checkbox"  id="ruleReceiverCheck" name="ruleReceiverCheck" />
+			<input type="text"  class="IP200"  maxlength="64" id="ruleReceiver" name="ruleReceiver" />
+			을(를) 포함할 때  (또는)	
+		</td>
+		</tr>
+		
+		<tr>
+		<th class="lbout">제목이</th>
+		<td>
+			<input type="checkbox"  id="ruleSubjectCheck" name="ruleSubjectCheck" />
+			<input type="text"  class="IP200"  maxlength="64" id="ruleSubject" name="ruleSubject" />
+			을(를) 포함할 때	
+		</td>
+		</tr>
+		
+		<tr>		
+		<td colspan="2" style="padding:5px 5px 5px 150px;">
+			<div id="ruleAddPFBox">
+			<div id="currentSaveRuleFolder" >
+			<div style="float:left">메일을</div>
+			<div style="float:left">
+				<a href="javascript:" id="parentFolder_default" onclick="viweStatus='pfBox'; menuLayerOpen('pfBox')" onMouseOut="viweStatus='out'; menuLayerOut('pfBox')" class="selectMailBoxA"> ::::: 저장되는 메일함 ::::: </a>
+				<div id="pfBox" onMouseOver="viweStatus='pfBox'; menuLayerOpen('pfBox')" onMouseOut="viweStatus='out'; menuLayerOut('pfBox')" class="gutter_layer div_scroll selectMailBox">
+					<ul id="ruleSaveBox" class="list_st_02" style="padding:0px 0px 0px 5px; margin:0px;">
+						<li onmouseover='yellowline(this)' onmouseout='grayline(this)' style="background:none">
+							<a href="javascript:selPFolder('::::: 저장되는 메일함 :::::','', true)">::::: 저장되는 메일함 :::::</a>
+						</li>									
+					</ul>
+				</div>
+			</div>
+			<div style="float:left" nowrap>
+				에 저장합니다.
+			</div>			
+			<div class="fclear"></div>
+			</div>
+			
+			<div style="float:left">
+				<input type="checkbox" name="mbox"  id="mbox"  onClick="toggleAddNewBox()"> 새 메일함				
+			</div>
+			<div id="newSaveRuleFolder" style="display:none;float:left" nowrap>
+				<a href="javascript:" id="parentFolder_new" onclick="viweStatus='newPfBox'; menuLayerOpen('newPfBox')" onMouseOut="viweStatus='out'; menuLayerOut('newPfBox')" class="selectMailBoxA"> ::::: 상위 메일함 ::::: </a>
+				<div id="newPfBox" onMouseOver="viweStatus='newPfBox'; menuLayerOpen('newPfBox')" onMouseOut="viweStatus='out'; menuLayerOut('newPfBox')" class="gutter_layer div_scroll selectMailBox">
+					<ul id="ruleSaveNewBox"  class="list_st_02" style="padding:0px 0px 0px 5px; margin:0px;">
+						<li onmouseover='yellowline(this)' onmouseout='grayline(this)' style="background:none">
+							<a href="javascript:selPFolder('::::: 상위 메일함 :::::','', true, 'new')">::::: 상위 메일함 :::::</a>
+						</li>									
+					</ul>
+				</div>	
+				<input type="text" class="IP200" maxlength="64" name="boxName" id="boxName" disabled/>
+				에 저장합니다.													
+			</div>			
+			<div class="fclear"></div>				
+		</td>
+		</tr>
+		
+	</table>
+</form>
+</div>
+
+<div id="addAddrPop"  title="주소록에 추가" style="display:none">
+<form name="addAddrForm" id="addAddrForm">	
+	<div id="addAddrListContents">
+		<table cellpadding="0" cellspacing="0" class="jq_innerTable">
+			<col width="30px"></col>
+			<col width="150px"></col>
+			<col></col>
+			<col width="100px"></col>
+			<tr>
+			<th class="lbout" style="text-align: center; border-left:none; border-right:none;">
+				<input type="checkbox" name="allchk"  onclick="checkAll(this,document.addAddrForm.addAddrEmail)"/>
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				이름
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">이메일</th>
+			<th style="text-align: center;border-left:none; border-right:none;">그룹</th>
+			</tr>
+		</table>			
+		<div style="height:150px; overflow-X:hidden;overflow-Y:auto; padding:1px;">
+			<table border="0" cellspacing="0" cellpadding="0"  class="jq_innerTable" id="addAddrTable">
+				<col width="30px"></col>
+				<col width="150px"></col>
+				<col></col>
+				<col width="100px"></col>
+			</table>		
+		</div>
+	</div>
+</form>
+</div>
+
+<div id="addRcptNormalAddrPop"  title="수신자 선택" style="display:none">
+<form name="addRcptNormalAddrForm" id="addRcptNormalAddrForm">	
+	<div id="addRcptNormalAddrListContents">
+		<table cellpadding="0" cellspacing="0" class="jq_innerTable">
+			<col width="30px"></col>
+			<col width="150px"></col>
+			<col></col>
+			<tr>
+			<th class="lbout" style="text-align: center; border-left:none; border-right:none;">
+				<input type="checkbox" name="allchk" id="addRcptNormalAddrAllchk" onclick="checkAll(this,document.addRcptNormalAddrForm.addRcptAddrEmail)"/>
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				이름
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				이메일
+			</th>
+			</tr>
+		</table>			
+		<div style="height:150px; overflow-X:hidden;overflow-Y:auto; padding:1px;">
+			<table border="0" cellspacing="0" cellpadding="0"  class="jq_innerTable" id="addRcptNormalAddrTable">
+				<col width="30px"></col>
+				<col width="150px"></col>
+				<col></col>
+			</table>		
+		</div>
+	</div>
+</form>
+</div>
+
+<div id="addRcptOrgAddrPop"  title="수신자 선택" style="display:none">
+<form name="addRcptOrgAddrForm" id="addRcptOrgAddrForm">	
+	<div id="addRcptOrgAddrListContents">
+		<table cellpadding="0" cellspacing="0" class="jq_innerTable">
+			<col width="30px"></col>
+			<col width="80px"></col>
+			<col width="80px"></col>
+			<col width="80px"></col>			
+			<col></col>
+			<tr>
+			<th class="lbout" style="text-align: center; border-left:none; border-right:none;">
+				<input type="checkbox" name="allchk" id="addRcptOrgAddrAllchk" onclick="checkAll(this,document.addRcptOrgAddrForm.addRcptAddrEmail)"/>
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				이름
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				직위
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				조직
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				이메일
+			</th>
+			</tr>
+		</table>			
+		<div style="height:150px; overflow-X:hidden;overflow-Y:auto; padding:1px;">
+			<table border="0" cellspacing="0" cellpadding="0"  class="jq_innerTable" id="addRcptOrgAddrTable">
+				<col width="30px"></col>
+				<col width="80px"></col>
+				<col width="80px"></col>
+				<col width="80px"></col>	
+				<col></col>
+			</table>		
+		</div>
+	</div>
+</form>
+</div>
+
+<div id="addRcptEmptyAddrPop"  title="수신자 선택" style="display:none">
+<form name="addRcptEmptyAddrForm" id="addRcptEmptyAddrForm">	
+	<div id="addRcptNormalAddrListContents">
+		<div class="TM_notice_box">등록되지 않은 메일주소가 있습니다.<br>새 주소를 등록하면, 바로 메일이 발송됩니다.</div>	
+		<table cellpadding="0" cellspacing="0" class="jq_innerTable" style="width:100%;*width:;">
+			<col width="30px"></col>
+			<col width="150px"></col>
+			<col></col>
+			<tr>
+			<th class="lbout" style="text-align: center; border-left:none; border-right:none;">
+				<input type="checkbox" name="allchk" id="addRcptEmptyAddrAllchk" onclick="checkAll(this,document.addRcptEmptyAddrForm.addRcptAddrEmail)"/>
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				이름
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				이메일
+			</th>
+			</tr>
+		</table>			
+		<div style="height:150px; overflow-X:hidden;overflow-Y:auto; padding:1px;">
+			<table border="0" cellspacing="0" cellpadding="0"  class="jq_innerTable" id="addRcptEmptyAddrTable" style="width:100%;*width:;">
+				<col width="30px"></col>
+				<col width="150px"></col>
+				<col></col>
+			</table>		
+		</div>
+	</div>
+</form>
+</div>
+
+<div id="sharedFolderPop"  title="공유메일함" style="display:none">
+<form name="sharedFolderForm" id="sharedFolderForm" onsubmit="return false;">
+	<input type="hidden" name="oldSharedFolderUid" id="oldSharedFolderUid"/>
+	<input type="hidden" name="sharedfolderName" id="sharedfolderName"/>	
+	
+	<table cellpadding="0" cellspacing="0" class="jq_innerTable">
+		<col width="100px"></col>
+		<col></col>		
+		<tr>
+		<th class="lbout">공유메일함 설정</th>
+		<td style="padding-left: 5px;">
+			<input type="radio" name="shreadUse" id="shreadUseEnabled" onclick="toggleSharedFolderSetting()"/>
+			사용
+			<input type="radio" name="shreadUse" id="shreadUseDisabled" onclick="toggleSharedFolderSetting()"/>	
+			사용안함
+		</td>		
+		</tr>
+		<tr>
+		<td colspan="2" style="padding-left: 5px;"> 
+			<div style="float:left;margin-top:3px;">								
+				<div id="sharedSearchItemSelect"></div>				
+			</div>
+			<div style="float:left;margin-top:3px;margin-left:5px;">								
+				<input type="text" name="readerSearchStr" id="readerSearchStr" class="IP200" maxlength="64" onKeyPress="(keyEvent(event) == 13) ? searchSharedUser() : '';"/>
+			</div>
+			<div style="float:left;margin-top:3px;margin-left:5px;">
+				<a class="btn_basic" href="javascript:;" onclick="searchSharedUser()"><span>검색</span></a>
+			</div>
+			<div class="fclear"></div>	
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2" style="text-align: center">
+			<table class="jq_innerTable" cellpadding="0" cellspacing="0">
+				<tr>
+				<td width="50%" style="text-align: center">
+					<select name="searchReaderList" id="searchReaderList" class="selectSharedBox" size="10" multiple="multiple"></select>
+				</td>
+				<td nowrap>
+					<a class="btn_leftmove" href="javascript:;" onclick="addSharedUser()"><span>추가</span></a>
+					<br/>
+					<br/>
+					<a class="btn_rightmove" href="javascript:;" onclick="removeSharedUser()"><span>삭제</span></a>
+				</td>
+				<td width="50%" style="text-align: center">
+					<select name="settingReaderList" id="settingReaderList" class="selectSharedBox" size="10" multiple="multiple"></select>
+				</td>
+				<tr>
+			</table>			
+		</td>
+		</tr>
+	</table>
+</form>
+</div>
+
+
+<div id="checkSendInfoPop"  title="오송신 방지" style="display:none">
+<form name="checkSendInfoForm" id="checkSendInfoForm">	
+	<div id="checkSendInfoListContents">
+		<div class="TM_notice_box">받는 사람 / 참조 / 숨은 참조 / 첨부를 확인 하신후 선택 하시고,<br> 보내기를 누르시면 메일이 발송됩니다.  </div>			
+		<div style="overflow-X:hidden;overflow-Y:auto; height: 300px;">
+		<table cellpadding="0" cellspacing="0" class="jq_innerTable" style="width:100%;*width:;table-layout: fixed;*border-bottom: #E6E6E6 solid 1px;">
+			<col width="100px"></col>			
+			<col></col>
+			<tr>
+			<th>제목</th>
+			<td id="subjectCheckL"></td>			
+			</tr>
+			
+			<tr id="toRcptCheckBox">
+			<th>받는사람</th>
+			<td style='padding:0px;' id="toRcptCheckL">
+			</td>			
+			</tr>
+			
+			<tr id="ccRcptCheckBox" style='display:none'>
+			<th>참조</th>
+			<td style='padding:0px;' id="ccRcptCheckL">			
+			</td>			
+			</tr>
+			
+			<tr id="bccRcptCheckBox" style='display:none'>
+			<th>숨은참조</th>
+			<td style='padding:0px;' id="bccRcptCheckL">			
+			</td>			
+			</tr>
+			
+			<tr id="attachCheckBox" style='display:none'>
+			<th>첨부파일</th>
+			<td style='padding:0px;' id="attachCheckL">
+			</td>			
+			</tr>
+		</table>
+		</div>
+		
+	</div>
+</form>
+</div>
+
+<div id="m_messageUploadForm"   class="popup_style2 TM_rule_modal">
+	<div class="title">
+		<span>메일 올리기</span>
+		<a class="btn_X" href="javascript:;" onclick="closeUploadModal()">닫기</a>
+	</div>	
+
+	<form id="messageUploadForm" name="messageUploadForm"  enctype="multipart/form-data">
+	<div class="TM_modal_content_wrapper">		
+		<div class="TM_modal_content" style="height:30px;">
+		<ul>					
+			<li>
+			<div class="ad_title" style="padding: 10px 5px 0px 0px;">메일 올리기</div>
+			<div class="ad_content" style="padding: 5px 0px 5px 5px;">
+				<div id="basicMsgUploadControl"><input type="button" id="basicMsgUploadBtn" /> </div>						
+			</div>
+			<div class="fclear"></div>			
+			</li>			
+		</ul>
+		</div>									
+	</div>	
+	</form>	
+	<div class="dotLine"></div>
+	<div class="btnArea">		
+		<a class="btn_style3" href="javascript:;" onclick="closeUploadModal()"><span>닫기</span></a>
+	</div>
+</div>
+
+
+<div id="attachUploadProgress"  title="파일 업로드" style="display:none">
+<form name="attachUploadProgressForm" id="attachUploadProgressForm">	
+	<div id="attachUploadProgressContents">			
+		<table cellpadding="0" cellspacing="0" class="jq_innerTable" style="table-layout:fixed;width:100%;*width:;">
+			<col></col>
+			<col width="100px"></col>			
+			<tr>
+			<th class="lbout" style="text-align: center; border-left:none; border-right:none;">
+				파일명
+			</th>
+			<th style="text-align: center;border-left:none; border-right:none;">
+				상태
+			</th>
+			</tr>
+		</table>			
+		<div id="uploadLoadingBox" style="height:300px; overflow-X:hidden;overflow-Y:auto; padding:1px;position: relative;">
+			<table border="0" cellspacing="0" cellpadding="0"  class="jq_innerTable" id="attachFileUploadTable" style="width:100%;*width:;table-layout:fixed;position: relative;">
+				<col></col>
+				<col width="100px"></col>				
+			</table>
+		</div>
+	</div>
+</form>
+</div>
+
+<script type="text/javascript">
+
+var toAddrList = [];
+var ccAddrList = [];
+var bccAddrList = [];
+var addrTempBuffer = new StringBuffer();
+
+if(!MENU_STATUS.addr || MENU_STATUS.addr != "on") {
+	jQuery("#add_from_addr").hide();
+	jQuery("#add_to_addr").hide();
+	jQuery("#add_cc_addr").hide();
+}
+
+if(!MENU_STATUS.setting || MENU_STATUS.setting != "on") {
+	jQuery("#view_setting").hide();
+}
+
+					
+
+								
+	addrTempBuffer.append('<a href="#" onclick="writeMessage(\'&quot;Moon-Ryul Jung&quot;&lt;moon@sogang.ac.kr&gt;\')">"Moon-Ryul Jung"&lt;moon@sogang.ac.kr&gt;</a>');
+	addrTempBuffer.append('<input type="hidden" name="toAddAddr"  value="&quot;Moon-Ryul Jung&quot;&lt;moon@sogang.ac.kr&gt;">');										
+
+
+toAddrList.push(addrTempBuffer.toString());
+addrTempBuffer.destroy();
+
+
+
+
+
+addrTempBuffer = null;
+
+makeRcptAddrMore("to","toAddrContents",toAddrList);
+if(ccAddrList.length > 0)makeRcptAddrMore("cc","ccAddrContents",ccAddrList);
+if(bccAddrList.length > 0)makeRcptAddrMore("bcc","bccAddrContents",bccAddrList);
+
+currentFolderType = "inbox";
+isMDNSend = 'false';
+isPopupload = false;
+
+init();
+</script>
+</body>
+</html>

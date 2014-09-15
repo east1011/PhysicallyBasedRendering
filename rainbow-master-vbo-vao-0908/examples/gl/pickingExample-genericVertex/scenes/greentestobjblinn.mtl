@@ -1,0 +1,88 @@
+newmtl grassBermuda1LeafShaderSG
+illum 4
+Kd 0.64 0.71 0.53
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.22 0.24 0.11
+Ns 58.00
+newmtl grassBermuda1ShaderSG
+illum 4
+Kd 0.41 0.49 0.28
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.22 0.24 0.11
+Ns 58.00
+newmtl grassBermuda2LeafShaderSG
+illum 4
+Kd 0.64 0.71 0.53
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.22 0.24 0.11
+Ns 58.00
+newmtl grassBermuda2ShaderSG
+illum 4
+Kd 0.41 0.49 0.28
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.22 0.24 0.11
+Ns 58.00
+newmtl grassBermuda4LeafShaderSG
+illum 4
+Kd 0.64 0.71 0.53
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.22 0.24 0.11
+Ns 58.00
+newmtl grassBermuda4ShaderSG
+illum 4
+Kd 0.41 0.49 0.28
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.22 0.24 0.11
+Ns 58.00
+newmtl grassBermuda6LeafShaderSG
+illum 4
+Kd 0.64 0.71 0.53
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.22 0.24 0.11
+Ns 58.00
+newmtl grassBermuda6ShaderSG
+illum 4
+Kd 0.41 0.49 0.28
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.22 0.24 0.11
+Ns 58.00
+newmtl lambert3SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd 4676342-2.tga
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl lambert4SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd field.tga
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl lambert5SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd sky_temp.tga
+Ni 1.00
+Ks 0.50 0.50 0.50
