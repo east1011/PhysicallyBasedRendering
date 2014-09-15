@@ -376,7 +376,7 @@ void ofApp::setup(){
 	initObjects(); // initObjects() is for testing. use it or initPBRTObjects()
 	initAABB();
 
-	// shader objects
+	// shader objects123
 	initFullScreen(); 
 	initNDC();
 
