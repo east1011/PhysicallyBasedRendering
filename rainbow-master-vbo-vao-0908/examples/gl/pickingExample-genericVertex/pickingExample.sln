@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openframeworksLib", "..\..\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpbrt", "..\..\..\pbrt-v2-src\pbrt-v2\src\pbrt.vs2012\libpbrt.vcxproj", "{2E030F4C-B2AE-476C-8E40-A326B3840F6C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "print_for_debug", "..\print_for_debug\print_for_debug.vcxproj", "{77ABC059-3DEB-4833-AEE4-E0E90C4DDAAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -41,6 +43,12 @@ Global
 		{2E030F4C-B2AE-476C-8E40-A326B3840F6C}.Release|Win32.Build.0 = Release|Win32
 		{2E030F4C-B2AE-476C-8E40-A326B3840F6C}.Release|x64.ActiveCfg = Release|x64
 		{2E030F4C-B2AE-476C-8E40-A326B3840F6C}.Release|x64.Build.0 = Release|x64
+		{77ABC059-3DEB-4833-AEE4-E0E90C4DDAAD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{77ABC059-3DEB-4833-AEE4-E0E90C4DDAAD}.Debug|Win32.Build.0 = Debug|Win32
+		{77ABC059-3DEB-4833-AEE4-E0E90C4DDAAD}.Debug|x64.ActiveCfg = Debug|Win32
+		{77ABC059-3DEB-4833-AEE4-E0E90C4DDAAD}.Release|Win32.ActiveCfg = Release|Win32
+		{77ABC059-3DEB-4833-AEE4-E0E90C4DDAAD}.Release|Win32.Build.0 = Release|Win32
+		{77ABC059-3DEB-4833-AEE4-E0E90C4DDAAD}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
