@@ -1260,16 +1260,25 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 		 				   
 				} // for t: all positions on the current ray	
 				
-				vec3 JuahnRGB = oldToRGB( LSpectrumOut );
+				vec3 RGB = oldToRGB( LSpectrumOut );
 
-				if ( psi >= 137.5  &&  psi <= 139.5 ) {			// for debugging by Juahn
-					return JuahnRGB * 0.7 + surfaceColor * 0.3;	// the light accumulated along the current ray 
+				float attenAmount = (tmaxAtten - tmin)/(tmax - tmin);
+
+				if ( psi >= 137.5  &&  psi <= 139.5 ) {
+					return (RGB*0.7 + surfaceColor*0.3)*attenAmount + surfaceColor*(1-attenAmount);	// the light accumulated along the current ray 
 				}
 				else {
-					return JuahnRGB * 0.2 + surfaceColor * 0.8;	// the light accumulated along the current ray
+					return (RGB*0.2 + surfaceColor*0.8)*attenAmount + surfaceColor*(1-attenAmount);	// the light accumulated along the current ray
 				}
 
-				return oldToRGB( LSpectrumOut ) * 0.7 + surfaceColor * 0.3;	// the light accumulated along the current ray
+				//if ( psi >= 137.5  &&  psi <= 139.5 ) {			// for debugging by Juahn
+				//	return JuahnRGB * 0.7 + surfaceColor * 0.3;	// the light accumulated along the current ray 
+				//}
+				//else {
+				//	return JuahnRGB * 0.2 + surfaceColor * 0.8;	// the light accumulated along the current ray
+				//}
+
+				//return oldToRGB( LSpectrumOut ) * 0.7 + surfaceColor * 0.3;	// the light accumulated along the current ray
 				//return oldToRGB( LSpectrumOut );	// the light accumulated along the current ray
 				//return toRGB( LSpectrumOut );
 				
