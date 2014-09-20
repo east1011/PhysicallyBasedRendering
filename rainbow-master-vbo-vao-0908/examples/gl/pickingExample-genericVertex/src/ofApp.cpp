@@ -61,8 +61,6 @@ A shared_ptr may also own no objects, in which case it is called empty.
 
 */
 
-
-
 #define Assert(expr) \
     ((expr) ? (void)0 : \
         fprintf(stderr, "Assertion \"%s\" failed in %s, line %d", \
@@ -85,8 +83,8 @@ extern int g_argc;
 extern char **g_argv;
 
 
-//Just avoid any using namespace directives in the headers. 
-//	(And use with care in C++ files, if at all. Inside functions is preferred.)
+// Just avoid any using namespace directives in the headers. 
+// (And use with care in C++ files, if at all. Inside functions is preferred.)
 // as long as they  * appear after all #includes.
 
 using namespace std;      // for string, vector, iostream, shared_ptr and other standard C++ stuff
@@ -103,22 +101,22 @@ using namespace std::tr1; // for shared_ptr<T>
 
 
 shared_ptr<MaterialShader> g_redDiffuseMat,
-                            g_blueDiffuseMat,
-							g_greenDiffuseMat,
-                            g_bumpFloorMat,
-                            g_arcballMat,
-                            g_pickingMat,
-                            g_lightMat,
-							g_rainbowAndSceneMat,
-							g_rainbowOnlyMat,
-							g_AABBRainbowOnlyMat,
-							g_fullScreenMat,
-							g_NDCMat;
+                           g_blueDiffuseMat,
+						   g_greenDiffuseMat,
+                           g_bumpFloorMat,
+                           g_arcballMat,
+                           g_pickingMat,
+                           g_lightMat,
+						   g_rainbowAndSceneMat,
+						   g_rainbowOnlyMat,
+						   g_AABBRainbowOnlyMat,
+						   g_fullScreenMat,
+						   g_NDCMat;
 
 shared_ptr<MaterialShader> g_overridingMaterial;
 
-shared_ptr<Object> g_NDCMatObj; // used  simply to draw a texture
-shared_ptr<Object> g_fullScreenMatObj, g_rainbowAndSceneMatObj, g_rainbowOnlyMatObj; // used  simply to draw a texture
+shared_ptr<Object> g_NDCMatObj; // used simply to draw a texture
+shared_ptr<Object> g_fullScreenMatObj, g_rainbowAndSceneMatObj, g_rainbowOnlyMatObj; // used simply to draw a texture
 shared_ptr<Object> g_AABBRainbowOnlyMatObj, g_oldAABBRainbowOnlyMatObj;;
 
 Matrix4 g_projectionMatrix; 
@@ -126,8 +124,8 @@ Matrix4 g_projectionMatrix;
 int  g_objId = 1; 
 
 
-double  g_frustMinFov,  g_frustFovY;
-double  g_frustNear, g_frustFar;
+double g_frustMinFov, g_frustFovY;
+double g_frustNear, g_frustFar;
 
 int g_windowWidth; 
 int g_windowHeight; 
@@ -138,7 +136,7 @@ bool g_mouseLClickButton, g_mouseRClickButton, g_mouseMClickButton;
 
 int g_prev_mouseClickX, g_prev_mouseClickY; // coordinates for mouse click event
 
-int  g_pressed_button;
+int g_pressed_button;
 
 int g_activeShader = 0;
 
@@ -148,7 +146,7 @@ bool g_backgroundBackedUp = false;
 bool g_picking_mode = false; // mode during the process of picking
 bool g_picked_mode = false;
 
-bool g_rotation_mode  = false;
+bool g_rotation_mode = false;
 
 
 
@@ -168,7 +166,7 @@ bool g_debugMode = true;
 //static const Cvec3 g_initAABBmax(90.3325, 75.8859, 90.3325);
 //static const Cvec3 g_initAABBmin(-90.3325, -14.4466, -90.3325);
 
-// THis includes the hemisphere for sky
+// This includes the hemisphere for sky
 
 // for National Modern Musium
 //static const float rainbowVolumeHeight = 21.3; 
@@ -180,35 +178,36 @@ bool g_debugMode = true;
 //static const float rainbowVolumeWidth = 40;
 //static const float rainbowVolumeDepth = 10;
 
-// for testing by by friends 
+// for testing by friends 
 static const float rainbowVolumeHeight = 50; 
-static const float rainbowVolumeWidth =60;
+//static const float rainbowVolumeWidth = 60;
+static const float rainbowVolumeWidth = 120;
 static const float rainbowVolumeDepth = 10;
 
 
 
 // The coordinates of the AABB, which will be used to compute the sizes of the view volume
 
-static			Cvec3 g_AABBmax, g_AABBmin; 
-static      	Cvec3 g_AABBsize (rainbowVolumeWidth, rainbowVolumeHeight, rainbowVolumeDepth  );
-static          Cvec3 g_initEyeLocation;
-static          Cvec3 g_AABBcenter;
+static Cvec3 g_AABBmax, g_AABBmin; 
+static Cvec3 g_AABBsize (rainbowVolumeWidth, rainbowVolumeHeight, rainbowVolumeDepth);
+static Cvec3 g_initEyeLocation;
+static Cvec3 g_AABBcenter;
 
 shared_ptr<SgRbtNode> g_AABBRbt, g_quadRbt;
 SgRbtNode g_SceneRbt;  
 
 // OLD AABB Specification
 static const Cvec3 g_initAABBmax(48.8672218, 60.4031639, 35.5040970);
-static  const Cvec3 g_initAABBmin(-60.4031792, -9.44913101, -60.4031944);
+static const Cvec3 g_initAABBmin(-60.4031792, -9.44913101, -60.4031944);
 static const Cvec3 g_initAABBcenter = (g_initAABBmin + g_initAABBmax) / 2.0;
 
 // The local coordinates of  the AABB box relative to the AABB coordinate system.
 // Only these coordinates are important. 
 
-static	const   Cvec3 g_localAABBmin = g_initAABBmin - g_initAABBcenter;
-  // relative to the coordinate system at g_initAABBcenter
+static const Cvec3 g_localAABBmin = g_initAABBmin - g_initAABBcenter;
+// relative to the coordinate system at g_initAABBcenter
 
-static const	Cvec3 g_localAABBmax = g_initAABBmax - g_initAABBcenter;
+static const Cvec3 g_localAABBmax = g_initAABBmax - g_initAABBcenter;
 
 
 // --------- Scene
@@ -221,22 +220,22 @@ Cvec4 g_light1Color, g_light2Color;
 
 Matrix4 g_eyeRbt, g_invEyeRbt, g_cameraRotMat, g_invCameraRotMat;
 
-Cvec3  g_sunRayDir ;
+Cvec3 g_sunRayDir ;
 
-float  g_radius = 1.0e-3; // 1 mm, 1.5e-3, 2.03-3
+float g_radius = 1.0e-3; // 1 mm, 1.5e-3, 2.03-3
 
-float  g_dropDensity =  30000;
+float g_dropDensity = 30000;
 
-Cvec3  g_lightRGBColor;
+Cvec3 g_lightRGBColor;
 
 
 Picker g_picker; // default constructor
 
-shared_ptr< Object>  g_currentPickedObject;
+shared_ptr< Object> g_currentPickedObject;
 
-vector < shared_ptr<Object> >  g_objectPtrList;
+vector < shared_ptr<Object> > g_objectPtrList;
 
-shared_ptr< Geometry > g_geometry;
+shared_ptr<Geometry> g_geometry;
 
 std::ofstream messageFile("./messageFile.txt", std::ios::out);
 std::ofstream textureFile("./textureDebug.txt", std::ios::out);
@@ -246,7 +245,7 @@ std::ofstream textureFile("./textureDebug.txt", std::ios::out);
 bool g_redrawWindowEvent = true; // used in ofAppGLFWWindow.cpp
 bool g_drawnToBackbuffer = false;
 
-int  g_renderMode = 1; // The background scene mode
+int g_renderMode = 1; // The background scene mode
 
 GLint g_savedFramebuffer;
 
@@ -260,14 +259,9 @@ ofApp:: ofApp() // default constructor
 
 
 
-
-
-
 void ofApp::setup(){
 	// drop down menu settup
-
 	
-		
 	//ofBackground(255, 0,0); // for debugging
 
 	ofBackground(128,200,255); // background (buffer clear color) = sky color
@@ -330,23 +324,22 @@ void ofApp::setup(){
 	// For now, It is assumed that localAABB is centered at the world origin
 	// height / horizontalDistFromEyeToAABB  = tan (g_frustFovY / 2.0) 
 
-
 	setupCamera();
 	//setupOldCamera();
 
 	//bool g_Gl2Compatible = false; // use shader programs of type "*-gl3 *"
 
-	//Sets the background clearing function to be auto (default) or not. 
-	//	If non-auto, then background clearing will not occur per frame (at the start of draw)
-	//but rather, whenever ofBackground is called.
+	// Sets the background clearing function to be auto (default) or not. 
+	// If non-auto, then background clearing will not occur per frame (at the start of draw)
+	// but rather, whenever ofBackground is called.
 	
     //ofSetBackgroundAuto( false); // It will make a single buffering by drawing to the front buffer
 
 
 	//------------------------------------------------------------
-    // void ofAppGLFWWindow::disableSetupScreen(){
-	//   bEnableSetupScreen = false;
-    // };
+    //void ofAppGLFWWindow::disableSetupScreen(){
+	//	bEnableSetupScreen = false;
+    //};
 
 	//_description: _
 
@@ -354,15 +347,15 @@ void ofApp::setup(){
 	// That function sets the perspective, coordinate system, and some other openGL parameters.
 	// If you need to use your own parameters, the call to that function can be disabled with ofDisableSetupScreen.
 
-	//ofDisableSetupScreen(); SetupScreen() is needed to draw the widgets. But the camera parameters set by
+	// ofDisableSetupScreen(); SetupScreen() is needed to draw the widgets. But the camera parameters set by
 	// this function will be ignored by draw() function defined in this class.
 
-	g_windowWidth =  ofGetWidth(); 
+	g_windowWidth = ofGetWidth(); 
 	g_windowHeight = ofGetHeight(); 
 
 	updateFrustFovY(); // It uses g_windowWidth and g_windowHeight
 	
-	//g_windowWidth =  nThetas;  
+	//g_windowWidth = nThetas;  
 	//g_windowHeight = nSpectralSamples;  
 
 		
@@ -376,7 +369,7 @@ void ofApp::setup(){
 	initObjects(); // initObjects() is for testing. use it or initPBRTObjects()
 	initAABB();
 
-	// shader objects123
+	// shader objects
 	initFullScreen(); 
 	initNDC();
 
@@ -442,13 +435,13 @@ spa_data spa;  //declare the SPA structure
 
     calculate_sunRay(sunRay, spa.zenith, spa.azimuth); // vector sunRay points to the sun
 	
-	messageFile  << "sunRay zenith angle = " << spa.zenith <<" sunRay azimuth" << spa.azimuth << endl;
+	messageFile << "sunRay zenith angle = " << spa.zenith <<" sunRay azimuth" << spa.azimuth << endl;
 	
-	messageFile  << "sunRay in geocentric coord (world coord system) = (" << sunRay  << endl;
+	messageFile << "sunRay in geocentric coord (world coord system) = (" << sunRay  << endl;
 
-	cout  << "sunRay zenith angle = " << spa.zenith <<" sunRay azimuth" << spa.azimuth << endl;
+	cout << "sunRay zenith angle = " << spa.zenith <<" sunRay azimuth" << spa.azimuth << endl;
 	
-	cout  << "sunRay in geocentric coord (world coord system) = (" << sunRay  << endl;
+	cout << "sunRay in geocentric coord (world coord system) = (" << sunRay  << endl;
 	g_sunRayDir = Cvec3(-sunRay[1], sunRay[2], -sunRay[0]); 
 	// rename the axes to 3D graphics convention : z (up) => y, x (north) => -z, y(west) => -x
 	//                         |
@@ -467,21 +460,19 @@ spa_data spa;  //declare the SPA structure
 
 void ofApp::setupCamera() {
 
-	
-	
-// set the parameters for the camera, which define the internal working of the camera.
-    g_frustMinFov = 100.0;  // old: A minimal of 100 degree field of view for rainbow viewing
-//  g_frustMinFov = 60.0;  //new
+	// set the parameters for the camera, which define the internal working of the camera.
+    g_frustMinFov = 90.0;  // old: A minimal of 100 degree field of view for rainbow viewing
+	//g_frustMinFov = 60.0;  //new
 
     g_frustFovY = g_frustMinFov; // FOV in y direction (updated by updateFrustFovY)
 
-	//   It means there is very high precision at the near plane, but very little precision at the far plane. 
-//	If the range [-n, -f] is getting larger, it causes a depth precision problem (z-fighting); 
-//  a small change of ze around the far plane does not affect on zn value. 
-//  The distance between n and f should be short as possible to minimize the depth buffer precision problem.
+	//It means there is very high precision at the near plane, but very little precision at the far plane. 
+	//If the range [-n, -f] is getting larger, it causes a depth precision problem (z-fighting); 
+	//a small change of ze around the far plane does not affect on zn value. 
+	//The distance between n and f should be short as possible to minimize the depth buffer precision problem.
 
-    g_frustNear = -5.0;    // near plane
-    g_frustFar = -200.0;    // far plane
+    g_frustNear = -0.01;		// near plane
+    g_frustFar = -200.0;		// far plane
 
 
 	// set the camera location and direction so that it can see the rainbow well
@@ -554,13 +545,13 @@ void ofApp::setupCamera() {
 
 	double eyeHeight = 1.7;
    
-	float distanceToEye =  42 ;  // the observer on the ground in Asian Game
+	float distanceToEye = 42 ;  // the observer on the ground in Asian Game
 	
 	Cvec3 eyeLocation = Cvec3(0, eyeHeight, distanceToEye);
 
 	// the position of the eye relative to the world coordinate system.
 
-	g_eyeRbt =   g_cameraRotMat * Matrix4::makeTranslation( eyeLocation  );
+	g_eyeRbt = g_cameraRotMat * Matrix4::makeTranslation( eyeLocation );
 	
 	cout << "camera setup: " << endl;
 	cout << g_eyeRbt << endl;
@@ -568,19 +559,21 @@ void ofApp::setupCamera() {
 	g_invCameraRotMat = inv( g_cameraRotMat);
 	messageFile << "g_invRotMat: \n" << g_invCameraRotMat << endl;
 
-	Matrix4 g_invEyeRbt = inv( g_eyeRbt);
+	Matrix4 g_invEyeRbt = inv(g_eyeRbt);
 
 
 	// setup light sources for Asian Game
-	float  distanceToLight =  42 + 24 + 5 ;
-	float  heightToLight = 40 + 15;
-	float  separationLight = 5;
+	//float distanceToLight = 42 + 24 + 5;
+	float distanceToLight = 300;
+	//float heightToLight = 40 + 15;
+	float heightToLight = 30;
+	float separationLight = 5;
 
 	g_light1Pos = g_SceneRbt * Cvec4( separationLight/2.0, heightToLight, distanceToLight, 1.0);
 	g_light2Pos = g_SceneRbt * Cvec4(-separationLight/2.0, heightToLight, distanceToLight, 1.0);  // define two lights positions in world space
 
-    g_light1Color =  Cvec4(1.0, 1.0, 1.0, 1.0);
-    g_light2Color =  Cvec4(1.0, 1.0, 1.0, 1.0);// set up light sources
+    g_light1Color = Cvec4(1.0, 1.0, 1.0, 1.0);
+    g_light2Color = Cvec4(1.0, 1.0, 1.0, 1.0);// set up light sources
 
 
 	
@@ -590,12 +583,12 @@ void ofApp::setupOldCamera() {
 
 	
 	
-// set the parameters for the camera, which define the internal working of the camera.
+	// set the parameters for the camera, which define the internal working of the camera.
     g_frustMinFov = 100.0;  // A minimal of 100 degree field of view for rainbow viewing
 
     g_frustFovY = g_frustMinFov; // FOV in y direction (updated by updateFrustFovY)
 
-    g_frustNear = -5.0;    // near plane
+    g_frustNear = -0.01;		// near plane
     g_frustFar = -200.0;    // far plane
 
 
@@ -642,48 +635,44 @@ void ofApp::setupOldCamera() {
 	    messageFile << theta << endl;
 
 	    messageFile << "rotated Axis:";
-	    messageFile << Cvec3(  g_cameraRotMat * Cvec4( negZAxis, 0.0 ) ) << endl;
+	    messageFile << Cvec3( g_cameraRotMat * Cvec4( negZAxis, 0.0 ) ) << endl;
 
-		messageFile << "g_rotMat :\n" <<  g_cameraRotMat << endl;
+		messageFile << "g_rotMat :\n" << g_cameraRotMat << endl;
 		
 
 
-	    Assert ( norm2 ( groundCamDir - Cvec3(  g_cameraRotMat * Cvec4( negZAxis, 0.0 ) ) ) <= 1.0e-8 );
+	    Assert ( norm2 ( groundCamDir - Cvec3( g_cameraRotMat * Cvec4( negZAxis, 0.0 ) ) ) <= 1.0e-8 );
 	   
 	}
 
     static const Cvec3 g_initAABBmax(48.8672218, 60.4031639, 35.5040970);
-    static  const Cvec3 g_initAABBmin(-60.4031792, -9.44913101, -60.4031944);
+    static const Cvec3 g_initAABBmin(-60.4031792, -9.44913101, -60.4031944);
     static const Cvec3 g_initAABBcenter = (g_initAABBmin + g_initAABBmax) / 2.0;
 
 
 	double eyeHeight = 1.7;
 	
-	g_invCameraRotMat = inv( g_cameraRotMat);
+	g_invCameraRotMat = inv(g_cameraRotMat);
 
-    Cvec3 localCenter = Cvec3( g_invCameraRotMat * Cvec4( g_initAABBcenter,0) );
+    Cvec3 localCenter = Cvec3( g_invCameraRotMat * Cvec4(g_initAABBcenter,0) );
 
 	float volumeDepth = g_initAABBmax[2] - g_initAABBmin[2];
 
 	//Cvec3 eyeTranslation = localCenter + Cvec3 ( 0, eyeHeight, volumeDepth );
-	Cvec3 eyeTranslation =  Cvec3 ( 0, eyeHeight, g_initAABBmax[2] * 2 );
+	Cvec3 eyeTranslation = Cvec3 ( 0, eyeHeight, g_initAABBmax[2] * 2 );
 	// the position of the eye relative the world coordinate system.	
-	g_eyeRbt = g_cameraRotMat * Matrix4::makeTranslation( eyeTranslation  );
-	g_invCameraRotMat = inv( g_cameraRotMat);
+	g_eyeRbt = g_cameraRotMat * Matrix4::makeTranslation( eyeTranslation );
+	g_invCameraRotMat = inv(g_cameraRotMat);
 	messageFile << "g_invRotMat: \n" << g_invCameraRotMat << endl;
 
-	Matrix4 g_invEyeRbt = inv( g_eyeRbt);
+	Matrix4 g_invEyeRbt = inv(g_eyeRbt);
 } // setupOldCamera()
 
 
-
-
-
-
 Cvec3  ofApp::getSunLightRGBColor() {
-// convert the sun light to its RGB representation
-	
-	double  sunIntensity, X = 0, Y = 0, Z = 0, XYZ;
+	// convert the sun light to its RGB representation
+
+	double sunIntensity, X = 0, Y = 0, Z = 0, XYZ;
 	double lambda_m; // meter
 
 	double xBar, yBar, zBar;
@@ -701,69 +690,69 @@ Cvec3  ofApp::getSunLightRGBColor() {
 	int j;
 	
 	for (lambda = lambdaStart, j=0; j < nLambdas; lambda += lambdaStep, j++ ) {
-	 // integration of cie-color-match curve over  nSpectralSampleSteps intervals,
+		// integration of cie-color-match curve over  nSpectralSampleSteps intervals,
     	      	
-     //  cie is sampled every lambdaStep * 2
+		//  cie is sampled every lambdaStep * 2
 		  
-	   int i1 = int ( (lambda - 380 ) / ( lambdaStep*2 ) );
-	   int i2 = int ( ( lambda + lambdaStep - 380) / (lambdaStep*2 ) );
+		int i1 = int ( (lambda - 380 ) / ( lambdaStep*2 ) );
+		int i2 = int ( ( lambda + lambdaStep - 380) / (lambdaStep*2 ) );
 
-	 //  messageFile << "j =" << j  << " i1=" << i1 << "i2=" << i2 << endl;
+		//  messageFile << "j =" << j  << " i1=" << i1 << "i2=" << i2 << endl;
 
-	   if ( i1 == i2) { 
-		   xBar =  cie_colour_match[ i1][ 0]; 
-		   yBar =  cie_colour_match[ i1][ 1 ];
-		   zBar =  cie_colour_match[ i1 ][ 2 ];
+		if ( i1 == i2) { 
+			xBar =  cie_colour_match[ i1][ 0]; 
+			yBar =  cie_colour_match[ i1][ 1 ];
+			zBar =  cie_colour_match[ i1 ][ 2 ];
 		
 		}  
-	   else { // j = i+1 => lambda is between two sample points 
+		else { // j = i+1 => lambda is between two sample points 
 		   
-		  xBar = ( cie_colour_match[ i1][ 0] + cie_colour_match[ i2 ][ 0] ) / 2.0; 
-		  yBar = ( cie_colour_match[ i1 ][ 1 ] + cie_colour_match[ i2][ 1 ] ) /2.0;
-		  zBar = ( cie_colour_match[ i1][ 2 ] + cie_colour_match[ i2][ 2 ] ) /2.0;
-        }
+			xBar = ( cie_colour_match[ i1][ 0] + cie_colour_match[ i2 ][ 0] ) / 2.0; 
+			yBar = ( cie_colour_match[ i1 ][ 1 ] + cie_colour_match[ i2][ 1 ] ) /2.0;
+			zBar = ( cie_colour_match[ i1][ 2 ] + cie_colour_match[ i2][ 2 ] ) /2.0;
+		}
 
 		//intensity = bb_spectrum(lambda);  // You already have the function that computes the irradiance of the sun
 		/*
 		if (  definitelyLessThan (  lambda / (lambdaStep * 2) - floor ( lambda / (lambdaStep * 2) ), 
-		                                   (2 * lambdaStep ) / 10.0, epsilon ) ) {
+											(2 * lambdaStep ) / 10.0, epsilon ) ) {
 		 
-		 // lambda is at a cie sample lambda which is sampled every lambdaStep * 2
+			// lambda is at a cie sample lambda which is sampled every lambdaStep * 2
 		  
-		   int i = int (  lambda - 380 ) / int ( lambdaStep*2 );
+			int i = int (  lambda - 380 ) / int ( lambdaStep*2 );
 
-		   xBar =  cie_colour_match[ i][ 0]; 
-		   yBar =  cie_colour_match[ i][ 1 ];
-		   zBar =  cie_colour_match[ i ][ 2 ];
+			xBar =  cie_colour_match[ i][ 0]; 
+			yBar =  cie_colour_match[ i][ 1 ];
+			zBar =  cie_colour_match[ i ][ 2 ];
 		
 		}  
 		else { // lambda is between two points and interpolate between them
 
-		  int i1 =  int (  lambda - lambdaStep - 380 ) / int ( lambdaStep*2 );
-		  int i2 =  int (  lambda + lambdaStep  - 380 ) / int ( lambdaStep*2 );
+			int i1 =  int (  lambda - lambdaStep - 380 ) / int ( lambdaStep*2 );
+			int i2 =  int (  lambda + lambdaStep  - 380 ) / int ( lambdaStep*2 );
 		
-		  xBar = ( cie_colour_match[ i1][ 0] + cie_colour_match[ i2 ][ 0] ) / 2.0; 
-		  yBar = ( cie_colour_match[ i1 ][ 1 ] + cie_colour_match[ i2][ 1 ] ) /2.0;
-		  zBar = ( cie_colour_match[ i1][ 2 ] + cie_colour_match[ i2][ 2 ] ) /2.0;
-        }
+			xBar = ( cie_colour_match[ i1][ 0] + cie_colour_match[ i2 ][ 0] ) / 2.0; 
+			yBar = ( cie_colour_match[ i1 ][ 1 ] + cie_colour_match[ i2][ 1 ] ) /2.0;
+			zBar = ( cie_colour_match[ i1][ 2 ] + cie_colour_match[ i2][ 2 ] ) /2.0;
+		}
 		*/
 
 		/*
 		xBar =  ( cie_colour_match[ ( int(lambda) - 380 ) / int( lambdaStep*2)] [0]
-				         + cie_colour_match[ ( int(lambda + lambdaStep*2) - 380 )  / int( lambdaStep*2)] [0] ) /2.0; 
-				 // lambdaStep is 2.5 nanometer
+							+ cie_colour_match[ ( int(lambda + lambdaStep*2) - 380 )  / int( lambdaStep*2)] [0] ) /2.0; 
+					// lambdaStep is 2.5 nanometer
 		yBar = ( cie_colour_match[ ( int(lambda) - 380 ) / int( lambdaStep*2)] [1] 
-		          + cie_colour_match[ ( int(lambda + lambdaStep*2) - 380 )  / int( lambdaStep*2)] [1] ) /2.0; 
+					+ cie_colour_match[ ( int(lambda + lambdaStep*2) - 380 )  / int( lambdaStep*2)] [1] ) /2.0; 
 		zBar = ( cie_colour_match[ ( int(lambda) - 380 ) / int( lambdaStep*2)] [2] 
-		           + cie_colour_match[ ( int(lambda + lambdaStep*2) - 380 )  / int( lambdaStep*2)] [2] ) /2.0; 
+					+ cie_colour_match[ ( int(lambda + lambdaStep*2) - 380 )  / int( lambdaStep*2)] [2] ) /2.0; 
 
 		//messageFile << "In dropvolume.cpp: int(lambda)- 380 =" << int(lambda) - 380 << endl;
 		*/
 
 		lambda_m = lambda * 1.0e-9;
 
-        sunIntensity = calculate_irradiance_of_sun(lambda_m); // isun: the return value of irradiance is per nanometer, but the function uses
-		                                                       // lambda_m in unit meter
+		sunIntensity = calculate_irradiance_of_sun(lambda_m);	// Isun: the return value of irradiance is per nanometer, but the function uses
+																// lambda_m in unit meter
 
 		X += sunIntensity * xBar * lambdaStep; 
 		Y += sunIntensity * yBar * lambdaStep;
@@ -784,27 +773,29 @@ Cvec3  ofApp::getSunLightRGBColor() {
 
 
 Matrix4 ofApp::makeProjectionMatrix() {
+	cout << "g_frustFovY=" << g_frustFovY << endl;
+	double aspectRatio =  static_cast <double>(g_windowWidth) / static_cast <double> (g_windowHeight);
+	cout << "aspectRatio = " << aspectRatio  << endl;
 
-	return Matrix4::makeProjection(
-		g_frustFovY, g_windowWidth / static_cast <double> (g_windowHeight),
-		g_frustNear, g_frustFar);
+	return Matrix4::makeProjection(g_frustFovY, g_windowWidth / static_cast <double> (g_windowHeight),
+								   g_frustNear, g_frustFar);
 }
 
 
 // update g_frustFovY from g_frustMinFov, g_windowWidth, and g_windowHeight
 void ofApp::updateFrustFovY() {
 
-  if (g_windowWidth >= g_windowHeight)
+	if (g_windowWidth >= g_windowHeight)
 
-    g_frustFovY = g_frustMinFov;
+		g_frustFovY = g_frustMinFov;
 
-  else {
-    const double RAD_PER_DEG = 0.5 * 3.14159 /180;
+	else {
+		const double RAD_PER_DEG = 0.5 * 3.14159 /180;
 
-    g_frustFovY = atan2(sin( g_frustMinFov * RAD_PER_DEG) * 
-		                    g_windowHeight /static_cast <double> (g_windowWidth), 
-							cos(g_frustMinFov * RAD_PER_DEG)) / RAD_PER_DEG;
-  }
+		g_frustFovY = atan2(sin(g_frustMinFov * RAD_PER_DEG) * g_windowHeight /static_cast <double> (g_windowWidth), 
+							cos(g_frustMinFov * RAD_PER_DEG)) 
+					  / RAD_PER_DEG;
+	}
 }
 
 //--------------------------------------------------------------
@@ -821,7 +812,7 @@ void ofApp::draw() {
 
 void ofApp::myOwnDraw() {
 
-     // callback function for draw event: 
+    // callback function for draw event: 
 	// This callback function is registered at the system initialization, 
 	// so called earlier than the other draw callbacks
 
@@ -837,61 +828,61 @@ void ofApp::myOwnDraw() {
 
 	if ( g_renderMode == 1 ) { // background scene only
 		cout << "renderSceneToSysBuffer():"  << endl;
-	   try {
-       	renderSceneToSysBuffer();
-     	}
+		try {
+			renderSceneToSysBuffer();
+		}
 	
-	   catch (const runtime_error & error ) {
-          std::cout << error.what() << endl;
-	      cout  <<"renderToSysBuffer:" <<  error.what() << endl;
-      }
+		catch (const runtime_error & error ) {
+			std::cout << error.what() << endl;
+			cout  <<"renderToSysBuffer:" <<  error.what() << endl;
+		}
 	}
 
     if ( g_renderMode == 2 ) { // rainbow only 
 		cout << "renderRainbowOnlyToScreen():"  << endl;
-	   try {
-       	renderRainbowOnlyToScreen();
+		try {
+			renderRainbowOnlyToScreen();
 
-     	}
+		}
 	
-	   catch (const runtime_error & error ) {
-          std::cout << "renderRainbowOnlyToScreen: " << error.what() << endl;
+		catch (const runtime_error & error ) {
+			std::cout << "renderRainbowOnlyToScreen: " << error.what() << endl;
 	     
-	   }
+		}
 
 	}
 	
 	 if ( g_renderMode == 3 ) { // background scene + rainbow 
-        cout << "renderRainbowAndScreenToScreen():"  << endl;
-	   try {
-       	renderRainbowAndSceneToScreen();
+		cout << "renderRainbowAndScreenToScreen():"  << endl;
+		try {
+			renderRainbowAndSceneToScreen();
 		
-     	}
+		}
 	
-	   catch (const runtime_error & error ) {
-          std::cout << error.what() << endl;
-	      cout  <<"renderRainbowAndScreenToScreen():" <<  error.what() << endl;
-	   }
-
+		catch (const runtime_error & error ) {
+			std::cout << error.what() << endl;
+			cout  <<"renderRainbowAndScreenToScreen():" <<  error.what() << endl;
+		}
+		
 	}
 
 
     if ( g_renderMode == 4 ) { // AABBrainbow only 
 		cout << "renderAABBRainbowOnlyToScreen():"  << endl;
-	   try {
-       	renderAABBRainbowOnlyToScreen();
+		try {
+			renderAABBRainbowOnlyToScreen();
 	
-     	}
+		}
 	
-	   catch (const runtime_error & error ) {
-          std::cout << error.what() << endl;
-	      cout  <<"renderAABBRainbowOnlyToScreen():" <<  error.what() << endl;
-	   }
+		catch (const runtime_error & error ) {
+			std::cout << error.what() << endl;
+			cout  <<"renderAABBRainbowOnlyToScreen():" <<  error.what() << endl;
+		}
 
 	} 
 
 		
-	 // g_renderMode == 0 => do nothing
+	// g_renderMode == 0 => do nothing
 
 	g_redrawWindowEvent = false; //for debugging
 
@@ -909,64 +900,64 @@ void ofApp::myOwnDraw() {
 void ofApp::renderToFBOAndDump(int renderMode ) {
 	
 	
-    if ( renderMode == 1 ) { // scene  
+	if ( renderMode == 1 ) { // scene  
 		cout << "renderToFBOAndDump: scene  only:"  << endl;
-	   try {
-       	renderSceneToFBO();
+		try {
+			renderSceneToFBO();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, g_fboScene);
+			glBindFramebuffer(GL_FRAMEBUFFER, g_fboScene);
   
-	    checkGlErrors();
-		readSceneFBOPixels("sceneFBO.txt");
+			checkGlErrors();
+			readSceneFBOPixels("sceneFBO.txt");
 
-		glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer); // default system framebuffer
-     	}
+			glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer); // default system framebuffer
+		}
 	
-	   catch (const runtime_error & error ) {
-          std::cout << "renderToFBOAndDump: scene only " << error.what() << endl;
+		catch (const runtime_error & error ) {
+			std::cout << "renderToFBOAndDump: scene only " << error.what() << endl;
 	     
-	   }
+		}
 
 	}
 	
 	   
     if ( renderMode == 2 ) { // rainbow only 
 		cout << "renderToFBOAndDump: rainbow only"  << endl;
-	   try {
-       	renderRainbowOnlyToFBO();
-		glBindFramebuffer(GL_FRAMEBUFFER, g_fboRainbow);
+		try {
+			renderRainbowOnlyToFBO();
+			glBindFramebuffer(GL_FRAMEBUFFER, g_fboRainbow);
   
-	    checkGlErrors();
-		readRainbowFBOPixels("rainbowOnlyFBO.txt");
-		glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer); // default system framebuffer
-     	}
+			checkGlErrors();
+			readRainbowFBOPixels("rainbowOnlyFBO.txt");
+			glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer); // default system framebuffer
+		}
 	
-	   catch (const runtime_error & error ) {
-          std::cout << "renderToFBOAndDump: rainbow only " << error.what() << endl;
+		catch (const runtime_error & error ) {
+			std::cout << "renderToFBOAndDump: rainbow only " << error.what() << endl;
 	     
-	   }
+		}
 
 	}
 	
 	 if ( renderMode == 3 ) { // background scene + rainbow 
-        cout << "renderToFBOAndDump: RainbowAndScreen"  << endl;
-	   try {
-       	renderRainbowAndSceneToFBO();
+		cout << "renderToFBOAndDump: RainbowAndScreen"  << endl;
+		try {
+			renderRainbowAndSceneToFBO();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, g_fboRainbow);
+			glBindFramebuffer(GL_FRAMEBUFFER, g_fboRainbow);
   
-	    checkGlErrors();
-		readRainbowFBOPixels("rainbowAndSceneFBO.txt");
+			checkGlErrors();
+			readRainbowFBOPixels("rainbowAndSceneFBO.txt");
 
-		glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer); // default system framebuffer
-		cout << "FBO dumped to rainbowAndSceneFBO.txt" << endl;
+			glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer); // default system framebuffer
+			cout << "FBO dumped to rainbowAndSceneFBO.txt" << endl;
 		
-     	}
+		}
 	
-	   catch (const runtime_error & error ) {
-          std::cout << error.what() << endl;
-	      cout  <<"renderToFBOAndDump:RainbowAndScreen  "<<  error.what() << endl;
-	   }
+		catch (const runtime_error & error ) {
+			std::cout << error.what() << endl;
+			cout  <<"renderToFBOAndDump:RainbowAndScreen  "<<  error.what() << endl;
+		}
 
 	}
 
@@ -978,9 +969,9 @@ void ofApp::renderSceneToFBO() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, g_fboScene);
 
-		 checkGlErrors();
+	checkGlErrors();
 	glEnable(GL_DEPTH_TEST);
-	 checkGlErrors();
+	checkGlErrors();
 	glDisable(GL_BLEND);
 	checkGlErrors();
 
@@ -990,15 +981,16 @@ void ofApp::renderSceneToFBO() {
 	 
 	glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // for the FBO g_fboScene
 	checkGlErrors();
-	  // GL_INVALID_FRAMEBUFFER_OPERATION is  caused by calling glClear when there's no current draw framebuffer
-	  // (as will be the case for a windowless OpenGL context before you bind an FBO, for example).
+	// GL_INVALID_FRAMEBUFFER_OPERATION is  caused by calling glClear when there's no current draw framebuffer
+	// (as will be the case for a windowless OpenGL context before you bind an FBO, for example).
 	 
 
 	drawBackgroundStuff();  // draw to FBO g_fboScene
 
-	glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer); // unbind the framebuffer and bind it to the default system buffer
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0); // unbind the framebuffer and bind it to the default system buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer);	// unbind the framebuffer and bind it to the default system buffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);					// unbind the framebuffer and bind it to the default system buffer
 	checkGlErrors();
+
 }//renderToSceneFBO()
 
 
@@ -1013,46 +1005,46 @@ void ofApp::renderRainbowOnlyToScreen() {
 	glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // for the default framebuffer
 	checkGlErrors();
 	 
-   Uniforms extraUniforms;
+	Uniforms extraUniforms;
 
-  glDrawBuffer(GL_BACK); // GL_BACK is the draw buffer for the zero framebuffer; for double-buffering context
-   checkGlErrors();
+	glDrawBuffer(GL_BACK); // GL_BACK is the draw buffer for the zero framebuffer; for double-buffering context
+	checkGlErrors();
 	
    
-	 const Matrix4 projMatrix = makeProjectionMatrix();
+	const Matrix4 projMatrix = makeProjectionMatrix();
 
-	 // The basic transformations
-     extraUniforms.put("uProjectionMatrix", projMatrix);
+	// The basic transformations
+	extraUniforms.put("uProjectionMatrix", projMatrix);
    
-     g_invEyeRbt = inv(g_eyeRbt);
+	g_invEyeRbt = inv(g_eyeRbt);
 
-     cout << "current eye frame:" << "\n" << g_eyeRbt << endl;
+	cout << "current eye frame:" << "\n" << g_eyeRbt << endl;
 
-     const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
-  const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
+	const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
+	const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
   
-  // send the eye space coordinates of lights to uniforms
-  extraUniforms.put("uLight1Pos", eyeLight1);
-  extraUniforms.put("uLight2Pos", eyeLight2);
+	// send the eye space coordinates of lights to uniforms
+	extraUniforms.put("uLight1Pos", eyeLight1);
+	extraUniforms.put("uLight2Pos", eyeLight2);
 
-  extraUniforms.put("uLight1Color", g_light1Color );
-  extraUniforms.put("uLight2Color", g_light2Color );
+	extraUniforms.put("uLight1Color", g_light1Color );
+	extraUniforms.put("uLight2Color", g_light2Color );
 
  
-  // upload the sun direction relative to the eye space
+	// upload the sun direction relative to the eye space
 
-  extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
- // extraUniforms.put("uSunRayDir", g_sunRayDir );
+	extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
+	// extraUniforms.put("uSunRayDir", g_sunRayDir );
 
 
-  extraUniforms.put("uWindowWidth", g_windowWidth );
-  extraUniforms.put("uWindowHeight",g_windowHeight);
+	extraUniforms.put("uWindowWidth", g_windowWidth );
+	extraUniforms.put("uWindowHeight",g_windowHeight);
   
-   extraUniforms.put("uRadius", g_radius );
-   extraUniforms.put("uDropDensity", g_dropDensity );  
+	extraUniforms.put("uRadius", g_radius );
+	extraUniforms.put("uDropDensity", g_dropDensity );  
 
-    extraUniforms.put("uEyeMatrix", g_eyeRbt); // This will be used in shader to convert the
-    extraUniforms.put("uInvEyeMatrix", g_invEyeRbt); // This will be used in shader to convert the
+	extraUniforms.put("uEyeMatrix", g_eyeRbt); // This will be used in shader to convert the
+	extraUniforms.put("uInvEyeMatrix", g_invEyeRbt); // This will be used in shader to convert the
    	   
 	cout << "current AABB frame (center):" << "\n" << *g_AABBRbt << endl;
 
@@ -1062,13 +1054,12 @@ void ofApp::renderRainbowOnlyToScreen() {
 	extraUniforms.put("uModelMatrixAABB",  *g_AABBRbt );
 	extraUniforms.put("uInvModelMatrixAABB", uInvModelMatrixAABB );
 
-	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * 
-		        Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
+	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
 	  
 	extraUniforms.put("uEyeOriginInBoxFrame", uEyeOriginInBoxFrame);
 
-	g_AABBmin = Cvec3(  -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0 );
-	g_AABBmax = Cvec3(  g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
+	g_AABBmin = Cvec3( -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0 );
+	g_AABBmax = Cvec3( g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
 	   
 	//g_AABBmin = Cvec3( *g_AABBRbt * Cvec4(  -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0, 1.0 ) );
 	//g_AABBmax = Cvec3( *g_AABBRbt  * Cvec4(  g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0, 1.0 )  );
@@ -1085,33 +1076,31 @@ void ofApp::renderRainbowOnlyToScreen() {
 	// The orientation of g_AABBRbt and that of g_EyeRbt are the same. 
 
 	// draw rainbow to the default buffer
-	 try {
+	try {
 
-      //Matrix4 MVM = g_invEyeRbt * (  *( g_rainbowOnlyMatObj -> objectRbt ) ) ; // g_currentPickedObject->objectRbt may have been
-	                                                              // changed by picking
-      Matrix4 MVM = Matrix4();
+		//Matrix4 MVM = g_invEyeRbt * (  *( g_rainbowOnlyMatObj -> objectRbt ) ) ;		// g_currentPickedObject->objectRbt may have been
+		//																			// changed by picking
+		Matrix4 MVM = Matrix4();
 
-	  extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
-   // debugging
+		extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
+		// debugging
 
-      g_rainbowOnlyMatObj->draw( extraUniforms ); 
+		g_rainbowOnlyMatObj->draw( extraUniforms ); 
 
-	  // This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
-	  // and set vertex     attribute pointers, and then calls drawElements() 
-	 
-     
+		// This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
+		// and set vertex     attribute pointers, and then calls drawElements() 
 	  
-	 }                                   
+	}                                   
 
 
-	 catch ( const runtime_error & error ) {
-		 //std::cout << error.what() << endl;
+	catch ( const runtime_error & error ) {
+		//std::cout << error.what() << endl;
 		messageFile << "uModelViewMatrix in rainbow" <<error.what() << endl;
 		cout << error.what() << endl;
 
 		//throw; // A throw expression that has no operand re-throws the exception currently being handled
 
-	 }
+	}
 
 	
 } //  renderRainbowOnlyToScreen() 
@@ -1127,46 +1116,46 @@ void ofApp::renderAABBRainbowOnlyToScreen() {
 	glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // for the default framebuffer
 	checkGlErrors();
 	 
-   Uniforms extraUniforms;
+	Uniforms extraUniforms;
 
-  glDrawBuffer(GL_BACK); // GL_BACK is the draw buffer for the zero framebuffer; for double-buffering context
-   checkGlErrors();
+	glDrawBuffer(GL_BACK); // GL_BACK is the draw buffer for the zero framebuffer; for double-buffering context
+	checkGlErrors();
 	
    
-	 const Matrix4 projMatrix = makeProjectionMatrix();
+	const Matrix4 projMatrix = makeProjectionMatrix();
 
-	 // The basic transformations
-     extraUniforms.put("uProjectionMatrix", projMatrix);
+	// The basic transformations
+	extraUniforms.put("uProjectionMatrix", projMatrix);
    
-     g_invEyeRbt = inv(g_eyeRbt);
+	g_invEyeRbt = inv(g_eyeRbt);
 
-     cout << "At renderAABBRainbow: current eye frame:" << "\n" << g_eyeRbt << endl;
+	cout << "At renderAABBRainbow: current eye frame:" << "\n" << g_eyeRbt << endl;
 
-     const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
-  const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
+	const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
+	const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
   
-  // send the eye space coordinates of lights to uniforms
-  extraUniforms.put("uLight1Pos", eyeLight1);
-  extraUniforms.put("uLight2Pos", eyeLight2);
+	// send the eye space coordinates of lights to uniforms
+	extraUniforms.put("uLight1Pos", eyeLight1);
+	extraUniforms.put("uLight2Pos", eyeLight2);
 
-  extraUniforms.put("uLight1Color", g_light1Color );
-  extraUniforms.put("uLight2Color", g_light2Color );
+	extraUniforms.put("uLight1Color", g_light1Color );
+	extraUniforms.put("uLight2Color", g_light2Color );
 
  
-  // upload the sun direction relative to the eye space
+	// upload the sun direction relative to the eye space
 
-  extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
- // extraUniforms.put("uSunRayDir", g_sunRayDir );
+	extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
+	// extraUniforms.put("uSunRayDir", g_sunRayDir );
 
 
-  extraUniforms.put("uWindowWidth", g_windowWidth );
-  extraUniforms.put("uWindowHeight",g_windowHeight);
+	extraUniforms.put("uWindowWidth", g_windowWidth );
+	extraUniforms.put("uWindowHeight",g_windowHeight);
   
-   extraUniforms.put("uRadius", g_radius );
-   extraUniforms.put("uDropDensity", g_dropDensity );  
+	extraUniforms.put("uRadius", g_radius );
+	extraUniforms.put("uDropDensity", g_dropDensity );  
 
-    extraUniforms.put("uEyeMatrix", g_eyeRbt); // This will be used in shader to convert the
-    extraUniforms.put("uInvEyeMatrix", g_invEyeRbt); // This will be used in shader to convert the
+	extraUniforms.put("uEyeMatrix", g_eyeRbt); // This will be used in shader to convert the
+	extraUniforms.put("uInvEyeMatrix", g_invEyeRbt); // This will be used in shader to convert the
    	   
 	cout << "At renderAABBRainbow: current AABB frame (center):" << "\n" << *g_AABBRbt << endl;
 
@@ -1176,18 +1165,17 @@ void ofApp::renderAABBRainbowOnlyToScreen() {
 
 	extraUniforms.put("uInvModelMatrixAABB", uInvModelMatrixAABB );
 
-	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * 
-		        Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
+	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
 	  
 	extraUniforms.put("uEyeOriginInBoxFrame", uEyeOriginInBoxFrame);
 
-	g_AABBmin = Cvec3(  -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0 );
-	g_AABBmax = Cvec3(  g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
+	g_AABBmin = Cvec3( -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0 );
+	g_AABBmax = Cvec3( g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
 	   
 	//g_AABBmin = Cvec3( *g_AABBRbt * Cvec4(  -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0, 1.0 ) );
 	//g_AABBmax = Cvec3( *g_AABBRbt  * Cvec4(  g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0, 1.0 )  );
 	   
-	extraUniforms.put("uAABBmin", g_AABBmin  );   
+	extraUniforms.put("uAABBmin", g_AABBmin );   
 	extraUniforms.put("uAABBmax", g_AABBmax );   
 	
 	Cvec4 localFrontNormal = Cvec4( 0.0, 0.0, 1.0, 0.0);
@@ -1199,31 +1187,31 @@ void ofApp::renderAABBRainbowOnlyToScreen() {
 	// The orientation of g_AABBRbt and that of g_EyeRbt are the same. 
 
 	// draw rainbow to the default buffer
-	 try {
+	try {
 
-      Matrix4 MVM = g_invEyeRbt * (  *( g_AABBRainbowOnlyMatObj -> objectRbt ) ) ; // g_currentPickedObject->objectRbt may have been
-	                                                              // changed by picking
+		Matrix4 MVM = g_invEyeRbt * (  *( g_AABBRainbowOnlyMatObj -> objectRbt ) ) ;		// g_currentPickedObject->objectRbt may have been
+																						// changed by picking
   
-	  extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
+		extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
    
-      g_AABBRainbowOnlyMatObj->draw( extraUniforms ); 
+		g_AABBRainbowOnlyMatObj->draw( extraUniforms ); 
 
-	  // This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
-	  // and set vertex     attribute pointers, and then calls drawElements() 
+		// This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
+		// and set vertex     attribute pointers, and then calls drawElements() 
 	 
      
 	  
-	 }                                   
+	}                                   
 
 
-	 catch ( const runtime_error & error ) {
-		 //std::cout << error.what() << endl;
+	catch ( const runtime_error & error ) {
+		//std::cout << error.what() << endl;
 		messageFile << "uModelViewMatrix in rainbow" <<error.what() << endl;
 		cout << error.what() << endl;
 
 		//throw; // A throw expression that has no operand re-throws the exception currently being handled
 
-	 }
+	}
 
 	
 } //  renderAABBRainbowOnlyToScreen() 
@@ -1242,42 +1230,42 @@ void ofApp::renderRainbowAndSceneToScreen( ) {
 	glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	checkGlErrors();
 	 
-   glDrawBuffer(GL_BACK); // GL_BACK is the draw buffer for the zero framebuffer; for double-buffering context
-   checkGlErrors();
+	glDrawBuffer(GL_BACK); // GL_BACK is the draw buffer for the zero framebuffer; for double-buffering context
+	checkGlErrors();
 	
    
 
-   Uniforms extraUniforms;
+	Uniforms extraUniforms;
 
   
-  const Matrix4 projMatrix = makeProjectionMatrix();
+	const Matrix4 projMatrix = makeProjectionMatrix();
 
-	 // The basic transformations
-  extraUniforms.put("uProjectionMatrix", projMatrix);
+	// The basic transformations
+	extraUniforms.put("uProjectionMatrix", projMatrix);
    
-  g_invEyeRbt = inv(g_eyeRbt);
+	g_invEyeRbt = inv(g_eyeRbt);
 
-  cout << "current eye frame:" << "\n" << g_eyeRbt << endl;
+	cout << "current eye frame:" << "\n" << g_eyeRbt << endl;
    
-  const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
-  const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
+	const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
+	const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
   
-  // send the eye space coordinates of lights to uniforms
-  extraUniforms.put("uLight1Pos", eyeLight1);
-  extraUniforms.put("uLight2Pos", eyeLight2);
+	// send the eye space coordinates of lights to uniforms
+	extraUniforms.put("uLight1Pos", eyeLight1);
+	extraUniforms.put("uLight2Pos", eyeLight2);
 
-  extraUniforms.put("uLight1Color", g_light1Color );
-  extraUniforms.put("uLight2Color", g_light2Color );
+	extraUniforms.put("uLight1Color", g_light1Color );
+	extraUniforms.put("uLight2Color", g_light2Color );
 
  
-  // upload the sun direction relative to the eye space
+	// upload the sun direction relative to the eye space
 
-  extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
- // extraUniforms.put("uSunRayDir", g_sunRayDir );
+	extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ));
+	// extraUniforms.put("uSunRayDir", g_sunRayDir );
 
 
-    extraUniforms.put("uEyeMatrix", g_eyeRbt); // This will be used in shader to convert the
-    extraUniforms.put("uInvEyeMatrix", g_invEyeRbt); // This will be used in shader to convert the
+	extraUniforms.put("uEyeMatrix", g_eyeRbt); // This will be used in shader to convert the
+	extraUniforms.put("uInvEyeMatrix", g_invEyeRbt); // This will be used in shader to convert the
    	   
 	cout << "current AABB frame (center):" << "\n" << *g_AABBRbt << endl;
 
@@ -1287,13 +1275,12 @@ void ofApp::renderRainbowAndSceneToScreen( ) {
 	extraUniforms.put("uModelMatrixAABB",  *g_AABBRbt );
 	extraUniforms.put("uInvModelMatrixAABB", uInvModelMatrixAABB );
 
-	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * 
-		        Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
+	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
 	  
 	extraUniforms.put("uEyeOriginInBoxFrame", uEyeOriginInBoxFrame);
 
-	g_AABBmin = Cvec3(  -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0);
-	g_AABBmax = Cvec3(  g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
+	g_AABBmin = Cvec3( -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0);
+	g_AABBmax = Cvec3( g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
 	   
 
 	extraUniforms.put("uAABBmin", g_AABBmin  );   
@@ -1307,48 +1294,48 @@ void ofApp::renderRainbowAndSceneToScreen( ) {
 	// bind the FBO textures
 
 	extraUniforms.put("uColorTex", 
-		  shared_ptr<Texture_FROM_FBO>(new Texture_FROM_FBO( g_colorTex) )); // g_colorTex is the bound texture
-	                                                                             // which was attached to g_fboScene
+			shared_ptr<Texture_FROM_FBO>(new Texture_FROM_FBO( g_colorTex) ));	// g_colorTex is the bound texture
+																				// which was attached to g_fboScene
 	extraUniforms.put("uDepthTex", 
-		   shared_ptr<Texture_FROM_FBO>(new Texture_FROM_FBO(g_depthTex)));
+			shared_ptr<Texture_FROM_FBO>(new Texture_FROM_FBO(g_depthTex)));
 
 
 	extraUniforms.put("uRadius", g_radius );
-    extraUniforms.put("uDropDensity", g_dropDensity );   
+	extraUniforms.put("uDropDensity", g_dropDensity );   
 
 	
 
 	// draw rainbow to the default buffer
-	 try {
+	try {
       
-      //Matrix4 MVM = g_invEyeRbt * (  *( g_rainbowAndSceneMatObj -> objectRbt ) ) ; 
+		//Matrix4 MVM = g_invEyeRbt * (  *( g_rainbowAndSceneMatObj -> objectRbt ) ) ; 
 	   
-     //  // for debugging: try g_fullScreenMatObj
-     // Matrix4 MVM = g_invEyeRbt * (  *( g_fullScreenMatObj-> objectRbt ) ) ; // g_currentPickedObject->objectRbt may have been
-	                                                              // changed by picking
-	 Matrix4 MVM = Matrix4();
+		// for debugging: try g_fullScreenMatObj
+		//Matrix4 MVM = g_invEyeRbt * (  *( g_fullScreenMatObj-> objectRbt ) ) ;	// g_currentPickedObject->objectRbt may have been
+		//																		// changed by picking
+		Matrix4 MVM = Matrix4();
 
-	  extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
+		extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
    
-      g_rainbowAndSceneMatObj->draw( extraUniforms ); 
-	  //g_fullScreenMatObj->draw( extraUniforms ); 
+		g_rainbowAndSceneMatObj->draw( extraUniforms ); 
+		//g_fullScreenMatObj->draw( extraUniforms ); 
 
-	  // This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
-	  // and set vertex     attribute pointers, and then calls drawElements() 
+		// This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
+		// and set vertex attribute pointers, and then calls drawElements() 
 	 
      
 	  
-	 }                                   
+	}                                   
 
 
-	 catch ( const runtime_error & error ) {
-		 //std::cout << error.what() << endl;
+	catch ( const runtime_error & error ) {
+		//std::cout << error.what() << endl;
 		messageFile << "uModelViewMatrix in rainbow" <<error.what() << endl;
 		cout << error.what() << endl;
 
 		//throw; // A throw expression that has no operand re-throws the exception currently being handled
 
-	 }
+	}
 
 		
 } //  renderRainbowAndSceenToScreen() 
@@ -1382,7 +1369,7 @@ void ofApp::renderRainbowOnlyToFBO() {
     const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
     const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
   
-  // send the eye space coordinates of lights to uniforms
+	// send the eye space coordinates of lights to uniforms
     extraUniforms.put("uLight1Pos", eyeLight1);
     extraUniforms.put("uLight2Pos", eyeLight2);
 
@@ -1390,10 +1377,10 @@ void ofApp::renderRainbowOnlyToFBO() {
     extraUniforms.put("uLight2Color", g_light2Color );
 
  
-  // upload the sun direction relative to the eye space
+	// upload the sun direction relative to the eye space
 
     extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
- // extraUniforms.put("uSunRayDir", g_sunRayDir );
+	// extraUniforms.put("uSunRayDir", g_sunRayDir );
 
 	extraUniforms.put("uRadius", g_radius );
     extraUniforms.put("uDropDensity", g_dropDensity );   
@@ -1409,20 +1396,19 @@ void ofApp::renderRainbowOnlyToFBO() {
 	extraUniforms.put("uModelMatrixAABB",  *g_AABBRbt );
 	extraUniforms.put("uInvModelMatrixAABB", uInvModelMatrixAABB );
 
-	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * 
-		        Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
+	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
 	  
 	extraUniforms.put("uEyeOriginInBoxFrame", uEyeOriginInBoxFrame);
 
 	//g_AABBmin = Cvec3( *g_AABBRbt * Cvec4(  -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0, 1.0 ) );
 	//g_AABBmax = Cvec3( *g_AABBRbt  * Cvec4(  g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0, 1.0 )  );
 	   
-	g_AABBmin = Cvec3(  -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0 );
-	g_AABBmax = Cvec3(  g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
+	g_AABBmin = Cvec3( -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0 );
+	g_AABBmax = Cvec3( g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
 	   
 
-	extraUniforms.put("uAABBmin", g_AABBmin  );   
-	extraUniforms.put("uAABBmax", g_AABBmax );   
+	extraUniforms.put("uAABBmin", g_AABBmin);   
+	extraUniforms.put("uAABBmax", g_AABBmax);   
 
 	Cvec4 localFrontNormal = Cvec4( 0.0, 0.0, 1.0, 0.0);
 	Cvec3 frontNormalToAABB = Cvec3( g_invEyeRbt * (*g_AABBRbt) * localFrontNormal );
@@ -1432,31 +1418,31 @@ void ofApp::renderRainbowOnlyToFBO() {
 
 	
 	// draw rainbow to the default buffer
-	 try {
+	try {
 
-      //Matrix4 MVM = g_invEyeRbt * (  *( g_rainbowOnlyMatObj -> objectRbt ) ) ; // g_currentPickedObject->objectRbt may have been
-	                                                              // changed by picking
-      Matrix4 MVM = Matrix4();
-	  extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
+		//Matrix4 MVM = g_invEyeRbt * (  *( g_rainbowOnlyMatObj -> objectRbt ) ) ;		// g_currentPickedObject->objectRbt may have been
+		//																			//changed by picking
+		Matrix4 MVM = Matrix4();
+		extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
    
-      g_rainbowOnlyMatObj->draw( extraUniforms ); 
+		g_rainbowOnlyMatObj->draw( extraUniforms ); 
 
-	  // This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
-	  // and set vertex     attribute pointers, and then calls drawElements() 
+		// This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
+		// and set vertex     attribute pointers, and then calls drawElements() 
 	 
      
 	  
-	 }                                   
+	}                                   
 
 
-	 catch ( const runtime_error & error ) {
-		 //std::cout << error.what() << endl;
+	catch ( const runtime_error & error ) {
+		//std::cout << error.what() << endl;
 		messageFile << "uModelViewMatrix in rainbow" <<error.what() << endl;
 		cout << error.what() << endl;
 
 		//throw; // A throw expression that has no operand re-throws the exception currently being handled
 
-	 }
+	}
 
 	 glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer);
 	
@@ -1489,24 +1475,24 @@ void ofApp::renderRainbowAndSceneToFBO() {
      
     g_projectionMatrix = makeProjectionMatrix();
 
-	 // The basic transformations
+	// The basic transformations
     extraUniforms.put("uProjectionMatrix", g_projectionMatrix);   
 
     cout << "current eye frame:" << "\n" << g_eyeRbt << endl;
 
-	 g_invEyeRbt = inv(g_eyeRbt);
+	g_invEyeRbt = inv(g_eyeRbt);
    
     const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
     const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
   
-  // send the eye space coordinates of lights to uniforms
+	// send the eye space coordinates of lights to uniforms
     extraUniforms.put("uLight1Pos", eyeLight1);
     extraUniforms.put("uLight2Pos", eyeLight2);
 
     extraUniforms.put("uLight1Color", g_light1Color );
     extraUniforms.put("uLight2Color", g_light2Color );
 
- // bind the FBO textures
+	// bind the FBO textures
 
 	extraUniforms.put("uColorTex", 
 		  shared_ptr<Texture_FROM_FBO>(new Texture_FROM_FBO( g_colorTex) )); // g_colorTex is the bound texture
@@ -1514,10 +1500,10 @@ void ofApp::renderRainbowAndSceneToFBO() {
 	extraUniforms.put("uDepthTex", 
 		   shared_ptr<Texture_FROM_FBO>(new Texture_FROM_FBO(g_depthTex)));
 
-  // upload the sun direction relative to the eye space
+	// upload the sun direction relative to the eye space
 
     extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
- // extraUniforms.put("uSunRayDir", g_sunRayDir );
+	//extraUniforms.put("uSunRayDir", g_sunRayDir );
 
 	extraUniforms.put("uRadius", g_radius );
     extraUniforms.put("uDropDensity", g_dropDensity );   
@@ -1533,56 +1519,55 @@ void ofApp::renderRainbowAndSceneToFBO() {
 	extraUniforms.put("uModelMatrixAABB",  *g_AABBRbt );
 	extraUniforms.put("uInvModelMatrixAABB", uInvModelMatrixAABB );
 
-	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * 
-		        Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
+	Cvec3 uEyeOriginInBoxFrame = Cvec3( uInvModelMatrixAABB * Cvec4(g_eyeRbt[3], g_eyeRbt[7], g_eyeRbt[11], g_eyeRbt[15]) );
 	  
 	extraUniforms.put("uEyeOriginInBoxFrame", uEyeOriginInBoxFrame);
 
-	g_AABBmin = Cvec3(  -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0 );
-	g_AABBmax = Cvec3(  g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
+	g_AABBmin = Cvec3( -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0 );
+	g_AABBmax = Cvec3( g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0 );
 	   
 	//g_AABBmin = Cvec3( *g_AABBRbt * Cvec4(  -g_AABBsize[0]/2.0, -g_AABBsize[1] / 2.0, -g_AABBsize[2]/2.0, 1.0 ) );
 	//g_AABBmax = Cvec3( *g_AABBRbt  * Cvec4(  g_AABBsize[0]/2.0, g_AABBsize[1] / 2.0, g_AABBsize[2]/2.0, 1.0 )  );
 	   
-	extraUniforms.put("uAABBmin", g_AABBmin  );   
-	extraUniforms.put("uAABBmax", g_AABBmax );   
+	extraUniforms.put("uAABBmin", g_AABBmin);   
+	extraUniforms.put("uAABBmax", g_AABBmax);   
 
-	Cvec4 localFrontNormal = Cvec4( 0.0, 0.0, 1.0, 0.0);
+	Cvec4 localFrontNormal = Cvec4(0.0, 0.0, 1.0, 0.0);
 	Cvec3 frontNormalToAABB = Cvec3( g_invEyeRbt * (*g_AABBRbt) * localFrontNormal );
 
 
 	cout << "frontNormalToAABB:=" << localFrontNormal <<" " << (*g_AABBRbt) * localFrontNormal  << " " << frontNormalToAABB << endl;
 
 	// draw rainbow to the default buffer
-	 try {
+	try {
 
-     // Matrix4 MVM = g_invEyeRbt * (  *( g_rainbowAndSceneMatObj -> objectRbt ) ) ; // g_currentPickedObject->objectRbt may have been
-	                                                              // changed by picking
+		//Matrix4 MVM = g_invEyeRbt * (  *( g_rainbowAndSceneMatObj -> objectRbt ) ) ;		// g_currentPickedObject->objectRbt may have been
+		//																				// changed by picking
 
-	  Matrix4 MVM = Matrix4();
+		Matrix4 MVM = Matrix4();
   
-	  extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
+		extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
    
-      g_rainbowAndSceneMatObj->draw( extraUniforms ); 
+		g_rainbowAndSceneMatObj->draw( extraUniforms ); 
 
-	  // This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
-	  // and set vertex     attribute pointers, and then calls drawElements() 
+		// This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
+		// and set vertex attribute pointers, and then calls drawElements() 
 	 
      
 	  
-	 }                                   
+	}                                   
 
 
-	 catch ( const runtime_error & error ) {
-		 //std::cout << error.what() << endl;
+	catch ( const runtime_error & error ) {
+		//std::cout << error.what() << endl;
 		messageFile << "uModelViewMatrix in rainbow" <<error.what() << endl;
 		cout << error.what() << endl;
 
 		//throw; // A throw expression that has no operand re-throws the exception currently being handled
 
-	 }
+	}
 
-	 glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer);
 
 } //  renderRainbowAndSceneToFBO() 
 
@@ -1590,46 +1575,45 @@ void ofApp::renderRainbowAndSceneToFBO() {
 
 void ofApp::renderSceneToSysBuffer() {
 	//GLint window_fbo =0; 
-    //glGetIntegerv(GL_FRAMEBUFFER_BINDING, &window_fbo); 
+	//glGetIntegerv(GL_FRAMEBUFFER_BINDING, &window_fbo); 
 	//glBindFramebuffer(GL_FRAMEBUFFER, window_fbo);
-	 //checkGlErrors();
+	//checkGlErrors();
 	// GL_INVALID_OPERATION is the error you get when multiple combinations of parameters that depend on different state are in conflict.
-	 // If it were just a missing enum, you should get GL_INVALID_ENUM.
+	// If it were just a missing enum, you should get GL_INVALID_ENUM.
 
-	 // GL_INVALID_OPERATION is generated if framebuffer is not zero or the name of a framebuffer previously returned 
-	 // from a call to glGenFramebuffers. 
+	// GL_INVALID_OPERATION is generated if framebuffer is not zero or the name of a framebuffer previously returned 
+	// from a call to glGenFramebuffers. 
 
-	 /*
-	 I feel it's necessary to point out here that the call to glBindFramebuffer(GL_FRAMEBUFFER, 0); 
-		 does not return rendering to the main framebuffer
-		 although it would appear to work for machines that run Windows, Unix(Mac) or Linux.
-		 Desktops and laptops have no concept of a main default system buffer. 
-		 This idea started with handheld devices. 
-		 When you make an openGL bind call with zero as the parameter
-		 then what you are doing is setting this function to NULL.
-		 It's how you disable this function. It's the same with glBindTexture(GL_TEXTURE_2D, 0);
-	 It is possible that on some handheld devices that the driver automatically activates
-		 the main system framebuffer when you set the framebuffer to NULL without activating another.
-		 This would be a choice made by the manufacturer and is not something that you should count on,
-		 this is not part of the openGL ES spec.
-		 For desktops and laptops, this is absolutely necessary 
-		 since disabling the framebuffer is required to return to normal openGL rendering. 
+	/*
+	I feel it's necessary to point out here that the call to glBindFramebuffer(GL_FRAMEBUFFER, 0); 
+		does not return rendering to the main framebuffer
+		although it would appear to work for machines that run Windows, Unix(Mac) or Linux.
+		Desktops and laptops have no concept of a main default system buffer. 
+		This idea started with handheld devices. 
+		When you make an openGL bind call with zero as the parameter
+		then what you are doing is setting this function to NULL.
+		It's how you disable this function. It's the same with glBindTexture(GL_TEXTURE_2D, 0);
+	It is possible that on some handheld devices that the driver automatically activates
+		the main system framebuffer when you set the framebuffer to NULL without activating another.
+		This would be a choice made by the manufacturer and is not something that you should count on,
+		this is not part of the openGL ES spec.
+		For desktops and laptops, this is absolutely necessary 
+		since disabling the framebuffer is required to return to normal openGL rendering. 
 
-         On an iOS device, you should make the following call, glBindFramebuffer(GL_FRAMEBUFFER, viewFramebuffer);,
-		 providing that you named your system framebuffer 'viewFramebuffer'.
-		 Look for through your initialization code for the following call, 
-		 glGenFramebuffers(1, &viewFramebuffer); 
-	      Whatever you have written at the end there is what you bind to when returning to your main system buffer.
+        On an iOS device, you should make the following call, glBindFramebuffer(GL_FRAMEBUFFER, viewFramebuffer);,
+		providing that you named your system framebuffer 'viewFramebuffer'.
+		Look for through your initialization code for the following call, 
+		glGenFramebuffers(1, &viewFramebuffer); 
+	    Whatever you have written at the end there is what you bind to when returning to your main system buffer.
 
 
-         If you are using GLKit then you can use the following call, [((GLKView *) self.view) bindDrawable];
-		   The 'self.view' may be slightly different depending on your particular startup code.
-         Also, for iOS, you could use, glBindFramebuffer(GL_FRAMEBUFFER, 2); 
-		   but this is likely not going to be consistent across future devices released by Apple. 
-		   They may change the default value of '2' to be '3' or something else in the future 
-		   so you'd want to use the actual name instead of an integer value.
-
-		   */
+        If you are using GLKit then you can use the following call, [((GLKView *) self.view) bindDrawable];
+		The 'self.view' may be slightly different depending on your particular startup code.
+        Also, for iOS, you could use, glBindFramebuffer(GL_FRAMEBUFFER, 2); 
+		but this is likely not going to be consistent across future devices released by Apple. 
+		They may change the default value of '2' to be '3' or something else in the future 
+		so you'd want to use the actual name instead of an integer value.
+	*/
 
 	//glClearDepth(0.);
 
@@ -1637,10 +1621,10 @@ void ofApp::renderSceneToSysBuffer() {
 
 	//glDepthFunc(GL_GREATER);
 
-		 checkGlErrors();
+	checkGlErrors();
 
 	glEnable(GL_DEPTH_TEST);
-	 checkGlErrors();
+	checkGlErrors();
 	glDisable(GL_BLEND);
 	checkGlErrors();
 
@@ -1654,94 +1638,94 @@ void ofApp::renderSceneToSysBuffer() {
 
 void ofApp::drawBackgroundStuff()  {
 
-   // glEnable(GL_DEPTH_TEST);
-	// checkGlErrors();
+	//glEnable(GL_DEPTH_TEST);
+	//checkGlErrors();
 	
 	//glDisable(GL_BLEND);
-	// checkGlErrors();
+	//checkGlErrors();
 	
 
-  Uniforms extraUniforms;
-  // build & send proj. matrix to vshader
+	Uniforms extraUniforms;
+	// build & send proj. matrix to vshader
   
-  const Matrix4 projMatrix = makeProjectionMatrix();
-  g_projectionMatrix =  projMatrix; 
+	const Matrix4 projMatrix = makeProjectionMatrix();
+	g_projectionMatrix =  projMatrix; 
 
-  extraUniforms.put("uProjectionMatrix", projMatrix);
+	extraUniforms.put("uProjectionMatrix", projMatrix);
    
-  g_invEyeRbt = inv(g_eyeRbt);
+	g_invEyeRbt = inv(g_eyeRbt);
 
-  cout << "current eye frame:" << "\n" << g_eyeRbt << endl;
+	cout << "current eye frame:" << "\n" << g_eyeRbt << endl;
 
 
-  const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
-  const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
+	const Cvec3 eyeLight1 = Cvec3(g_invEyeRbt * g_light1Pos ); // g_light1 position in eye coordinates
+	const Cvec3 eyeLight2 = Cvec3(g_invEyeRbt * g_light2Pos ); // g_light2 position in eye coordinates
   
-  // send the eye space coordinates of lights to uniforms
-  extraUniforms.put("uLight1Pos", eyeLight1);
-  extraUniforms.put("uLight2Pos", eyeLight2);
+	// send the eye space coordinates of lights to uniforms
+	extraUniforms.put("uLight1Pos", eyeLight1);
+	extraUniforms.put("uLight2Pos", eyeLight2);
 
-  extraUniforms.put("uLight1Color", g_light1Color );
-  extraUniforms.put("uLight2Color", g_light2Color );
+	extraUniforms.put("uLight1Color", g_light1Color );
+	extraUniforms.put("uLight2Color", g_light2Color );
 
  
-  // upload the sun direction relative to the eye space
+	// upload the sun direction relative to the eye space
 
-  extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
- // extraUniforms.put("uSunRayDir", g_sunRayDir );
-  extraUniforms.put("uLightRGBColor", g_lightRGBColor);
+	extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
+	// extraUniforms.put("uSunRayDir", g_sunRayDir );
+	extraUniforms.put("uLightRGBColor", g_lightRGBColor);
 
-  extraUniforms.put("uWindowWidth", g_windowWidth );
-  extraUniforms.put("uWindowHeight",g_windowHeight);
+	extraUniforms.put("uWindowWidth", g_windowWidth);
+	extraUniforms.put("uWindowHeight",g_windowHeight);
 	
 
   	  
 	// (1) Draw the background objects to  FBO =  a container for textures and an optional depth buffer
 	// FBO: there are no visible color buffer bitplanes, only a single "off-screen" color image attachment,
-	//	so there is no sense of front and back buffers or SWAPPING.   
+	// so there is no sense of front and back buffers or SWAPPING.   
  
 	// draw all the objects except for the last, which is a rainbow
     
-   for ( int i  = 0; i < g_objectPtrList.size(); i++ ) { // (5) This loop goes over the list of objects g_objectPtrList and draw each object in the list.
-	                                                //     Where and how is this object list created?
+	for ( int i  = 0; i < g_objectPtrList.size(); i++ ) {	// (5) This loop goes over the list of objects g_objectPtrList and draw each object in the list.
+															//     Where and how is this object list created?
 
-     Matrix4 MVM = g_invEyeRbt * (  *( g_objectPtrList[i] -> objectRbt ) ) ; // g_currentPickedObject->objectRbt may have been
-	                                                              // changed by picking
-     try {
-	 extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
-      }
-	   catch ( const runtime_error & error ) {
-		 //std::cout << error.what() << endl;
-		messageFile << "uModelViewMatrix:" << error.what() << endl;
-		cout << error.what() << endl;			
-	   }
+		Matrix4 MVM = g_invEyeRbt * (  *( g_objectPtrList[i] -> objectRbt ) ) ; // g_currentPickedObject->objectRbt may have been
+																				// changed by picking
+		try {
+			extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
+		}
+		catch ( const runtime_error & error ) {
+			//std::cout << error.what() << endl;
+			messageFile << "uModelViewMatrix:" << error.what() << endl;
+			cout << error.what() << endl;			
+		}
 
-     // compute the depth of the vertcies in eye space for debugging
+		// compute the depth of the vertcies in eye space for debugging
 
      
-	 // draw
-	 try {
-      g_objectPtrList[i]->draw( extraUniforms ); 
-	  // This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
-	  // and set vertex     attribute pointers, and then calls drawElements() */
+		// draw
+		try {
+			g_objectPtrList[i]->draw( extraUniforms ); 
+			// This draw leads to  BufferedObjectGeometry::draw() which binds vertex buffers 
+			// and set vertex     attribute pointers, and then calls drawElements() */
 	 
-	  // unbind the current vao for the current mesh
+			// unbind the current vao for the current mesh
 
-	  //glBindVertexArray(0);
+			//glBindVertexArray(0);
 
 	  
-	 }                                   
-	 catch ( const runtime_error & error ) {
-		 //std::cout << error.what() << endl;
-		messageFile << "object->draw():" <<  error.what() << endl;
-		cout << error.what() << endl;
+		}                                   
+		catch ( const runtime_error & error ) {
+			//std::cout << error.what() << endl;
+			messageFile << "object->draw():" <<  error.what() << endl;
+			cout << error.what() << endl;
 
-		//throw; // A throw expression that has no operand re-throws the exception currently being handled
+			//throw; // A throw expression that has no operand re-throws the exception currently being handled
 
-	 }
+		}
 
 	 
-    } // for each object except for rainbow
+	} // for each object except for rainbow
 
 
 } // drawBackgroundStuff() for ordinary rendering
@@ -1751,279 +1735,279 @@ void ofApp::drawBackgroundStuff()  {
 void ofApp::drawForPicking() {
  
    
-  drawPseudoColors();
+	drawPseudoColors();
   
   
-  glFinish();
-  checkGlErrors();
+	glFinish();
+	checkGlErrors();
 }
 
 void ofApp::drawPseudoColors() {
 
-  glEnable(GL_DEPTH_TEST);
-  checkGlErrors();
-  glDisable(GL_BLEND);
-  checkGlErrors();
-  glClearColor(0, 0, 0, 0); // this background color is only meant to be used
-                               // for the background of the back buffer for rendering in picking.
-  checkGlErrors();
-  //GLint window_fbo =0; 
-  // glGetIntegerv(GL_FRAMEBUFFER_BINDING, &window_fbo);  
-  //glBindFramebuffer(GL_FRAMEBUFFER, window_fbo); // 0 = the system-provided buffer
+	glEnable(GL_DEPTH_TEST);
+	checkGlErrors();
+	glDisable(GL_BLEND);
+	checkGlErrors();
+	glClearColor(0, 0, 0, 0);	// this background color is only meant to be used
+								// for the background of the back buffer for rendering in picking.
+	checkGlErrors();
+	//GLint window_fbo =0; 
+	// glGetIntegerv(GL_FRAMEBUFFER_BINDING, &window_fbo);  
+	//glBindFramebuffer(GL_FRAMEBUFFER, window_fbo); // 0 = the system-provided buffer
   
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // CLEAR THE COLOR AND DEPTH BUFFER => does it apply to FBOs too?
-  checkGlErrors();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // CLEAR THE COLOR AND DEPTH BUFFER => does it apply to FBOs too?
+	checkGlErrors();
 
-// Declare an empty uniforms
+	// Declare an empty uniforms
 
-  Uniforms extraUniforms;
-  // build & send proj. matrix to vshader
+	Uniforms extraUniforms;
+	// build & send proj. matrix to vshader
 
   
-  const Matrix4 projMatrix = makeProjectionMatrix();
+	const Matrix4 projMatrix = makeProjectionMatrix();
  
 
-  extraUniforms.put("uProjectionMatrix", projMatrix);
+	extraUniforms.put("uProjectionMatrix", projMatrix);
    
-  g_invEyeRbt = inv(g_eyeRbt);
+	g_invEyeRbt = inv(g_eyeRbt);
 
-  cout << "current eye frame:" << "\n" << g_eyeRbt << endl;
+	cout << "current eye frame:" << "\n" << g_eyeRbt << endl;
 
   
 
-  extraUniforms.put("uWindowWidth", g_windowWidth );
-  extraUniforms.put("uWindowHeight",g_windowHeight);
+	extraUniforms.put("uWindowWidth", g_windowWidth );
+	extraUniforms.put("uWindowHeight",g_windowHeight);
 	
   
-  g_overridingMaterial = g_pickingMat;
+	g_overridingMaterial = g_pickingMat;
 
-  for ( int i  = 0; i <g_objectPtrList.size() ; i++ ) { // (5) This loop goes over the list of objects g_objectPtrList and draw each object in the list.
-	                                                //     The last object is a rainbow, which is not to be picked up. So skip over it
-		                                            //     during picking.
+	for ( int i  = 0; i <g_objectPtrList.size() ; i++ ) {// (5) This loop goes over the list of objects g_objectPtrList and draw each object in the list.
+														 //     The last object is a rainbow, which is not to be picked up. So skip over it
+														 //     during picking.
 
-     Matrix4 MVM = g_invEyeRbt * (  *(g_objectPtrList[i]->objectRbt) ) ; // g_currentPickedObject->objectRbt may have been
-	                                                              // changed by picking, object includes AABB
-    //Matrix4 NMVM = normalMatrix(MVM);
+		Matrix4 MVM = g_invEyeRbt * (  *(g_objectPtrList[i]->objectRbt) ) ; // g_currentPickedObject->objectRbt may have been
+																	// changed by picking, object includes AABB
+		//Matrix4 NMVM = normalMatrix(MVM);
   
-	 extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
+		extraUniforms.put("uModelViewMatrix", MVM).put("uNormalMatrix", normalMatrix(MVM) );
 
 	 
-    Cvec4 pickColor = g_objectPtrList[i]->pickColor; // sRGB color is written to the framebuffer; linear RGB when read from the buffer
+		Cvec4 pickColor = g_objectPtrList[i]->pickColor; // sRGB color is written to the framebuffer; linear RGB when read from the buffer
 
 
-	//Cvec4 materialColor = g_objectPtrList[i]->objectColor;
+		//Cvec4 materialColor = g_objectPtrList[i]->objectColor;
 	
-	//std::cout << "Linear [float] Color for the Object to be Drawn For Picking=" << pickColor[0] << ","<< pickColor[1] << "," << 
-	//            pickColor[2]  << "," << pickColor[3] << endl;
+		//std::cout << "Linear [float] Color for the Object to be Drawn For Picking=" << pickColor[0] << ","<< pickColor[1] << "," << 
+		//            pickColor[2]  << "," << pickColor[3] << endl;
 
-    extraUniforms.put( "uMaterialColor", pickColor ); // set material color. In the case of
-	                                                 // g_overridingMaterial, there are no uniform "uMaterialColor" assigned when
-	                                                  // when it is created.
-
-
-    checkGlErrors();
+		extraUniforms.put( "uMaterialColor", pickColor );	// set material color. In the case of
+															// g_overridingMaterial, there are no uniform "uMaterialColor" assigned when
+															// when it is created.
 
 
+		checkGlErrors();
 
-    // the following draw() method will use g_overridingMaterial->draw() if g_overridingMaterial is on
 
-	 g_objectPtrList[i]->draw( extraUniforms );  // the material Color is also a uniform value, but it is
-	                                         // part of Material of this object. It will be taken care of 
-	                                         // within the draw method.
 
-     checkGlErrors();
-  }  // for
+		// the following draw() method will use g_overridingMaterial->draw() if g_overridingMaterial is on
+
+		g_objectPtrList[i]->draw( extraUniforms );  // the material Color is also a uniform value, but it is
+													// part of Material of this object. It will be taken care of 
+													// within the draw method.
+
+		checkGlErrors();
+	}  // for
 
 	// unset the overriding material
-  g_overridingMaterial.reset();
+	g_overridingMaterial.reset();
 	
   
 } // drawPseudoColor() for  picking
 
 void ofApp::generateFBO() {
 	glGenFramebuffers(1, &g_fboScene);
-	 checkGlErrors();
+	checkGlErrors();
 	// glBindFramebuffer(GL_FRAMEBUFFER, g_fboScene);  
 	
-	 glGenFramebuffers(1, &g_fboRainbow);
-	 checkGlErrors();
+	glGenFramebuffers(1, &g_fboRainbow);
+	checkGlErrors();
 }
 
 
 void ofApp::attachTexturesToSceneFBO() {
 
 	// framebuffer object with value zero is reserved to represent the default framebuffer 
-    //  provided by the windowing system.
+    // provided by the windowing system.
     // FBO uses a nonzero framebuffer object fbo:
-    // GLuint fbo;
+    //GLuint fbo;
 	 
-	 //glBindFramebuffer(GL_FRAMEBUFFER, g_fboScene);  
-	 //checkGlErrors();
+	//glBindFramebuffer(GL_FRAMEBUFFER, g_fboScene);  
+	//checkGlErrors();
 	
 
-    /* glClear on FBO should be called after it is completely specified. Move to later. See below
+	/* glClear on FBO should be called after it is completely specified. Move to later. See below
 
     try {
 
-      glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	  checkGlErrors();
-	  // GL_INVALID_FRAMEBUFFER_OPERATION is  caused by calling glClear when there's no current draw framebuffer
-	  // (as will be the case for a windowless OpenGL context before you bind an FBO, for example).
+		glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		checkGlErrors();
+		// GL_INVALID_FRAMEBUFFER_OPERATION is  caused by calling glClear when there's no current draw framebuffer
+		// (as will be the case for a windowless OpenGL context before you bind an FBO, for example).
 
 
-	 }
+	}
 	 
-	  catch ( const runtime_error & error ) {
-		 //std::cout << error.what() << endl;
+	catch ( const runtime_error & error ) {
+		//std::cout << error.what() << endl;
 		messageFile << error.what() << endl;
 		cout << error.what() << endl;
 
 		//throw; // A throw expression that has no operand re-throws the exception currently being handled
 
-	 }
-	 */
+	}
+	*/
 	  
 	 
-	  glViewport(0,0,g_windowWidth, g_windowHeight);   
-	  checkGlErrors();
+	glViewport(0,0,g_windowWidth, g_windowHeight);   
+	checkGlErrors();
 	 
 	 	  
 	// The texture we're going to render colors to 
 
-	 //GLuint colorTex;
-	 glGenTextures(1, &g_colorTex);
-	  checkGlErrors();
+	//GLuint colorTex;
+	glGenTextures(1, &g_colorTex);
+	checkGlErrors();
 	// "Bind" the generated texture as the current texture: 
 	// all future texture functions will modify this current texture 
 
-	 glBindTexture(GL_TEXTURE_2D, g_colorTex);
+	glBindTexture(GL_TEXTURE_2D, g_colorTex);
 
-	 checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
  
-	  //Components of texels are named after color components. 
-	  //Because this parameter does not end in “_INTEGER”, OpenGL knows that the data we are uploading is 
-	  //either a floating-point value or a normalized integer value (which converts to a float when accessed by the shader).
-	  //The parameter GL_UNSIGNED_BYTE says that each component that we are uploading is stored in an 8-bit unsigned byte. 
-      //glTexImage2D(GL_TEXTURE_2D, 0,  (!srgb) || g_Gl2Compatible ? GL_RGB : GL_SRGB, tga.imageWidth, tga.imageHeight,
-	//		   0, GL_RGBA, GL_UNSIGNED_BYTE, tga.imageData);
+	//Components of texels are named after color components. 
+	//Because this parameter does not end in “_INTEGER”, OpenGL knows that the data we are uploading is 
+	//either a floating-point value or a normalized integer value (which converts to a float when accessed by the shader).
+	//The parameter GL_UNSIGNED_BYTE says that each component that we are uploading is stored in an 8-bit unsigned byte. 
+	//glTexImage2D(GL_TEXTURE_2D, 0,  (!srgb) || g_Gl2Compatible ? GL_RGB : GL_SRGB, tga.imageWidth, tga.imageHeight,
+	//0, GL_RGBA, GL_UNSIGNED_BYTE, tga.imageData);
 
-	  bool srgb = true;
+	bool srgb = true;
 
-	  // do not use SRGB format because we are doing light calculation
+	// do not use SRGB format because we are doing light calculation
 
-	  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, g_windowWidth, g_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, g_windowWidth, g_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-	 //  glTexImage2D(GL_TEXTURE_2D, 0, (!srgb) || g_Gl2Compatible ? GL_RGBA : GL_SRGB, 
-	  //	            g_windowWidth, g_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	  checkGlErrors();
+	//  glTexImage2D(GL_TEXTURE_2D, 0, (!srgb) || g_Gl2Compatible ? GL_RGBA : GL_SRGB, 
+	//	            g_windowWidth, g_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	checkGlErrors();
 
 	// attach the texture to the framebuffer
-	 glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_colorTex, 0); // 0 = mipmap level  
-	  checkGlErrors();
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_colorTex, 0); // 0 = mipmap level  
+	checkGlErrors();
 
-	 glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
-	  checkGlErrors();
-	 // depth texture
+	glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
+	checkGlErrors();
+	// depth texture
 	 	
 
-	 //GLuint dataTex;
-	 glGenTextures(1, &g_dataTex);
-	  checkGlErrors();
+	//GLuint dataTex;
+	glGenTextures(1, &g_dataTex);
+	checkGlErrors();
 	// "Bind" the generated texture as the current texture: 
 	// all future texture functions will modify this current texture 
 
-	 glBindTexture(GL_TEXTURE_2D, g_dataTex);
+	glBindTexture(GL_TEXTURE_2D, g_dataTex);
 
-	 checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
  
-	  //Components of texels are named after color components. 
-	  //Because this parameter does not end in “_INTEGER”, OpenGL knows that the data we are uploading is 
-	  //either a floating-point value or a normalized integer value (which converts to a float when accessed by the shader).
-	  //The parameter GL_UNSIGNED_BYTE says that each component that we are uploading is stored in an 8-bit unsigned byte. 
+	//Components of texels are named after color components. 
+	//Because this parameter does not end in “_INTEGER”, OpenGL knows that the data we are uploading is 
+	//either a floating-point value or a normalized integer value (which converts to a float when accessed by the shader).
+	//The parameter GL_UNSIGNED_BYTE says that each component that we are uploading is stored in an 8-bit unsigned byte. 
 
-	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_windowWidth, g_windowHeight, 0, GL_RGBA,
-		GL_FLOAT, NULL);
-	  checkGlErrors();
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_windowWidth, g_windowHeight, 0, GL_RGBA,
+	GL_FLOAT, NULL);
+	checkGlErrors();
 
 	// attach the texture to the framebuffer
-	 glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, g_dataTex, 0); // 0 = mipmap level  
-	  checkGlErrors();
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, g_dataTex, 0); // 0 = mipmap level  
+	checkGlErrors();
 
-	 glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
-	  checkGlErrors();
-	 // depth texture
+	glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
+	checkGlErrors();
+	// depth texture
 
 	//GLuint depthTex;
 	glGenTextures(1, &g_depthTex);
-	 checkGlErrors();
+	checkGlErrors();
 	glBindTexture(GL_TEXTURE_2D, g_depthTex);
-	 checkGlErrors();
+	checkGlErrors();
 		
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, g_windowWidth, g_windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	 checkGlErrors();
+	checkGlErrors();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	 checkGlErrors();
+	checkGlErrors();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	 checkGlErrors();
+	checkGlErrors();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	 checkGlErrors();
+	checkGlErrors();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	 checkGlErrors();
+	checkGlErrors();
 
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	
 	// attach the depth texture to the framebuffer
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, g_depthTex, 0);
-	 checkGlErrors();
+	checkGlErrors();
 	glBindTexture(GL_TEXTURE_2D,0); 
-	 checkGlErrors();
+	checkGlErrors();
 
 	//GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
 	glDrawBuffers(2, attachments);		// drawing color and depth all together? - need to check
-	 checkGlErrors();
+	checkGlErrors();
 	//DrawBuffer is per-framebuffer state, and will default to COLOR_ATTACHMENT0 for non-zero FBOs.
 	 
 	// the buffer selection in glDrawBuffers is part of the framebuffer object state. 
 	// Therefore, if this setting is constant, this function can be called only once when creating the framebuffer.
 	// glDrawBuffers defines an array of buffers into which outputs from the fragment shader data will be written
-	//  If a fragment shader writes a value to one or more user defined output variables, then the value of each variable
+	// If a fragment shader writes a value to one or more user defined output variables, then the value of each variable
 	// will be written into the buffer specified at a location within bufs
 	// bufs \{ GL_FRONT_LEFT, ... GL_COLOR_ATTACHMENTn}
 
 	
 
 	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	 checkGlErrors();
+		checkGlErrors();
 	if (e != GL_FRAMEBUFFER_COMPLETE)
 		cout << "There is a problem with the FBO\n" << endl;
 
-	 //Now that FBO is completely specified, clear the buffer with  the original clear color in order to draw the real scene
+	//Now that FBO is completely specified, clear the buffer with  the original clear color in order to draw the real scene
       
 	//You should use glCZKlear (...), modern GPUs use color buffer, depth buffer and stencil
-	 //buffer compression. Clearing the buffer is extremely cheap because these buffers are 
-	 //often hierarchically tiled, and the process of clearing the buffer amounts to flipping 
-	 //one or two bits in each tile. It even helps with many early fragment tests and general
-	 //frame buffer throughput if you regularly clear the buffers. On Tile-Based Deferred 
-	 //Rendering GPUs (e.g. PowerVR SGX - all iOS devices) it is equally important for similar reasons. 
+	//buffer compression. Clearing the buffer is extremely cheap because these buffers are 
+	//often hierarchically tiled, and the process of clearing the buffer amounts to flipping 
+	//one or two bits in each tile. It even helps with many early fragment tests and general
+	//frame buffer throughput if you regularly clear the buffers. On Tile-Based Deferred 
+	//Rendering GPUs (e.g. PowerVR SGX - all iOS devices) it is equally important for similar reasons. 
 
 
 	 
@@ -2033,208 +2017,206 @@ void ofApp::attachTexturesToSceneFBO() {
 void ofApp::attachTexturesToRainbowFBO() {
 
 	// framebuffer object with value zero is reserved to represent the default framebuffer 
-    //  provided by the windowing system.
-    // FBO uses a nonzero framebuffer object fbo:
-    // GLuint fbo;
+	// provided by the windowing system.
+	// FBO uses a nonzero framebuffer object fbo:
+	//GLuint fbo;
 	 
-	 //glBindFramebuffer(GL_FRAMEBUFFER, g_fboScene);  
-	 //checkGlErrors();
+	//glBindFramebuffer(GL_FRAMEBUFFER, g_fboScene);  
+	//checkGlErrors();
 	
 
-    /* glClear on FBO should be called after it is completely specified. Move to later. See below
+	/* glClear on FBO should be called after it is completely specified. Move to later. See below
 
-    try {
+	try {
 
-      glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	  checkGlErrors();
-	  // GL_INVALID_FRAMEBUFFER_OPERATION is  caused by calling glClear when there's no current draw framebuffer
-	  // (as will be the case for a windowless OpenGL context before you bind an FBO, for example).
+		glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		checkGlErrors();
+		// GL_INVALID_FRAMEBUFFER_OPERATION is  caused by calling glClear when there's no current draw framebuffer
+		// (as will be the case for a windowless OpenGL context before you bind an FBO, for example).
 
 
-	 }
+	}
 	 
-	  catch ( const runtime_error & error ) {
-		 //std::cout << error.what() << endl;
+	catch ( const runtime_error & error ) {
+		//std::cout << error.what() << endl;
 		messageFile << error.what() << endl;
 		cout << error.what() << endl;
 
 		//throw; // A throw expression that has no operand re-throws the exception currently being handled
 
-	 }
-	 */
-	  GLint maxColorAttachments;
+	}
+	*/
+	GLint maxColorAttachments;
 
-	  glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
+	glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
 
-	  cout << "maxColorAttachments =" << maxColorAttachments << endl;
+	cout << "maxColorAttachments =" << maxColorAttachments << endl;
 	  	 
-	  glViewport(0,0,g_windowWidth, g_windowHeight);   
-	  checkGlErrors();
+	glViewport(0,0,g_windowWidth, g_windowHeight);   
+	checkGlErrors();
 	 
 	 	  
 	// The texture we're going to render colors to 
 
-	 //GLuint colorTex;
-	 glGenTextures(1, &g_colorTex1);
-	  checkGlErrors();
+	//GLuint colorTex;
+	glGenTextures(1, &g_colorTex1);
+	checkGlErrors();
 	// "Bind" the generated texture as the current texture: 
 	// all future texture functions will modify this current texture 
 
-	 glBindTexture(GL_TEXTURE_2D, g_colorTex1);
+	glBindTexture(GL_TEXTURE_2D, g_colorTex1);
 
-	 checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
  
-     bool srgb = true;
+	bool srgb = true;
 
-	 // do not use SRGB format because we are doing light calculation
+	// do not use SRGB format because we are doing light calculation
 
-	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
-	 	          g_windowWidth, g_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, g_windowWidth, g_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-	 //glTexImage2D(GL_TEXTURE_2D, 0, (!srgb) || g_Gl2Compatible ? GL_RGBA : GL_SRGB,
-	 //	          g_windowWidth, g_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	  checkGlErrors();
+	//glTexImage2D(GL_TEXTURE_2D, 0, (!srgb) || g_Gl2Compatible ? GL_RGBA : GL_SRGB, g_windowWidth, g_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	checkGlErrors();
 
 	// attach the texture to the framebuffer
-	 glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_colorTex1, 0); // 0 = mipmap level  
-	  checkGlErrors();
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_colorTex1, 0); // 0 = mipmap level  
+	checkGlErrors();
 
-	 glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
-	  checkGlErrors();
+	glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
+	checkGlErrors();
 
 	  
-	 // depth texture
+	// depth texture
 	 	
 	
-    //GLuint depthTex;
+	//GLuint depthTex;
 	glGenTextures(1, &g_depthTex1);
-	 checkGlErrors();
+	checkGlErrors();
 	glBindTexture(GL_TEXTURE_2D, g_depthTex1);
-	 checkGlErrors();
+	checkGlErrors();
 		
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, g_windowWidth, g_windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	 checkGlErrors();
+	checkGlErrors();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	 checkGlErrors();
+	checkGlErrors();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	 checkGlErrors();
+	checkGlErrors();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	 checkGlErrors();
+	checkGlErrors();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	 checkGlErrors();
+	checkGlErrors();
 
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	
 	// attach the depth texture to the framebuffer
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, g_depthTex1, 0);
-	 checkGlErrors();
+	checkGlErrors();
 	glBindTexture(GL_TEXTURE_2D,0); 
-	 checkGlErrors();
+	checkGlErrors();
 
 
 
-	 //GLuint dataTex;
-	 glGenTextures(1, &g_dataTex1);
-	  checkGlErrors();
+	//GLuint dataTex;
+	glGenTextures(1, &g_dataTex1);
+	checkGlErrors();
 	// "Bind" the generated texture as the current texture: 
 	// all future texture functions will modify this current texture 
 
-	 glBindTexture(GL_TEXTURE_2D, g_dataTex1);
+	glBindTexture(GL_TEXTURE_2D, g_dataTex1);
 
-	 checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
  
-	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_windowWidth, g_windowHeight, 0, GL_RGBA,
-		GL_FLOAT, NULL);
-	  checkGlErrors();
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_windowWidth, g_windowHeight, 0, GL_RGBA,
+	GL_FLOAT, NULL);
+	checkGlErrors();
 
 	// attach the texture to the framebuffer
-	 glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,g_dataTex1, 0); // 0 = mipmap level  
-	  checkGlErrors();
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,g_dataTex1, 0); // 0 = mipmap level  
+	checkGlErrors();
 
-	 glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
-	  checkGlErrors();
+	glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
+	checkGlErrors();
 
 
 	  
 	  
-	 //GLuint dataTex;
-	 glGenTextures(1, &g_dataTex2);
-	  checkGlErrors();
+	//GLuint dataTex;
+	glGenTextures(1, &g_dataTex2);
+	checkGlErrors();
 	// "Bind" the generated texture as the current texture: 
 	// all future texture functions will modify this current texture 
 
-	 glBindTexture(GL_TEXTURE_2D, g_dataTex2);
+	glBindTexture(GL_TEXTURE_2D, g_dataTex2);
 
-	 checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
-	 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	  checkGlErrors();
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
  
-	 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_windowWidth, g_windowHeight, 0, GL_RGBA,
-		GL_FLOAT, NULL);
-	  checkGlErrors();
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_windowWidth, g_windowHeight, 0, GL_RGBA,
+	GL_FLOAT, NULL);
+	checkGlErrors();
 
 	// attach the texture to the framebuffer
-	 glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2,g_dataTex2, 0); // 0 = mipmap level  
-	  checkGlErrors();
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2,g_dataTex2, 0); // 0 = mipmap level  
+	checkGlErrors();
 
-	 glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
-	  checkGlErrors();
+	glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
+	checkGlErrors();
 
 
 	GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	 //GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	 //,  Max=8: GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT1,    GL_COLOR_ATTACHMENT1,  
+	//GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	//,  Max=8: GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT1,    GL_COLOR_ATTACHMENT1,  
 	//	GL_COLOR_ATTACHMENT5,  GL_COLOR_ATTACHMENT6,  GL_COLOR_ATTACHMENT7};
 	  
 	glDrawBuffers(3, attachments);		// drawing color and depth all together? - need to check
-	 checkGlErrors();
+	checkGlErrors();
 	//DrawBuffer is per-framebuffer state, and will default to COLOR_ATTACHMENT0 for non-zero FBOs.
 	 
 	// the buffer selection in glDrawBuffers is part of the framebuffer object state. 
 	// Therefore, if this setting is constant, this function can be called only once when creating the framebuffer.
 	// glDrawBuffers defines an array of buffers into which outputs from the fragment shader data will be written
-	//  If a fragment shader writes a value to one or more user defined output variables, then the value of each variable
+	// If a fragment shader writes a value to one or more user defined output variables, then the value of each variable
 	// will be written into the buffer specified at a location within bufs
 	// bufs \{ GL_FRONT_LEFT, ... GL_COLOR_ATTACHMENTn}
 
 	
 
 	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	 checkGlErrors();
+	checkGlErrors();
 	if (e != GL_FRAMEBUFFER_COMPLETE)
 		cout << "There is a problem with the FBO\n" << endl;
 
-	 //Now that FBO is completely specified, clear the buffer with  the original clear color in order to draw the real scene
+	//Now that FBO is completely specified, clear the buffer with  the original clear color in order to draw the real scene
       
 	//You should use glClear (...), modern GPUs use color buffer, depth buffer and stencil
-	 //buffer compression. Clearing the buffer is extremely cheap because these buffers are 
-	 //often hierarchically tiled, and the process of clearing the buffer amounts to flipping 
-	 //one or two bits in each tile. It even helps with many early fragment tests and general
-	 //frame buffer throughput if you regularly clear the buffers. On Tile-Based Deferred 
-	 //Rendering GPUs (e.g. PowerVR SGX - all iOS devices) it is equally important for similar reasons. 
+	//buffer compression. Clearing the buffer is extremely cheap because these buffers are 
+	//often hierarchically tiled, and the process of clearing the buffer amounts to flipping 
+	//one or two bits in each tile. It even helps with many early fragment tests and general
+	//frame buffer throughput if you regularly clear the buffers. On Tile-Based Deferred 
+	//Rendering GPUs (e.g. PowerVR SGX - all iOS devices) it is equally important for similar reasons. 
 
 
 	 
@@ -2281,210 +2263,209 @@ void ofApp::drawTextureFromSysBufferFile() {
 
 void ofApp::readRainbowFBOPixels(char * fileName) {
 
-std::ofstream sceneFBOFile (fileName);
+	std::ofstream sceneFBOFile (fileName);
 	
- unsigned char *pixels = new unsigned char [ g_windowWidth * g_windowHeight * 4 ];
+	unsigned char *pixels = new unsigned char [ g_windowWidth * g_windowHeight * 4 ];
+	
+	float *depths = new float [g_windowHeight * g_windowWidth];
+	float *floatPixels = new float [g_windowHeight * g_windowWidth * 4];
+	float *floatPixels2 = new float [g_windowHeight * g_windowWidth * 4];
+	//float *depth = new float [1];
+	//float *floatPixel = new float [4];
  
- float *depths = new float [  g_windowHeight * g_windowWidth];
- float *floatPixels = new float [ g_windowHeight *g_windowWidth *  4];
-  float *floatPixels2 = new float [ g_windowHeight *g_windowWidth *  4];
- //float *depth = new float [1];
- //float *floatPixel = new float [ 4];
  
  
- 
-  //glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_DEPTH_COMPONENT, GL_FLOAT, depths ); 
-  // The near plane is drawn, so that the depth is all 1. It is verified.
- 
-   // read the color buffer 
+	//glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_DEPTH_COMPONENT, GL_FLOAT, depths ); 
+	// The near plane is drawn, so that the depth is all 1. It is verified.
+	
+	// read the color buffer 
 
-  glReadBuffer(GL_COLOR_ATTACHMENT0); // of the current framebuffer
-  
-  glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels ); // fragColor
+	glReadBuffer(GL_COLOR_ATTACHMENT0); // of the current framebuffer
+	
+	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels); // fragColor
 
-  glReadBuffer(GL_COLOR_ATTACHMENT1); // spect1
-  glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels ); //
+	glReadBuffer(GL_COLOR_ATTACHMENT1); // spect1
+	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels); //
 
-  glReadBuffer(GL_COLOR_ATTACHMENT2); // spect2
-  glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels2 ); //
-// glReadPixels simply returns bytes in the order R, G, B, R, G, B, ... 
-  //(based on your setting of GL_RGB) from the bottom left of the screen going up to the top right. From the OpenGL documentation:
-//  From there you can either reference a pixel's component location 
-  //with data[(py * width + px) * 3 + component] where px and py are the pixel locations you want to look up, 
-  //and component being the R, G, or B components of the pixel.
+	glReadBuffer(GL_COLOR_ATTACHMENT2); // spect2
+	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels2); //
+	//glReadPixels simply returns bytes in the order R, G, B, R, G, B, ... 
+	//(based on your setting of GL_RGB) from the bottom left of the screen going up to the top right. From the OpenGL documentation:
+	//From there you can either reference a pixel's component location 
+	//with data[(py * width + px) * 3 + component] where px and py are the pixel locations you want to look up, 
+	//and component being the R, G, or B components of the pixel.
 
-  /*
-  GLint colorReadType;
+	/*
+	GLint colorReadType;
 
-  glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &colorReadType);
-   GLint colorReadFormat;
+	glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &colorReadType);
+	GLint colorReadFormat;
 
-  glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &colorReadFormat);
+	glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &colorReadFormat);
 
-  cout << "colorReadFormat=" << colorReadFormat << "  colorReadType =" << colorReadType << endl;
-  */
-     sceneFBOFile << " The RGBA value of each pixel (i,j) may be background colors or value of some variables in the case of true fragments." << endl;
+	cout << "colorReadFormat=" << colorReadFormat << " colorReadType=" << colorReadType << endl;
+	*/
+	sceneFBOFile << "The RGBA value of each pixel (i,j) may be background colors or value of some variables in the case of true fragments." << endl;
    
 	    
 	for (int j = 0; j < g_windowHeight; j++ )
-			   // print jth row
-			  for ( int i = 0; i < g_windowWidth ; i++) 
-				  // print ith column
-	 {
+	// print jth row
+		for ( int i = 0; i < g_windowWidth ; i++) { // print ith column
 	
-		   // ostream& operator<< (unsigned int val);
-       //glReadPixels(i,j, 1,1, GL_DEPTH_COMPONENT, GL_FLOAT, depth ); 
-	//   float zWin0 =	 depths[i + j* g_windowWidth ]; 
-	   //float zWin1 =	 depth[0]; 
-	    sceneFBOFile << endl;
+			//ostream& operator<< (unsigned int val);
+			//glReadPixels(i,j, 1,1, GL_DEPTH_COMPONENT, GL_FLOAT, depth ); 
+			//float zWin0 =	 depths[i + j* g_windowWidth ]; 
+			//float zWin1 =	 depth[0]; 
+			sceneFBOFile << endl;
 
-	   sceneFBOFile  << "At " << "(" <<  i   << "," <<  j  << "):" ;  
+			sceneFBOFile  << "At " << "(" <<  i   << "," <<  j  << "):" ;  
 	    
-	  // float zNDC = zWin0 * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
+			//float zNDC = zWin0 * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
 	   	       
-	  // float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
+			//float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
 		
 	  
-	   //sceneFBOFile  << "-zEye= " << -zEye <<  endl;  // -200 = FAR PLANE
+			//sceneFBOFile  << "-zEye= " << -zEye <<  endl;  // -200 = FAR PLANE
 	
-	    float red =	 floatPixels[ (j* g_windowWidth + i) *4 + 0 ]; 
-	   float green = floatPixels[ (j* g_windowWidth + i ) *4 + 1]; 
-	   float blue = floatPixels[ ( j* g_windowWidth + i ) *4 + 2]; 
-	   float alpha= floatPixels[ ( j* g_windowWidth + i) *4 + 3]; 
+			float red = floatPixels[ (j* g_windowWidth + i) *4 + 0 ]; 
+			float green = floatPixels[ (j* g_windowWidth + i) *4 + 1 ]; 
+			float blue = floatPixels[ (j* g_windowWidth + i) *4 + 2 ]; 
+			float alpha= floatPixels[ (j* g_windowWidth + i) *4 + 3 ]; 
 	  
-	   float zNDC = red * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
+			float zNDC = red * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
 	   	       
-	   float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
-		
-	  // the names of variables should be changed in each case
-	   sceneFBOFile  << "-Eye= " << zEye <<  endl;  // -200 = FAR PLANE, -5 = near plane
-	   sceneFBOFile  << "(zWin, zNDC, zEye, A) = "  << Cvec4f( red, green, blue, alpha) << endl;
+			float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
+			
+			sceneFBOFile << "(oldR, oldG, oldB) = " << red<<", "<<green<<", "<<blue<< endl;
+
+
+			// the names of variables should be changed in each case
+			//sceneFBOFile << "-Eye= " << zEye <<  endl;  // -200 = FAR PLANE, -5 = near plane
+			//sceneFBOFile << "(zWin, zNDC, zEye, A) = " << Cvec4f( red, green, blue, alpha) << endl;
 	
-	   red =	 floatPixels2[ (j* g_windowWidth + i) *4 + 0 ]; 
-	   green = floatPixels2[ (j* g_windowWidth + i ) *4 + 1]; 
-	   blue = floatPixels2[ ( j* g_windowWidth + i ) *4 + 2]; 
-	   alpha= floatPixels2[ ( j* g_windowWidth + i) *4 + 3]; 
+			red = floatPixels2[ (j* g_windowWidth + i) *4 + 0 ]; 
+			green = floatPixels2[ (j* g_windowWidth + i) *4 + 1 ]; 
+			blue = floatPixels2[ (j* g_windowWidth + i) *4 + 2 ]; 
+			alpha= floatPixels2[ (j* g_windowWidth + i) *4 + 3 ]; 
 	  
-	   sceneFBOFile  << "(zEye, tmin, tmax, A) = "  << Cvec4f( red, green, blue, alpha) << endl;
+			//sceneFBOFile << "(zEye, tmin, tmax, A) = " << Cvec4f( red, green, blue, alpha) << endl;
 
 
-	}
+		}
 
  
-    sceneFBOFile.close();
+	sceneFBOFile.close();
 	cout <<"background Scene output dumped" << endl;
 
-// inbind the currently bound framebuffer
+	// inbind the currently bound framebuffer
 
-//glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer);
-// glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 } // readRainbowFBOPixels()
 
 
 void ofApp::readSceneFBOPixels(char * fileName) {
 
-std::ofstream sceneFBOFile (fileName);
+	std::ofstream sceneFBOFile (fileName);
 	
- unsigned char *pixels = new unsigned char [ g_windowWidth * g_windowHeight * 4 ];
+	unsigned char *pixels = new unsigned char [ g_windowWidth * g_windowHeight * 4 ];
  
- float *depths = new float [  g_windowHeight * g_windowWidth];
- float *floatPixels = new float [ g_windowHeight *g_windowWidth *  4];
-  float *floatPixels2 = new float [ g_windowHeight *g_windowWidth *  4];
- //float *depth = new float [1];
- //float *floatPixel = new float [ 4];
+	float *depths = new float [  g_windowHeight * g_windowWidth];
+	float *floatPixels = new float [ g_windowHeight *g_windowWidth *  4];
+	float *floatPixels2 = new float [ g_windowHeight *g_windowWidth *  4];
+	//float *depth = new float [1];
+	//float *floatPixel = new float [ 4];
  
  
  
 
-  // The near plane is drawn, so that the depth is all 1. It is verified.
+	// The near plane is drawn, so that the depth is all 1. It is verified.
  
-   // read the color buffer 
+	// read the color buffer 
 
-  glReadBuffer(GL_COLOR_ATTACHMENT0); // of the current framebuffer
+	glReadBuffer(GL_COLOR_ATTACHMENT0); // of the current framebuffer
   
-  glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels ); // fragColor
+	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels ); // fragColor
 
-  glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_DEPTH_COMPONENT, GL_FLOAT, depths ); 
+	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_DEPTH_COMPONENT, GL_FLOAT, depths ); 
 
- // glReadBuffer(GL_COLOR_ATTACHMENT1); // spect1
- // glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels ); //
+	//glReadBuffer(GL_COLOR_ATTACHMENT1); // spect1
+	//glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels ); //
 
-//  glReadBuffer(GL_COLOR_ATTACHMENT2); // spect2
-//  glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels2 ); //
-// glReadPixels simply returns bytes in the order R, G, B, R, G, B, ... 
-  //(based on your setting of GL_RGB) from the bottom left of the screen going up to the top right. From the OpenGL documentation:
-//  From there you can either reference a pixel's component location 
-  //with data[(py * width + px) * 3 + component] where px and py are the pixel locations you want to look up, 
-  //and component being the R, G, or B components of the pixel.
+	//glReadBuffer(GL_COLOR_ATTACHMENT2); // spect2
+	//glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels2 ); //
+	// glReadPixels simply returns bytes in the order R, G, B, R, G, B, ... 
+	// (based on your setting of GL_RGB) from the bottom left of the screen going up to the top right. From the OpenGL documentation:
+	// From there you can either reference a pixel's component location 
+	// with data[(py * width + px) * 3 + component] where px and py are the pixel locations you want to look up, 
+	// and component being the R, G, or B components of the pixel.
 
-  /*
-  GLint colorReadType;
+	/*
+	GLint colorReadType;
 
-  glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &colorReadType);
-   GLint colorReadFormat;
+	glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &colorReadType);
+	GLint colorReadFormat;
 
-  glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &colorReadFormat);
+	glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &colorReadFormat);
 
-  cout << "colorReadFormat=" << colorReadFormat << "  colorReadType =" << colorReadType << endl;
-  */
-     sceneFBOFile << " The RGBA value of each pixel (i,j) may be background colors or value of some variables in the case of true fragments." << endl;
+	cout << "colorReadFormat=" << colorReadFormat << "  colorReadType =" << colorReadType << endl;
+	*/
+	sceneFBOFile << " The RGBA value of each pixel (i,j) may be background colors or value of some variables in the case of true fragments." << endl;
    
 	    
 	for (int j = 0; j < g_windowHeight; j++ )
 			   // print jth row
-			  for ( int i = 0; i < g_windowWidth ; i++) 
-				  // print ith column
-	 {
+		for ( int i = 0; i < g_windowWidth ; i++) { // print ith column
 	
-		   // ostream& operator<< (unsigned int val);
-       //glReadPixels(i,j, 1,1, GL_DEPTH_COMPONENT, GL_FLOAT, depth ); 
-	   float zWin =	 depths[i + j* g_windowWidth ]; 
-	   //float zWin1 =	 depth[0]; 
-	    sceneFBOFile << endl;
+			// ostream& operator<< (unsigned int val);
+			//glReadPixels(i,j, 1,1, GL_DEPTH_COMPONENT, GL_FLOAT, depth ); 
+			float zWin =	 depths[i + j* g_windowWidth ]; 
+			//float zWin1 =	 depth[0]; 
+			sceneFBOFile << endl;
 
-	   sceneFBOFile  << "At " << "(" <<  i   << "," <<  j  << "):" ;  
+			sceneFBOFile  << "At " << "(" <<  i   << "," <<  j  << "):" ;  
 	    
-	  // float zNDC = zWin0 * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
+			//float zNDC = zWin0 * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
 	   	       
-	  // float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
+			//float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
 		
 	  
-	   //sceneFBOFile  << "-zEye= " << -zEye <<  endl;  // -200 = FAR PLANE
-	/*
-	    float red =	 pixels[ (j* g_windowWidth + i) *4 + 0 ]; 
-	   float green = pixels[ (j* g_windowWidth + i ) *4 + 1]; 
-	   float blue = pixels[ ( j* g_windowWidth + i ) *4 + 2]; 
-	   float alpha= pixels[ ( j* g_windowWidth + i) *4 + 3]; 
-	  */
+			//sceneFBOFile  << "-zEye= " << -zEye <<  endl;  // -200 = FAR PLANE
+			/*
+			float red =	 pixels[ (j* g_windowWidth + i) *4 + 0 ]; 
+			float green = pixels[ (j* g_windowWidth + i) *4 + 1 ]; 
+			float blue = pixels[ (j* g_windowWidth + i) *4 + 2 ]; 
+			float alpha= pixels[ (j* g_windowWidth + i) *4 + 3 ]; 
+			*/
 
-	   float zNDC = zWin * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
+			float zNDC = zWin * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
 	   	       
-	   float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
+			float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
 		
 	  
-	   sceneFBOFile  << "( g_projectionMatrix(2,2),  g_projectionMatrix(2,3), zEye)= " << Cvec3(  g_projectionMatrix(2,2), g_projectionMatrix(2,3), zEye)  <<  endl;  // -200 = FAR PLANE, -5 = near plane
+			sceneFBOFile << "( g_projectionMatrix(2,2), g_projectionMatrix(2,3), zEye)= " << Cvec3( g_projectionMatrix(2,2), g_projectionMatrix(2,3), zEye) << endl;  // -200 = FAR PLANE, -5 = near plane
 
-	   /*
-	   sceneFBOFile  << "(zWin, zNDC, zEye, A) = "  << Cvec4f( red, green, blue, alpha) << endl;
+			/*
+			sceneFBOFile << "(zWin, zNDC, zEye, A) = " << Cvec4f(red, green, blue, alpha) << endl;
 	
-	   red =	 floatPixels2[ (j* g_windowWidth + i) *4 + 0 ]; 
-	   green = floatPixels2[ (j* g_windowWidth + i ) *4 + 1]; 
-	   blue = floatPixels2[ ( j* g_windowWidth + i ) *4 + 2]; 
-	   alpha= floatPixels2[ ( j* g_windowWidth + i) *4 + 3]; 
+			red = floatPixels2[ (j* g_windowWidth + i) *4 + 0 ]; 
+			green = floatPixels2[ (j* g_windowWidth + i) *4 + 1 ]; 
+			blue = floatPixels2[ (j* g_windowWidth + i) *4 + 2 ]; 
+			alpha= floatPixels2[ (j* g_windowWidth + i) *4 + 3 ]; 
 	  
-	   sceneFBOFile  << "(zEye, tmin, tmax, A) = "  << Cvec4f( red, green, blue, alpha) << endl;
-	   */
+			sceneFBOFile << "(zEye, tmin, tmax, A) = " << Cvec4f( red, green, blue, alpha ) << endl;
+			*/
 
-	}
+		}
 
  
     sceneFBOFile.close();
 	cout <<"background Scene output dumped" << endl;
 
-// inbind the currently bound framebuffer
+	// inbind the currently bound framebuffer
 
-//glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer);
-// glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, g_savedFramebuffer);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 } // readSceneFBOPixels()
 
 
@@ -2499,8 +2480,8 @@ std::ofstream sceneFBOFile (fileName);
 So in modern OpenGL using VAOs (which is recommended), it's usually similar to this workflow:
 
 //initialization
-  glGenVertexArrays
-  glBindVertexArray
+glGenVertexArrays
+glBindVertexArray
 
 glGenBuffers
 glBindBuffer
@@ -2509,15 +2490,15 @@ glBufferData
 glVertexAttribPointer
 glEnableVertexAttribArray
 
-  glBindVertexArray(0)
+glBindVertexArray(0)
 
-  glDeleteBuffers //you can already delete it after the VAO is unbound, since the
+glDeleteBuffers //you can already delete it after the VAO is unbound, since the
 //VAO still references it, keeping it alive (see comments below).
 
 ...
 
 //rendering
-  glBindVertexArray
+glBindVertexArray
 glDrawWhatever
 
 --------------------------------------------------------------------------------
@@ -2588,10 +2569,10 @@ void ofApp::initObjects() {
 
 
 
-// // set a texture reference
-//	void setUniformTexture(const string & name, ofBaseHasTexture& img, int textureLocation);
-//	void setUniformTexture(const string & name, ofTexture& img, int textureLocation);
-//	void setUniformTexture(const string & name, int textureTarget, GLint textureID, int textureLocation);
+//// set a texture reference
+//void setUniformTexture(const string & name, ofBaseHasTexture& img, int textureLocation);
+//void setUniformTexture(const string & name, ofTexture& img, int textureLocation);
+//void setUniformTexture(const string & name, int textureTarget, GLint textureID, int textureLocation);
 	
 void ofApp::initMaterials() {
 
@@ -2707,246 +2688,261 @@ void ofApp::initPBRTObjects() {
 
 
 void ofApp::initObjects() {
-  int ibLen, vbLen;
+	int ibLen, vbLen;
 
 
-// 1: create a ground
+	// 1: create a ground
 	//static const float groundY = -2.0;      // y coordinate of the ground
-    static const float groundSize = 100.0;   // half the ground length
+    static const float groundSize = 200.0;   // half the ground length
 
-  // temporary storage for a plane geometry
-  getPlaneVbIbLen( vbLen, ibLen); // get the sizes of the vertex buffer and the 
-                                 // index buffer for a plane. The vertex buffer
-                                 // size is the number of vertices.
-  vector<VertexPNTBX> vtxGround (vbLen);
-  vector<unsigned short> idxGround (ibLen);
+	// temporary storage for a plane geometry
+	getPlaneVbIbLen(vbLen, ibLen);	// get the sizes of the vertex buffer and the 
+									// index buffer for a plane. The vertex buffer
+									// size is the number of vertices.
+	vector<VertexPNTBX> vtxGround (vbLen);
+	vector<unsigned short> idxGround (ibLen);
 
-  makePlane( groundSize * 2, vtxGround.begin(), idxGround.begin() );
+	makePlane( groundSize * 2, vtxGround.begin(), idxGround.begin() );
 
-  // vtxGround is an array of generic vertices (position, normal, tex coord, tangent, binormal)
+	// vtxGround is an array of generic vertices (position, normal, tex coord, tangent, binormal)
 
   
-  // A x-z plane at y = g_groundY of dimension [-g_groundSize, g_groundSize]^2
- /* VertexPN vtxGround[4] = {
-		  
-    VertexPN( -groundSize, groundY, groundSize, 0, 1, 0), where groundY =0
-    VertexPN( groundSize, groundY,  groundSize, 0, 1, 0),
-    VertexPN(  groundSize, groundY, -groundSize, 0, 1, 0),
-    VertexPN(  -groundSize, groundY, -groundSize, 0, 1, 0),
-  };
+	// A x-z plane at y = g_groundY of dimension [-g_groundSize, g_groundSize]^2
+	/* VertexPN vtxGround[4] = {VertexPN( -groundSize, groundY, groundSize, 0, 1, 0), where groundY =0
+								VertexPN( groundSize, groundY,  groundSize, 0, 1, 0),
+								VertexPN(  groundSize, groundY, -groundSize, 0, 1, 0),
+								VertexPN(  -groundSize, groundY, -groundSize, 0, 1, 0),
+								};
   
-  unsigned short idxGround[] = {0, 1, 2, 0, 2, 3};
-  */
+	unsigned short idxGround[] = {0, 1, 2, 0, 2, 3};
+	*/
 
   
 
-  //shared_ptr<Geometry> groundGeometry  ( new Geometry( &vtxGround[0], &idxGround[0], 4, 6,  &sqTex[0], numOfTexCoords  )  );
-  shared_ptr<Geometry> groundGeometry  ( new SimpleIndexedGeometryPNTBX("ground", &vtxGround[0], &idxGround[0], vbLen, ibLen, GL_TRIANGLES  )  );
+	//shared_ptr<Geometry> groundGeometry ( new Geometry( &vtxGround[0], &idxGround[0], 4, 6,  &sqTex[0], numOfTexCoords ) );
+	shared_ptr<Geometry> groundGeometry ( new SimpleIndexedGeometryPNTBX("ground", &vtxGround[0], &idxGround[0], vbLen, ibLen, GL_TRIANGLES ) );
 
  
-//  SimpleIndexedGeometryPNTBX => init: vbo(new FormattedVbo( Vertex::FORMAT ) ), ibo(new FormattedIbo(size2IboFmt(sizeof(Index)))) 
-//   where Vertex is either VertexPN, ...:
+	// SimpleIndexedGeometryPNTBX => init: vbo(new FormattedVbo( Vertex::FORMAT ) ), ibo(new FormattedIbo(size2IboFmt(sizeof(Index)))) 
+	// where Vertex is either VertexPN, ...:
 
-//  const VertexFormat VertexPN::FORMAT = VertexFormat(sizeof(VertexPN))
-//	  .put("aPosition", 3, GL_FLOAT, GL_FALSE, offsetof(VertexPN, p))
-//	  .put("aNormal", 3, GL_FLOAT, GL_FALSE, offsetof(VertexPN, n));
-
- 
-
-  // 2: create a cube
- // int ibLen, vbLen;
-
-  getCubeVbIbLen(vbLen, ibLen);
-
-  // Temporary storage for cube geometry
-
-  // T = tangent, X = coordinates
-
-  vector<VertexPNTBX> vtxCube1(vbLen); // vtxCube:  a vector of VertexPNTBX type with length vbLen
-
-  vector<unsigned short> idxCube1(ibLen); // idxCube: 
-
-  // makecube<VertexPNTBX, unsigned short>( vtxCube.begin(), idxCube.begin() );
-
-  // vtxCube and idxCube are vertices whose stroages are already
-  // allocated, so that you can access each element of a vertex by means
-  // of iterator.
-
- // makeCube(30,6.4, 25, vtxCube1.begin(), idxCube1.begin() ); // fill vtxCube and idxCube, starting
-                                                       // from their starting pointers => a list of vertex coords,
-                                                       // tex coords, normal coords, tangent coords, binormal coords
-
-  // for debugging
-   makeCube(30, 26.4, 25, vtxCube1.begin(), idxCube1.begin() ); // fill vtxCube and idxCube, starting
-                                                       // from their starting pointers => a list of vertex coords,
-                                                       // tex coords, normal coords, tangent coords, binormal coords
-  // create vbo and ibo for vtxCube and idxCube by using SimpleIndexedGeometryPNTBX, where
-  // SimpleIndexedGeometry<VertexPNTBX, unsigned short> SimpleIndexedGeometryPNTBX;
-
- shared_ptr<Geometry> cubeGeometry1 (  new SimpleIndexedGeometryPNTBX("cube1",  &vtxCube1[0], &idxCube1[0], vbLen, ibLen, GL_TRIANGLES ) ); // reset(T * p)
-
-  //shared_ptr<Geometry> cubeGeometry (  new Geometry( &vtxCube[0], &idxCube[0], vbLen, ibLen, &sqTex[0], numOfTexCoords  ) ); // reset(T * p)
+	//const VertexFormat VertexPN::FORMAT = VertexFormat(sizeof(VertexPN))
+	//										.put("aPosition", 3, GL_FLOAT, GL_FALSE, offsetof(VertexPN, p))
+	//										.put("aNormal", 3, GL_FLOAT, GL_FALSE, offsetof(VertexPN, n));
 
  
- // 3: create another cube
- // int ibLen, vbLen;
 
-  getCubeVbIbLen(vbLen, ibLen);
+	// 2: create a cube
+	// int ibLen, vbLen;
 
-  // Temporary storage for cube geometry
+	getCubeVbIbLen(vbLen, ibLen);
 
-  // T = tangent, X = coordinates
+	// Temporary storage for cube geometry
 
-  vector<VertexPNTBX> vtxCube2(vbLen); // vtxCube:  a vector of VertexPNTBX type with length vbLen
+	// T = tangent, X = coordinates
 
-  vector<unsigned short> idxCube2(ibLen); // idxCube: 
+	vector<VertexPNTBX> vtxCube1(vbLen); // vtxCube:  a vector of VertexPNTBX type with length vbLen
 
-  // makecube<VertexPNTBX, unsigned short>( vtxCube.begin(), idxCube.begin() );
+	vector<unsigned short> idxCube1(ibLen); // idxCube: 
 
-  // vtxCube and idxCube are vertices whose stroages are already
-  // allocated, so that you can access each element of a vertex by means
-  // of iterator.
+	// makecube<VertexPNTBX, unsigned short>( vtxCube.begin(), idxCube.begin() );
 
- // makeCube(20, 12.7, 25, vtxCube2.begin(), idxCube2.begin() ); // fill vtxCube and idxCube, starting
-                                                       // from their starting pointers => a list of vertex coords,
-                                                       // tex coords, normal coords, tangent coords, binormal coords
+	// vtxCube and idxCube are vertices whose stroages are already
+	// allocated, so that you can access each element of a vertex by means
+	// of iterator.
 
-  // for debugging
-    makeCube(20, 62.7, 25, vtxCube2.begin(), idxCube2.begin() ); // fill vtxCube and idxCube, starting
-  // create vbo and ibo for vtxCube and idxCube by using SimpleIndexedGeometryPNTBX, where
-  // SimpleIndexedGeometry<VertexPNTBX, unsigned short> SimpleIndexedGeometryPNTBX;
+	//makeCube(30,6.4, 25, vtxCube1.begin(), idxCube1.begin() );	// fill vtxCube and idxCube, starting
+	//															// from their starting pointers => a list of vertex coords,
+	//															// tex coords, normal coords, tangent coords, binormal coords
 
- shared_ptr<Geometry> cubeGeometry2 (  new SimpleIndexedGeometryPNTBX("cube2",  &vtxCube2[0], &idxCube2[0], vbLen, ibLen, GL_TRIANGLES ) ); // reset(T * p)
+	// for debugging
+	makeCube(30, 26.4, 25, vtxCube1.begin(), idxCube1.begin() );	// fill vtxCube and idxCube, starting
+																	// from their starting pointers => a list of vertex coords,
+																	// tex coords, normal coords, tangent coords, binormal coords
+	// create vbo and ibo for vtxCube and idxCube by using SimpleIndexedGeometryPNTBX, where
+	// SimpleIndexedGeometry<VertexPNTBX, unsigned short> SimpleIndexedGeometryPNTBX;
 
-  //shared_ptr<Geometry> cubeGeometry (  new Geometry( &vtxCube[0], &idxCube[0], vbLen, ibLen, &sqTex[0], numOfTexCoords  ) ); // reset(T * p)
+	shared_ptr<Geometry> cubeGeometry1 ( new SimpleIndexedGeometryPNTBX("cube1", &vtxCube1[0], &idxCube1[0], vbLen, ibLen, GL_TRIANGLES ) ); // reset(T * p)
+
+	//shared_ptr<Geometry> cubeGeometry ( new Geometry( &vtxCube[0], &idxCube[0], vbLen, ibLen, &sqTex[0], numOfTexCoords ) ); // reset(T * p)
+
+ 
+	// 3: create another cube
+	// int ibLen, vbLen;
+
+	getCubeVbIbLen(vbLen, ibLen);
+
+	// Temporary storage for cube geometry
+
+	// T = tangent, X = coordinates
+
+	vector<VertexPNTBX> vtxCube2(vbLen); // vtxCube:  a vector of VertexPNTBX type with length vbLen
+
+	vector<unsigned short> idxCube2(ibLen); // idxCube: 
+
+	// makecube<VertexPNTBX, unsigned short>( vtxCube.begin(), idxCube.begin() );
+
+	// vtxCube and idxCube are vertices whose stroages are already
+	// allocated, so that you can access each element of a vertex by means
+	// of iterator.
+
+	//makeCube(20, 12.7, 25, vtxCube2.begin(), idxCube2.begin() );	// fill vtxCube and idxCube, starting
+	//																// from their starting pointers => a list of vertex coords,
+	//																// tex coords, normal coords, tangent coords, binormal coords
+
+	// for debugging
+	makeCube(20, 62.7, 25, vtxCube2.begin(), idxCube2.begin() ); // fill vtxCube and idxCube, starting
+	// create vbo and ibo for vtxCube and idxCube by using SimpleIndexedGeometryPNTBX, where
+	// SimpleIndexedGeometry<VertexPNTBX, unsigned short> SimpleIndexedGeometryPNTBX;
+
+	shared_ptr<Geometry> cubeGeometry2 ( new SimpleIndexedGeometryPNTBX("cube2", &vtxCube2[0], &idxCube2[0], vbLen, ibLen, GL_TRIANGLES ) ); // reset(T * p)
+
+	//shared_ptr<Geometry> cubeGeometry ( new Geometry( &vtxCube[0], &idxCube[0], vbLen, ibLen, &sqTex[0], numOfTexCoords  ) ); // reset(T * p)
 
 
-  // 4: create a sphere
+	// 4: create a sphere
   
- /*
-  int slices = 100;
-  int stacks = 100;
+	
+	int slices = 100;
+	int stacks = 100;
 
-  getSphereVbIbLen(slices, stacks, vbLen, ibLen);
+	getSphereVbIbLen(slices, stacks, vbLen, ibLen);
 
-  // Temporary storage for cube geometry
+	// Temporary storage for cube geometry
 
-  vector<VertexPNTBX>  vtxSphere (vbLen);
+	vector<VertexPNTBX>  vtxSphere (vbLen);
 
-  vector<unsigned short> idxSphere (ibLen);
+	vector<unsigned short> idxSphere (ibLen);
 
-  float radius = 3;
+	float radius = 3;
 
-  makeSphere(radius, slices, stacks,  vtxSphere.begin(), idxSphere.begin() );
+	makeSphere(radius, slices, stacks,  vtxSphere.begin(), idxSphere.begin() );
 
-  //geometry.h: typedef SimpleIndexedGeometry<VertexPNTBX, unsigned short> SimpleIndexedGeometryPNTBX;
+	//geometry.h: typedef SimpleIndexedGeometry<VertexPNTBX, unsigned short> SimpleIndexedGeometryPNTBX;
 
-  shared_ptr<Geometry> sphereGeometry ( new SimpleIndexedGeometryPNTBX( &vtxSphere[0], &idxSphere[0], vbLen, ibLen, GL_TRIANGLES ) ); // reset(T * p)
+	shared_ptr<Geometry> sphereGeometry ( new SimpleIndexedGeometryPNTBX( "sphere", &vtxSphere[0], &idxSphere[0], vbLen, ibLen, GL_TRIANGLES ) ); // reset(T * p)
  
-  // or  shared_ptr<Geometry> sphereGeometry =  new Geometry( &vtx[0], &idx[0], vbLen, ibLen ); // reset(T * p)
-  // NOTE: here vtx and idx arrays are copied to the vertex buffer object internally, so this data need not be global.
+	// or  shared_ptr<Geometry> sphereGeometry =  new Geometry( &vtx[0], &idx[0], vbLen, ibLen ); // reset(T * p)
+	// NOTE: here vtx and idx arrays are copied to the vertex buffer object internally, so this data need not be global.
+	
 
-  */
 
+	// create the object frames for the created geometry
 
-  // create the object frames for the created geometry
-
-  // The following does not work, because the  matrix created by SgRbtNode::makeTranslation() is
-  //	destroyed outside of this function initObjects(). To avoid it, create the matrix by the "new" method.
- //	The objects created by new methods remain unless removed explicitly. This is handled by shared_ptr<>. 
+	// The following does not work, because the  matrix created by SgRbtNode::makeTranslation() is
+	// destroyed outside of this function initObjects(). To avoid it, create the matrix by the "new" method.
+	// The objects created by new methods remain unless removed explicitly. This is handled by shared_ptr<>. 
 																				   
-//  shared_ptr<SgRbtNode> groundRbt ( &SgRbtNode::makeTranslation( Cvec3(0,0,0) ) ); 
- // shared_ptr<SgRbtNode>  cubeRbt ( &SgRbtNode::makeTranslation( Cvec3(5.0,0,0)  ) );
-  // shared_ptr< SgRbtNode>  sphereRbt ( &SgRbtNode::makeTranslation( Cvec3(0,0,0) ) );
+	//shared_ptr<SgRbtNode> groundRbt ( &SgRbtNode::makeTranslation( Cvec3(0,0,0) ) ); 
+	//shared_ptr<SgRbtNode> cubeRbt ( &SgRbtNode::makeTranslation( Cvec3(5.0,0,0) ) );
+	//shared_ptr< SgRbtNode> sphereRbt ( &SgRbtNode::makeTranslation( Cvec3(0,0,0) ) );
   
    
 	
-  shared_ptr<SgRbtNode> groundRbt ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(0,0,0) ) ) ); // this uses the non-default copy constructor ?
-  //shared_ptr<SgRbtNode> cubeRbt1 ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(0, 3.2, -12.5)  ) )  );
-  shared_ptr<SgRbtNode> cubeRbt1 ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(0,  26.4/2.0, -12.5)  ) )  );
- // shared_ptr< SgRbtNode> sphereRbt ( new SgRbtNode ( SgRbtNode::makeTranslation( Cvec3(-0.5,0,0) ) ) );
- //  shared_ptr<SgRbtNode> cubeRbt2 ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(25, 6.35, -12.5)  ) )  );
+	shared_ptr<SgRbtNode> groundRbt ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(0,0,0) ) ) ); // this uses the non-default copy constructor ?
+	//shared_ptr<SgRbtNode> cubeRbt1 ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(0, 3.2, -12.5) ) )  );
+	shared_ptr<SgRbtNode> cubeRbt1 ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(0, 26.4/2.0, -25.0/2.0) ) ) );
+	shared_ptr< SgRbtNode> sphereRbt ( new SgRbtNode ( SgRbtNode::makeTranslation( Cvec3(-0.5,0,0) ) ) );
+	//shared_ptr<SgRbtNode> cubeRbt2 ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(25, 6.35, -12.5) ) ) );
   
-     shared_ptr<SgRbtNode> cubeRbt2 ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(25, 62.7/2.0, -12.5)  ) )  );
+	shared_ptr<SgRbtNode> cubeRbt2 ( new SgRbtNode( g_SceneRbt * SgRbtNode::makeTranslation( Cvec3(25, 62.7/2.0, -25.0/2.0) ) ) );
   
 	   
-  shared_ptr<Object> ground ( new Object( "ground",  groundRbt, groundGeometry, g_bumpFloorMat) );
-  shared_ptr<Object> cube1 ( new Object( "cube1", cubeRbt1, cubeGeometry1, g_blueDiffuseMat) );
-  shared_ptr<Object> cube2 ( new Object( "cube2", cubeRbt2, cubeGeometry2, g_redDiffuseMat) );
-  //shared_ptr<Object> sphere ( new Object( "sphere", sphereRbt, sphereGeometry, g_blueDiffuseMat) );
+	shared_ptr<Object> ground ( new Object( "ground",  groundRbt, groundGeometry, g_bumpFloorMat) );
+	shared_ptr<Object> cube1 ( new Object( "cube1", cubeRbt1, cubeGeometry1, g_blueDiffuseMat) );
+	shared_ptr<Object> cube2 ( new Object( "cube2", cubeRbt2, cubeGeometry2, g_redDiffuseMat) );
+	shared_ptr<Object> sphere ( new Object( "sphere", sphereRbt, sphereGeometry, g_blueDiffuseMat) );
 
-  cout << endl << "cube1 RBT=" << cubeRbt1 << endl;
-
-
-  // 1: create the object id color for picking purpose 
-
-  Cvec4 pickColor;
-  unsigned int id; // 32 bit unsigned
+	cout << endl << "cube1 RBT=" << cubeRbt1 << endl;
 
 
-  id = g_objId ++; 
-  //id = 0; 
+	// 1: create the object id color for picking purpose 
 
-  id = id << 8;  // RGBA: fill A field with 0's, shifting the value of id left 8 bits
-  id = id | 255 ; // id for  ground; make A field to be all 1's
-
+	Cvec4 pickColor;
+	unsigned int id; // 32 bit unsigned
 
 
-  pickColor = g_picker.idToColor(id); // id => linearTrans(idColor)
+	id = g_objId ++; 
+	//id = 0; 
 
-  ground->pickColor = pickColor; // the   pickColor = linearTrans(idColor) will be sent to the shader Uniform variable when drawing 
-                                 // That is, by fragColor = linearTrans(id). WHen written to the framebuffer, sRGBTrans(linearTrans(idColor)) =
-                                 //  idColor will written. When read by glReadPixel, this value is 
-                                 // read. 
+	id = id << 8;  // RGBA: fill A field with 0's, shifting the value of id left 8 bits
+	id = id | 255 ; // id for  ground; make A field to be all 1's
+
+
+
+	pickColor = g_picker.idToColor(id); // id => linearTrans(idColor)
+
+	ground->pickColor = pickColor;	// the pickColor = linearTrans(idColor) will be sent to the shader Uniform variable when drawing 
+									// That is, by fragColor = linearTrans(id). WHen written to the framebuffer, sRGBTrans(linearTrans(idColor)) =
+									// idColor will written. When read by glReadPixel, this value is 
+									// read. 
   
-  cout << "ground object id=" << id <<"," << "object pseudo color=" << pickColor << endl;
+	cout << "ground object id=" << id <<"," << "object pseudo color=" << pickColor << endl;
 
 
-  // store the objects in the object list
+	// store the objects in the object list
 
-  g_objectPtrList.push_back( ground );
+	g_objectPtrList.push_back( ground );
 
-  // add the object and the id to the list for picking
-  g_picker.addToMap( id, ground );
+	// add the object and the id to the list for picking
+	g_picker.addToMap( id, ground );
 
 
   
-  // 2: the same for the cube
+	// 2: the same for the cube
  
-  id= g_objId ++;
-  id = id << 8;  
-  id = id | 255; // id for  cube 
-  pickColor  = g_picker.idToColor(id );
+	id= g_objId ++;
+	id = id << 8;  
+	id = id | 255; // id for  cube 
+	pickColor  = g_picker.idToColor(id );
 
-  cube1->pickColor = pickColor;
+	cube1->pickColor = pickColor;
  
-  cout << "cube1 object id=" << id <<"," << "object pseudo color=" << pickColor << endl;
+	cout << "cube1 object id=" << id <<"," << "object pseudo color=" << pickColor << endl;
 
-  g_objectPtrList.push_back( cube1 ); 
+	g_objectPtrList.push_back( cube1 ); 
 
 
-  g_picker.addToMap( id, cube1 );
+	g_picker.addToMap( id, cube1 );
 
    
   
   
-  // 3: another cube
-  id = g_objId ++;
-  id = id << 8;
-  id = id | 255; // id for  sphere 
+	// 3: another cube
+	id = g_objId ++;
+	id = id << 8;
+	id = id | 255; // id for sphere 
 
-  pickColor = g_picker.idToColor(id);
+	pickColor = g_picker.idToColor(id);
 
-  //sphere->pickColor  = pickColor;
-  cube2->pickColor  = pickColor;
+	//sphere->pickColor = pickColor;
+	cube2->pickColor = pickColor;
 
-  cout << "cube2 object id=" << id <<"," << "object pseudo color=" << pickColor << endl;
+	cout << "cube2 object id=" << id <<"," << "object pseudo color=" << pickColor << endl;
 
-  // for debugging
+	// for debugging
 
-  g_objectPtrList.push_back( cube2 );
+	g_objectPtrList.push_back( cube2 );
 
-  g_picker.addToMap( id, cube2 );
+	g_picker.addToMap( id, cube2 );
+
+	// 4: sphere 
+	id = g_objId ++;
+	id = id << 8;
+	id = id | 255; // id for  sphere 
+
+	pickColor = g_picker.idToColor(id);
+
+	//sphere->pickColor  = pickColor;
+	sphere->pickColor  = pickColor;
+
+	cout << "sphere object id=" << id <<"," << "object pseudo color=" << pickColor << endl;
+
+	// for debugging
+
+	g_objectPtrList.push_back( sphere );
+
+	g_picker.addToMap( id, sphere );
 
   
  
@@ -2955,370 +2951,370 @@ void ofApp::initObjects() {
 
 
  void ofApp::initAABB() {
-  int ibLen, vbLen;
+	int ibLen, vbLen;
 
 
-  getCubeVbIbLen(vbLen, ibLen);
-
- 
-  vector<VertexPNTBX> vtxAABB(vbLen); // vtxCube:  a vector of VertexPNTBX type with length vbLen
-                                      // what happens if I use VertexPNX ?
-
-  vector<unsigned short> idxAABB(ibLen); // idxCube: 
-
-  makeCube( g_AABBsize[0], g_AABBsize[1], g_AABBsize[2], vtxAABB.begin(), idxAABB.begin() ); 
+	getCubeVbIbLen(vbLen, ibLen);
 
  
-  shared_ptr<Geometry> AABBGeometry (  new SimpleIndexedGeometryPNTBX("AABB", &vtxAABB[0], &idxAABB[0], vbLen, ibLen, GL_TRIANGLES ) );
+	vector<VertexPNTBX> vtxAABB(vbLen); // vtxCube:  a vector of VertexPNTBX type with length vbLen
+										// what happens if I use VertexPNX ?
+
+	vector<unsigned short> idxAABB(ibLen); // idxCube: 
+
+	makeCube( g_AABBsize[0], g_AABBsize[1], g_AABBsize[2], vtxAABB.begin(), idxAABB.begin() ); 
 
  
-// for National Modern Musium
- 	g_AABBRbt.reset(  new SgRbtNode (  g_SceneRbt * 
- 		                       Matrix4::makeTranslation( 	Cvec3( 0, g_AABBsize[1]/2 + 6.4, -g_AABBsize[2]/2.0 ) ) ) );
-  shared_ptr<Object> AABB ( new Object( "AABB",  g_AABBRbt, AABBGeometry, g_arcballMat) );
+	shared_ptr<Geometry> AABBGeometry ( new SimpleIndexedGeometryPNTBX("AABB", &vtxAABB[0], &idxAABB[0], vbLen, ibLen, GL_TRIANGLES ) );
+
+ 
+	// for National Modern Musium
+	//g_AABBRbt.reset( new SgRbtNode ( g_SceneRbt * Matrix4::makeTranslation( Cvec3( 0, g_AABBsize[1]/2 + 6.4, -g_AABBsize[2]/2.0 ) ) ) );
+	g_AABBRbt.reset( new SgRbtNode ( g_SceneRbt * Matrix4::makeTranslation( Cvec3( 0, g_AABBsize[1]/2, -g_AABBsize[2]/2.0 ) ) ) );
+	shared_ptr<Object> AABB ( new Object( "AABB", g_AABBRbt, AABBGeometry, g_arcballMat) );
 
   
 	cout << "At initAABB: current AABB frame (center):" << "\n" << *g_AABBRbt << endl;
 
-  Cvec4 pickColor;
-  unsigned int id; // 32 bit unsigned
+	Cvec4 pickColor;
+	unsigned int id; // 32 bit unsigned
 
   
-  id= 0; // set the  AABB box id to zero. // AABB box can be picked and moved.
-  id = id << 8;  
-  id = id | 255; // 
-  pickColor  = g_picker.idToColor(id ); // pickColor is an sRGB non-linear color
+	id= 0; // set the  AABB box id to zero. // AABB box can be picked and moved.
+	id = id << 8;  
+	id = id | 255; // 
+	pickColor  = g_picker.idToColor(id ); // pickColor is an sRGB non-linear color
 
-  cout << "At initAABB: AABB object id=" << id <<"," << "object pseudo color=" << pickColor << endl;
+	cout << "At initAABB: AABB object id=" << id <<"," << "object pseudo color=" << pickColor << endl;
 
-  AABB->pickColor = pickColor;
-
-
-  g_objectPtrList.push_back( AABB ); //for debugging
+	AABB->pickColor = pickColor;
 
 
-  g_picker.addToMap( id, AABB );
+	g_objectPtrList.push_back( AABB ); //for debugging
+
+
+	g_picker.addToMap( id, AABB );
 
  
  } // initAABB
 
  // RAINBOW INIT
-  void ofApp::initRainbow() {
-  int ibLen, vbLen;
+void ofApp::initRainbow() {
+	int ibLen, vbLen;
 
-  // create the near plane quad, which is the front of the view frustrum.
-  // g_frustMinFov = 60.0;  
- //   g_frustFovY = g_frustMinFov; 
-  //  g_frustNear = -1.1;    // near plane
-  //  g_frustFar = -100.0;    // far plane
-  //  y = tan( 60/2 * PI / 180) * z => y = tan(60/2) * (-g_frustNear) is the height of the 
-  //  near quad of the near plane. 
-
-
-  float quadZLocation = (float) g_frustNear + (-0.1); // a little bit further than the near plane; the near plane itself will not be seen
-
-  float y = std::tan( g_frustFovY * 0.5 * PI / 180 ) * (-quadZLocation);
+	// create the near plane quad, which is the front of the view frustrum.
+	//g_frustMinFov = 60.0;  
+	//g_frustFovY = g_frustMinFov; 
+	//g_frustNear = -1.1;     // near plane
+	//g_frustFar = -100.0;    // far plane
+	//y = tan(60/2 * PI / 180) * z => y = tan(60/2) * (-g_frustNear) is the height of the 
+	// near quad of the near plane. 
 
 
-  static const float quadHeight = 2.0 * y;   // 
+	float quadZLocation = (float) g_frustNear + (-0.1); // a little bit further than the near plane; the near plane itself will not be seen
 
-  // temporary storage for a plane geometry
-  getPlaneVbIbLen( vbLen, ibLen); // get the sizes of the vertex buffer and the 
-                                 // index buffer for a plane. The vertex buffer
-                                 // size is the number of vertices.
-  vector<VertexPNTBX> vtxQuad (vbLen);
-  vector<unsigned short> idxQuad (ibLen);
+	float y = std::tan( g_frustFovY * 0.5 * PI / 180 ) * (-quadZLocation);
 
-  // create the quad at g_frustNear
-  float aspectRatio = g_windowWidth / static_cast <double> (g_windowHeight);
-  float quadWidth = quadHeight * aspectRatio;
 
-  
+	static const float quadHeight = 2.0 * y;   // 
 
-  makeNearPlaneQuad( quadWidth, quadHeight, quadZLocation, vtxQuad.begin(), idxQuad.begin() );
+	// temporary storage for a plane geometry
+	getPlaneVbIbLen( vbLen, ibLen); // get the sizes of the vertex buffer and the 
+									// index buffer for a plane. The vertex buffer
+									// size is the number of vertices.
+	vector<VertexPNTBX> vtxQuad (vbLen);
+	vector<unsigned short> idxQuad (ibLen);
 
-  
-  //shared_ptr<Geometry> groundGeometry  ( new Geometry( &vtxGround[0], &idxGround[0], 4, 6,  &sqTex[0], numOfTexCoords  )  );
-  shared_ptr<Geometry> nearPlaneQuadGeometry  ( new SimpleIndexedGeometryPNTBX("rainbow", &vtxQuad[0], &idxQuad[0], vbLen, ibLen, GL_TRIANGLES  )  );
+	// create the quad at g_frustNear
+	float aspectRatio = g_windowWidth / static_cast <double> (g_windowHeight);
+	float quadWidth = quadHeight * aspectRatio;
 
-    // rainbow shader
+	
 
-  //MaterialShader rainbowAndSceneMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-gl3.fshader");
+	makeNearPlaneQuad( quadWidth, quadHeight, quadZLocation, vtxQuad.begin(), idxQuad.begin() );
+
+	
+	//shared_ptr<Geometry> groundGeometry ( new Geometry( &vtxGround[0], &idxGround[0], 4, 6,  &sqTex[0], numOfTexCoords ) );
+	shared_ptr<Geometry> nearPlaneQuadGeometry ( new SimpleIndexedGeometryPNTBX("rainbow", &vtxQuad[0], &idxQuad[0], vbLen, ibLen, GL_TRIANGLES ) );
+
+	// rainbow shader
+
+	//MaterialShader rainbowAndSceneMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-gl3.fshader");
    
-  MaterialShader rainbowAndSceneMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-RGB-STAN-gl3.frag");
- //MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-old-org-gl3.fshader");
- //  MaterialShader rainbowMat ("basic+rainbow", "shaders/FullScreenQuad-gl3.vshader", "shaders/FBOtexture-gl3.fshader");
-//    MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-8-22-gl3.fshader");
+	MaterialShader rainbowAndSceneMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-RGB-STAN-gl3.frag");
+	//MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-old-org-gl3.fshader");
+	//MaterialShader rainbowMat ("basic+rainbow", "shaders/FullScreenQuad-gl3.vshader", "shaders/FBOtexture-gl3.fshader");
+	//MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-8-22-gl3.fshader");
  
-  //MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-STAN-gl3.fshader");
+	//MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-STAN-gl3.fshader");
 
-  //MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-old-gl3.fshader");
-
-
- // MaterialShader initializes  its member programDesc_ which has a member program, 
-  // by programDesc_ ( GlProgramLibrary::getSingleton().getProgramDesc(vsFilename, fsFilename) ), which in turn
-  // sets the output variable for shaders, e.g.:
-  //if (!g_Gl2Compatible) {
-		// index 0, 1, 2 refers to the index of the array attachments in:
-		// GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2 }; 
-		// glDrawBuffers(3,  attachments);
-
-   //   glBindFragDataLocation(program, 0, "fragColor");
-  //	  glBindFragDataLocation(program, 1, "phaseSpectrum");
-  //	  glBindFragDataLocation(program, 2, "rainbowColorSpectrum");
-  //	}
-
-  int primaryWidth = PrimarySpectrum::getPrimarySpectrumsWidth();
-  int XYZWidth = PrimarySpectrum::getXYZSpectrumsWidth();
-  float *primarySpectrums = new float[ primaryWidth ];
-  float *XYZSpectrums = new float[ XYZWidth ];
-
-  PrimarySpectrum::initPrimarySpectrums(XYZSpectrums, primarySpectrums);
-
-  // rainbow mat
-  g_rainbowAndSceneMat.reset(new MaterialShader( rainbowAndSceneMat) );
-   g_rainbowAndSceneMat->getUniforms().put("uXYZSpectrums", 
-	     shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(XYZWidth, XYZSpectrums)));
-
-  g_rainbowAndSceneMat->getUniforms().put("uPrimarySpectrums", 
-	     shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(primaryWidth, primarySpectrums)));
-
-  g_rainbowAndSceneMat->getUniforms().put("uScatTex", shared_ptr<ShaderImageTexture2D_RF_RF>(new ShaderImageTexture2D_RF_RF("rainbow/scattering2_120_fort.txt")));
+	//MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-old-gl3.fshader");
 
 
-  g_rainbowAndSceneMat->getUniforms().put("uPhaseTex", shared_ptr<ShaderImageTexture3D_RF_RF>(new ShaderImageTexture3D_RF_RF("rainbow/phaseFunction2_120_100_fort.txt")));
+	// MaterialShader initializes  its member programDesc_ which has a member program, 
+	// by programDesc_ ( GlProgramLibrary::getSingleton().getProgramDesc(vsFilename, fsFilename) ), which in turn
+	// sets the output variable for shaders, e.g.:
+	//if (!g_Gl2Compatible) {
+	//	index 0, 1, 2 refers to the index of the array attachments in:
+	//	GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2 }; 
+	//	glDrawBuffers(3,  attachments);
 
-  // quadRbt for the near plane quad is the same as the eye frame, because the full screen quad (near plane) is specified 
-  // relative to the eye frame. 
+	//	glBindFragDataLocation(program, 0, "fragColor");
+	//	glBindFragDataLocation(program, 1, "phaseSpectrum");
+	//	glBindFragDataLocation(program, 2, "rainbowColorSpectrum");
+	//}
 
-  // When the camera is changed, g_rainbowAndSceneMatObj->objectRbt should be changed as well.
-  // To avoid it, make MVM = g_invEyeRbt * g_eyeRbt = Identity.
-  // Or Use g_NDCMatObj to use the full screen quad.
+	int primaryWidth = PrimarySpectrum::getPrimarySpectrumsWidth();
+	int XYZWidth = PrimarySpectrum::getXYZSpectrumsWidth();
+	float *primarySpectrums = new float[ primaryWidth ];
+	float *XYZSpectrums = new float[ XYZWidth ];
 
-   std::shared_ptr<SgRbtNode> nearPlaneQuadRbt (  new SgRbtNode ( g_eyeRbt)  );
+	PrimarySpectrum::initPrimarySpectrums(XYZSpectrums, primarySpectrums);
 
-   // rainbow material obj
+	// rainbow mat
+	g_rainbowAndSceneMat.reset(new MaterialShader( rainbowAndSceneMat) );
+	g_rainbowAndSceneMat->getUniforms().put("uXYZSpectrums", 
+			shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(XYZWidth, XYZSpectrums)));
+
+	g_rainbowAndSceneMat->getUniforms().put("uPrimarySpectrums", 
+			shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(primaryWidth, primarySpectrums)));
+
+	g_rainbowAndSceneMat->getUniforms().put("uScatTex", shared_ptr<ShaderImageTexture2D_RF_RF>(new ShaderImageTexture2D_RF_RF("rainbow/scattering2_120_fort.txt")));
+
+
+	g_rainbowAndSceneMat->getUniforms().put("uPhaseTex", shared_ptr<ShaderImageTexture3D_RF_RF>(new ShaderImageTexture3D_RF_RF("rainbow/phaseFunction2_120_100_fort.txt")));
+
+	// quadRbt for the near plane quad is the same as the eye frame, because the full screen quad (near plane) is specified 
+	// relative to the eye frame. 
+
+	// When the camera is changed, g_rainbowAndSceneMatObj->objectRbt should be changed as well.
+	// To avoid it, make MVM = g_invEyeRbt * g_eyeRbt = Identity.
+	// Or Use g_NDCMatObj to use the full screen quad.
+
+	std::shared_ptr<SgRbtNode> nearPlaneQuadRbt ( new SgRbtNode ( g_eyeRbt) );
+
+	// rainbow material obj
   
-   g_rainbowAndSceneMatObj.reset(   new Object( "rainbowAndScene",  nearPlaneQuadRbt, nearPlaneQuadGeometry, g_rainbowAndSceneMat) );
+	g_rainbowAndSceneMatObj.reset( new Object( "rainbowAndScene", nearPlaneQuadRbt, nearPlaneQuadGeometry, g_rainbowAndSceneMat ) );
 
 
 
-  // rainbow only mat
+	// rainbow only mat
 
-   MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-RGB-only-STAN-gl3.frag");
-   g_rainbowOnlyMat.reset(new MaterialShader( rainbowOnlyMat) );
+	MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-RGB-only-STAN-gl3.frag");
+	g_rainbowOnlyMat.reset(new MaterialShader( rainbowOnlyMat) );
    
-  g_rainbowOnlyMat->getUniforms().put("uXYZSpectrums", 
-	     shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(XYZWidth, XYZSpectrums)));
+	g_rainbowOnlyMat->getUniforms().put("uXYZSpectrums", 
+			shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(XYZWidth, XYZSpectrums)));
 
-  g_rainbowOnlyMat->getUniforms().put("uPrimarySpectrums", 
-	     shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(primaryWidth, primarySpectrums)));
+	g_rainbowOnlyMat->getUniforms().put("uPrimarySpectrums", 
+			shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(primaryWidth, primarySpectrums)));
 
-  g_rainbowOnlyMat->getUniforms().put("uScatTex", shared_ptr<ShaderImageTexture2D_RF_RF>(new ShaderImageTexture2D_RF_RF("rainbow/scattering2_120_fort.txt")));
+	g_rainbowOnlyMat->getUniforms().put("uScatTex", shared_ptr<ShaderImageTexture2D_RF_RF>(new ShaderImageTexture2D_RF_RF("rainbow/scattering2_120_fort.txt")));
 
 
-  g_rainbowOnlyMat->getUniforms().put("uPhaseTex", shared_ptr<ShaderImageTexture3D_RF_RF>(new ShaderImageTexture3D_RF_RF("rainbow/phaseFunction2_120_100_fort.txt")));
+	g_rainbowOnlyMat->getUniforms().put("uPhaseTex", shared_ptr<ShaderImageTexture3D_RF_RF>(new ShaderImageTexture3D_RF_RF("rainbow/phaseFunction2_120_100_fort.txt")));
 
   
-   g_rainbowOnlyMatObj.reset(   new Object( "rainbowOnly",  nearPlaneQuadRbt, nearPlaneQuadGeometry, g_rainbowOnlyMat) );
+	g_rainbowOnlyMatObj.reset( new Object( "rainbowOnly", nearPlaneQuadRbt, nearPlaneQuadGeometry, g_rainbowOnlyMat ) );
 
 
  } // initRainbow()
  
-  void ofApp::initAABBRainbow() {
-  int ibLen, vbLen;
+void ofApp::initAABBRainbow() {
+	int ibLen, vbLen;
 
-  getCubeVbIbLen(vbLen, ibLen);
+	getCubeVbIbLen(vbLen, ibLen);
 
-  // Temporary storage for cube geometry
+	// Temporary storage for cube geometry
 
-  // T = tangent, X = coordinates
+	// T = tangent, X = coordinates
 
-  vector<VertexPNTBX> vtxAABB(vbLen); // vtxCube:  a vector of VertexPNTBX type with length vbLen
-                                      // what happens if I use VertexPNX ?
+	vector<VertexPNTBX> vtxAABB(vbLen); // vtxCube:  a vector of VertexPNTBX type with length vbLen
+										// what happens if I use VertexPNX ?
 
-  vector<unsigned short> idxAABB(ibLen); // idxCube: 
+	vector<unsigned short> idxAABB(ibLen); // idxCube: 
 
-  makeCube( g_AABBsize[0], g_AABBsize[1], g_AABBsize[2], vtxAABB.begin(), idxAABB.begin() ); 
+	makeCube( g_AABBsize[0], g_AABBsize[1], g_AABBsize[2], vtxAABB.begin(), idxAABB.begin() ); 
 
-  // create vbo and ibo for vtxCube and idxCube by using SimpleIndexedGeometryPNTBX, where
-  // SimpleIndexedGeometry<VertexPNTBX, unsigned short> SimpleIndexedGeometryPNTBX;
+	// create vbo and ibo for vtxCube and idxCube by using SimpleIndexedGeometryPNTBX, where
+	// SimpleIndexedGeometry<VertexPNTBX, unsigned short> SimpleIndexedGeometryPNTBX;
 
-  // Upload the geometry data and bind it to the Vbo 
- //shared_ptr<Geometry> AABBGeometry (  new SimpleIndexedGeometryPNTBX("AABB", &vtxAABB[0], &idxAABB[0], vbLen, ibLen, GL_QUADS ) ); 
- // GL_QAUDS has been removed from the core profile => ENUM error is caused
-  shared_ptr<Geometry> AABBGeometry (  new SimpleIndexedGeometryPNTBX("AABBRainbow", &vtxAABB[0], &idxAABB[0], vbLen, ibLen, GL_TRIANGLES ) );
+	// Upload the geometry data and bind it to the Vbo 
+	//shared_ptr<Geometry> AABBGeometry ( new SimpleIndexedGeometryPNTBX("AABB", &vtxAABB[0], &idxAABB[0], vbLen, ibLen, GL_QUADS ) ); 
+	// GL_QAUDS has been removed from the core profile => ENUM error is caused
+	shared_ptr<Geometry> AABBGeometry ( new SimpleIndexedGeometryPNTBX("AABBRainbow", &vtxAABB[0], &idxAABB[0], vbLen, ibLen, GL_TRIANGLES ) );
 
  
-// for National Modern Musium: g_AABBRbt is set in initAABB()
+	// for National Modern Musium: g_AABBRbt is set in initAABB()
 
- 	//g_AABBRbt.reset(  new SgRbtNode (  g_SceneRbt * 
-	//	                       Matrix4::makeTranslation( 	Cvec3( 0, g_AABBsize[1]/2 + 6.4, -g_AABBsize[2]/2.0 ) ) ) );
+	//g_AABBRbt.reset( new SgRbtNode ( g_SceneRbt * 
+	//							Matrix4::makeTranslation( Cvec3( 0, g_AABBsize[1]/2 + 6.4, -g_AABBsize[2]/2.0 ) ) ) );
 	// for debugging
 
   
-//  	g_AABBRbt.reset(  new SgRbtNode (  g_eyeRbt * 
-//		                       Matrix4::makeTranslation( 	Cvec3( 0, g_AABBsize[1]/2 + 6.4, -g_AABBsize[2]/2.0 ) ) ) );
+	//g_AABBRbt.reset( new SgRbtNode ( g_eyeRbt * 
+	//							Matrix4::makeTranslation( Cvec3( 0, g_AABBsize[1]/2 + 6.4, -g_AABBsize[2]/2.0 ) ) ) );
 
 	cout << " At initAABBRainbow: AABBRbt =" << "\n" << *g_AABBRbt << endl;
 
 	// for Asian Game [the world frame is assumed right at the front of the AABB box
 
- 	//g_AABBRbt.reset(  new SgRbtNode (  g_SceneRbt * 
-	//	                       Matrix4::makeTranslation( 	Cvec3( 0, g_AABBsize[1]/2, -g_AABBsize[2]/2.0) ) ) );
+	//g_AABBRbt.reset( new SgRbtNode ( g_SceneRbt * 
+	//	                       Matrix4::makeTranslation( Cvec3( 0, g_AABBsize[1]/2, -g_AABBsize[2]/2.0) ) ) );
 	
-	 // rainbow shader
+	// rainbow shader
 
  
-// MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-only-gl3.fshader");
- MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-only-STAN-gl3.frag");
- g_AABBRainbowOnlyMat.reset(new MaterialShader( rainbowOnlyMat) );
+	//MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-only-gl3.fshader");
+	MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-only-STAN-gl3.frag");
+	g_AABBRainbowOnlyMat.reset( new MaterialShader( rainbowOnlyMat) );
 
- g_AABBRainbowOnlyMat->getUniforms().put("uScatTex", shared_ptr<ShaderImageTexture2D_RF_RF>(new ShaderImageTexture2D_RF_RF("rainbow/scattering2_120_fort.txt")));
+	g_AABBRainbowOnlyMat->getUniforms().put("uScatTex", shared_ptr<ShaderImageTexture2D_RF_RF>(new ShaderImageTexture2D_RF_RF("rainbow/scattering2_120_fort.txt")));
 
- g_AABBRainbowOnlyMat->getUniforms().put("uPhaseTex", shared_ptr<ShaderImageTexture3D_RF_RF>(new ShaderImageTexture3D_RF_RF("rainbow/phaseFunction2_120_100_fort.txt")));
+	g_AABBRainbowOnlyMat->getUniforms().put("uPhaseTex", shared_ptr<ShaderImageTexture3D_RF_RF>(new ShaderImageTexture3D_RF_RF("rainbow/phaseFunction2_120_100_fort.txt")));
 
- g_AABBRainbowOnlyMatObj.reset ( new Object( "AABBRainbow",  g_AABBRbt, AABBGeometry, g_AABBRainbowOnlyMat) );
+	g_AABBRainbowOnlyMatObj.reset ( new Object( "AABBRainbow", g_AABBRbt, AABBGeometry, g_AABBRainbowOnlyMat) );
   
  
- }//initAABBRainbow()
+}//initAABBRainbow()
  
 
 void ofApp::initFullScreen() {
   int ibLen, vbLen;
 
-  // create the near plane quad, which is the front of the view frustrum.
-  // g_frustMinFov = 60.0;  
- //   g_frustFovY = g_frustMinFov; 
-  //  g_frustNear = -1.1;    // near plane
-  //  g_frustFar = -100.0;    // far plane
-  //  y = tan( 60/2 * PI / 180) * z => y = tan(60/2) * (-g_frustNear) is the height of the 
-  //  near quad of the near plane. 
+	// create the near plane quad, which is the front of the view frustrum.
+	//g_frustMinFov = 60.0;  
+	//g_frustFovY = g_frustMinFov; 
+	//g_frustNear = -1.1;    // near plane
+	//g_frustFar = -100.0;    // far plane
+	//y = tan( 60/2 * PI / 180) * z => y = tan(60/2) * (-g_frustNear) is the height of the 
+	// near quad of the near plane. 
 
-  float quadZLocation = (float) g_frustNear + (-0.1); // a little bit further than the near plane; the near plane itself will not be seen
+	float quadZLocation = (float) g_frustNear + (-0.1); // a little bit further than the near plane; the near plane itself will not be seen
 
-  static const float y = std::tan( g_frustFovY * 0.5 * PI / 180.0 ) * (-quadZLocation);
+	static const float y = std::tan( g_frustFovY * 0.5 * PI / 180.0 ) * (-quadZLocation);
 
 
-  static const float quadHeight = 2.0 * y;   // 
+	static const float quadHeight = 2.0 * y;
 
  
 
-  // temporary storage for a plane geometry
-  getPlaneVbIbLen( vbLen, ibLen); // get the sizes of the vertex buffer and the 
-                                 // index buffer for a plane. The vertex buffer
-                                 // size is the number of vertices.
-  vector<VertexPNTBX> vtxQuad (vbLen);
-  vector<unsigned short> idxQuad (ibLen);
+	// temporary storage for a plane geometry
+	getPlaneVbIbLen( vbLen, ibLen); // get the sizes of the vertex buffer and the 
+									// index buffer for a plane. The vertex buffer
+									// size is the number of vertices.
+	vector<VertexPNTBX> vtxQuad (vbLen);
+	vector<unsigned short> idxQuad (ibLen);
 
-  // create the quad at g_frustNear
+	// create the quad at g_frustNear
 
-  float aspectRatio = g_windowWidth / static_cast <double> (g_windowHeight);
-  float quadWidth = aspectRatio * quadHeight;
+	float aspectRatio = g_windowWidth / static_cast <double> (g_windowHeight);
+	float quadWidth = aspectRatio * quadHeight;
 
-  //float quadZLocation = (float) g_frustNear + (-0.1); // a little bit further than the near plane; the near plane itself will not be seen
+	//float quadZLocation = (float) g_frustNear + (-0.1); // a little bit further than the near plane; the near plane itself will not be seen
   
  
-  makeNearPlaneQuad( quadWidth, quadHeight, quadZLocation, vtxQuad.begin(), idxQuad.begin() );
+	makeNearPlaneQuad( quadWidth, quadHeight, quadZLocation, vtxQuad.begin(), idxQuad.begin() );
 
-   cout << "quad Width=" << quadWidth << "quad Height=" << quadHeight << endl;
+	cout << "quad Width=" << quadWidth << "quad Height=" << quadHeight << endl;
 
-  //shared_ptr<Geometry> groundGeometry  ( new Geometry( &vtxGround[0], &idxGround[0], 4, 6,  &sqTex[0], numOfTexCoords  )  );
-  shared_ptr<Geometry> nearPlaneQuadGeometry  ( new SimpleIndexedGeometryPNTBX("fullscreen", &vtxQuad[0], &idxQuad[0], vbLen, ibLen, GL_TRIANGLES  )  );
+	//shared_ptr<Geometry> groundGeometry ( new Geometry( &vtxGround[0], &idxGround[0], 4, 6,  &sqTex[0], numOfTexCoords ) );
+	shared_ptr<Geometry> nearPlaneQuadGeometry  ( new SimpleIndexedGeometryPNTBX( "fullscreen", &vtxQuad[0], &idxQuad[0], vbLen, ibLen, GL_TRIANGLES ) );
    
-  MaterialShader fullScreenMat ("fullScreen", "shaders/FullScreenQuad-gl3.vshader", "shaders/FBOtexture-gl3.fshader");
+	MaterialShader fullScreenMat ("fullScreen", "shaders/FullScreenQuad-gl3.vshader", "shaders/FBOtexture-gl3.fshader");
 
-  int primaryWidth = PrimarySpectrum::getPrimarySpectrumsWidth();
-  int XYZWidth = PrimarySpectrum::getXYZSpectrumsWidth();
-  float *primarySpectrums = new float[ primaryWidth ];
-  float *XYZSpectrums = new float[ XYZWidth ];
+	int primaryWidth = PrimarySpectrum::getPrimarySpectrumsWidth();
+	int XYZWidth = PrimarySpectrum::getXYZSpectrumsWidth();
+	float *primarySpectrums = new float[ primaryWidth ];
+	float *XYZSpectrums = new float[ XYZWidth ];
 
-  PrimarySpectrum::initPrimarySpectrums(XYZSpectrums, primarySpectrums);
+	PrimarySpectrum::initPrimarySpectrums(XYZSpectrums, primarySpectrums);
 
-  g_fullScreenMat.reset(new MaterialShader( fullScreenMat) );
+	g_fullScreenMat.reset(new MaterialShader( fullScreenMat));
    
 
-   g_fullScreenMat->getUniforms().put("uXYZSpectrums", 
-	     shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(XYZWidth, XYZSpectrums)));
+	g_fullScreenMat->getUniforms().put("uXYZSpectrums", 
+			shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(XYZWidth, XYZSpectrums)));
 
-  g_fullScreenMat->getUniforms().put("uPrimarySpectrums", 
-	     shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(primaryWidth, primarySpectrums)));
+	g_fullScreenMat->getUniforms().put("uPrimarySpectrums", 
+			shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(primaryWidth, primarySpectrums)));
 
   
-  std::shared_ptr<SgRbtNode> nearPlaneQuadRbt (  new SgRbtNode ( g_eyeRbt)  );
+	std::shared_ptr<SgRbtNode> nearPlaneQuadRbt ( new SgRbtNode ( g_eyeRbt) );
     
-   g_fullScreenMatObj.reset(   new Object( "fullscreen",  nearPlaneQuadRbt, 
-	                                       nearPlaneQuadGeometry, g_fullScreenMat) );
-// print the vertices of the qaud
+	g_fullScreenMatObj.reset( new Object( "fullscreen", nearPlaneQuadRbt, 
+											nearPlaneQuadGeometry, g_fullScreenMat) );
+	// print the vertices of the qaud
 
-  for (int i =0; i < vtxQuad.size(); i++ ) {
-	 cout << " local quad[i]= " << vtxQuad[i].p << endl; 
+	for (int i =0; i < vtxQuad.size(); i++ ) {
+		cout << " local quad[i]= " << vtxQuad[i].p << endl; 
 
-  }
+	}
  
-  for (int i =0; i < vtxQuad.size(); i++ ) {
-	 cout << " global quad[i]= " << ( *nearPlaneQuadRbt) *
-		                                 Cvec4f( vtxQuad[i].p,  1.0) << endl; 
+	for (int i =0; i < vtxQuad.size(); i++ ) {
+		cout << " global quad[i]= " << ( *nearPlaneQuadRbt) *
+										Cvec4f(vtxQuad[i].p,  1.0) << endl; 
 
-  }
+	}
 
 
-   const Matrix4 projMatrix = makeProjectionMatrix();
+	const Matrix4 projMatrix = makeProjectionMatrix();
    
-  for (int i =0; i < vtxQuad.size(); i++ ) {
-	 cout << " projected quad[i]= " <<  projMatrix * Cvec4f( vtxQuad[i].p, 1)  << endl; 
+	for (int i =0; i < vtxQuad.size(); i++ ) {
+		cout << " projected quad[i]= " <<  projMatrix * Cvec4f(vtxQuad[i].p, 1) << endl; 
 
-  }
+	}
 
 
  } // initFullScreenQuad()
 
-  void ofApp::initNDC() {
-	  int ibLen, vbLen;
+void ofApp::initNDC() {
+	int ibLen, vbLen;
 
 	 
-	  getPlaneVbIbLen(vbLen, ibLen);
+	getPlaneVbIbLen(vbLen, ibLen);
   
-	  static const float quadSize = 2.0;   //
+	static const float quadSize = 2.0; 
 
-	  // temporary storage for a plane geometry
-	  getPlaneVbIbLen( vbLen, ibLen); // get the sizes of the vertex buffer and the 
-									 // index buffer for a plane. The vertex buffer
-									 // size is the number of vertices.
-	  vector<VertexPNTBX> vtxQuad (vbLen);
-	  vector<unsigned short> idxQuad (ibLen);
+	// temporary storage for a plane geometry
+	getPlaneVbIbLen( vbLen, ibLen); // get the sizes of the vertex buffer and the 
+									// index buffer for a plane. The vertex buffer
+									// size is the number of vertices.
+	vector<VertexPNTBX> vtxQuad (vbLen);
+	vector<unsigned short> idxQuad (ibLen);
 
-	  makeNDC( quadSize, vtxQuad.begin(), idxQuad.begin() );
+	makeNDC( quadSize, vtxQuad.begin(), idxQuad.begin() );
 
   
-	  //shared_ptr<Geometry> groundGeometry  ( new Geometry( &vtxGround[0], &idxGround[0], 4, 6,  &sqTex[0], numOfTexCoords  )  );
-	  shared_ptr<Geometry> NDCGeometry  ( new SimpleIndexedGeometryPNTBX("NDC", &vtxQuad[0], &idxQuad[0], vbLen, ibLen, GL_TRIANGLES  )  );
+	//shared_ptr<Geometry> groundGeometry ( new Geometry( &vtxGround[0], &idxGround[0], 4, 6, &sqTex[0], numOfTexCoords )  );
+	shared_ptr<Geometry> NDCGeometry ( new SimpleIndexedGeometryPNTBX("NDC", &vtxQuad[0], &idxQuad[0], vbLen, ibLen, GL_TRIANGLES)  );
 
 		
-	  MaterialShader NDCMat ("NDC", "./shaders/NDC-gl3.vshader", "./shaders/FBOtexture-gl3.fshader");
+	MaterialShader NDCMat ("NDC", "./shaders/NDC-gl3.vshader", "./shaders/FBOtexture-gl3.fshader");
      
 
-	  g_NDCMat.reset(new MaterialShader( NDCMat) );
+	g_NDCMat.reset(new MaterialShader( NDCMat) );
 
-	  int primaryWidth = PrimarySpectrum::getPrimarySpectrumsWidth();
-     int XYZWidth = PrimarySpectrum::getXYZSpectrumsWidth();
-     float *primarySpectrums = new float[ primaryWidth ];
-      float *XYZSpectrums = new float[ XYZWidth ];
+	int primaryWidth = PrimarySpectrum::getPrimarySpectrumsWidth();
+    int XYZWidth = PrimarySpectrum::getXYZSpectrumsWidth();
+    float *primarySpectrums = new float[ primaryWidth ];
+    float *XYZSpectrums = new float[ XYZWidth ];
 
-     PrimarySpectrum::initPrimarySpectrums(XYZSpectrums, primarySpectrums);
+    PrimarySpectrum::initPrimarySpectrums(XYZSpectrums, primarySpectrums);
 
-      g_NDCMat->getUniforms().put("uXYZSpectrums", 
-	     shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(XYZWidth, XYZSpectrums)));
+    g_NDCMat->getUniforms().put("uXYZSpectrums", 
+			shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(XYZWidth, XYZSpectrums)));
 
-      g_NDCMat->getUniforms().put("uPrimarySpectrums", 
-	     shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(primaryWidth, primarySpectrums)));
+    g_NDCMat->getUniforms().put("uPrimarySpectrums", 
+			shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(primaryWidth, primarySpectrums)));
+	
+    // NDCRbt is the identity matrix
+    shared_ptr<SgRbtNode> NDCRbt ( new SgRbtNode ( Matrix4() ) );
 
-      // NDCRbt is the identity matrix
-      shared_ptr<SgRbtNode> NDCRbt ( new SgRbtNode (  Matrix4()  ) );
+	g_NDCMatObj.reset ( new Object("NDC",  NDCRbt, NDCGeometry, g_NDCMat) );
 
-	  g_NDCMatObj.reset ( new Object( "NDC",  NDCRbt, NDCGeometry, g_NDCMat) );
-
- } // initNDC()
+} // initNDC()
  
 
 //--------------------------------------------------------------
@@ -3332,10 +3328,10 @@ void ofApp::windowResized(int w, int h){  // call back function for event proces
    
 	glViewport(0, 0, g_windowWidth, g_windowHeight);
   
-	cout   << "WINDOW RESIZED: Size of window is now " << g_windowWidth << "x" << g_windowHeight << endl;
+	cout << "WINDOW RESIZED: Size of window is now " << g_windowWidth << "x" << g_windowHeight << endl;
 	cout << "results of ofGetHeight and ofGetWidth= " << ofGetWidth() << "x" << ofGetHeight() << endl;
 
-	//cerr  << "Size of window is now " << g_windowWidth << "x" << g_windowHeight << endl;
+	//cerr << "Size of window is now " << g_windowWidth << "x" << g_windowHeight << endl;
 	//system ("PAUSE");
 
 	updateFrustFovY();
@@ -3351,163 +3347,163 @@ void ofApp::windowResized(int w, int h){  // call back function for event proces
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){ // call back function for event processing
 
- // This callback is called every time the pressed mouse is moved a little.
-// x, y: the current mouse position after this little  motion is finished.
+	// This callback is called every time the pressed mouse is moved a little.
+	// x, y: the current mouse position after this little  motion is finished.
 
 
-  /*cout  << "dragged mouse button " << button << "X = " << x << "Y = " << y << endl;
-  // Here the moved button is 0, meaning that which button is pressed while moving the mouse is ignored.
+	/*cout << "dragged mouse button " << button << "X = " << x << "Y = " << y << endl;
+	// Here the moved button is 0, meaning that which button is pressed while moving the mouse is ignored.
  
-  cout <<  "Control Key Pressed =" << ofGetKeyPressed( OF_KEY_CONTROL ) << endl;
-  cout <<  "Shift  Key Pressed =" << ofGetKeyPressed( OF_KEY_SHIFT ) << endl;
-  cout <<  "ALT Key Pressed =" << ofGetKeyPressed( OF_KEY_ALT ) << endl;
-  */
+	cout << "Control Key Pressed =" << ofGetKeyPressed( OF_KEY_CONTROL ) << endl;
+	cout << "Shift  Key Pressed =" << ofGetKeyPressed( OF_KEY_SHIFT ) << endl;
+	cout << "ALT Key Pressed =" << ofGetKeyPressed( OF_KEY_ALT ) << endl;
+	*/
 
 
-  const double dx = x - g_prev_mouseClickX;
-  const double dy = g_windowHeight - y - 1 - g_prev_mouseClickY;
+	const double dx = x - g_prev_mouseClickX;
+	const double dy = g_windowHeight - y - 1 - g_prev_mouseClickY;
   
-  Matrix4 m;
+	Matrix4 m;
   
-  g_prev_mouseClickX = x;
-  g_prev_mouseClickY = g_windowHeight - y - 1;
+	g_prev_mouseClickX = x;
+	g_prev_mouseClickY = g_windowHeight - y - 1;
 
-  if ( ofGetKeyPressed( OF_KEY_CONTROL ) && !ofGetKeyPressed( OF_KEY_ALT ) )  {
-	  // translate the camera 
-      switch ( button ) {
-		  case OF_MOUSE_BUTTON_LEFT:
-			 // cout  << " left button moves" << endl;
-			  m = Matrix4::makeTranslation( Cvec3( dx, dy, 0.0) * 0.01 ); 
-			  //m = Matrix4::makeTranslation( Cvec3( dx, 0.0, 0.0) * 0.01 ); 
-			  break;
-		  case OF_MOUSE_BUTTON_RIGHT:
-			 // cout  << " right button moves" << endl;
-			  m = Matrix4::makeTranslation( Cvec3( 0.0, 0.0, -dy) * 0.01 ); 
-			  break;
+	if ( ofGetKeyPressed( OF_KEY_CONTROL ) && !ofGetKeyPressed( OF_KEY_ALT ) )  {
+		// translate the camera 
+		switch ( button ) {
+			case OF_MOUSE_BUTTON_LEFT:
+				// cout << " left button moves" << endl;
+				m = Matrix4::makeTranslation( Cvec3( dx, dy, 0.0) * 0.01 ); 
+				//m = Matrix4::makeTranslation( Cvec3( dx, 0.0, 0.0) * 0.01 ); 
+				break;
+			case OF_MOUSE_BUTTON_RIGHT:
+				// cout << " right button moves" << endl;
+				m = Matrix4::makeTranslation( Cvec3( 0.0, 0.0, -dy) * 0.01 ); 
+				break;
 
-		  default: 
-			  m = Matrix4::makeTranslation( Cvec3( 0.0, 0.0, 0.0)  ); 
-	  } // switch
+			default: 
+				m = Matrix4::makeTranslation( Cvec3( 0.0, 0.0, 0.0) ); 
+		} // switch
 
-	   g_eyeRbt *= m;
+		g_eyeRbt *= m;
 
-	   // window = ofPtr<ofAppBaseWindow>(new ofAppGLFWWindow());
-	   //ofPtr<ofAppGLFWWindow>	appwindow =  window;
-	   //appwindow  ->display();
+		//window = ofPtr<ofAppBaseWindow>(new ofAppGLFWWindow());
+		//ofPtr<ofAppGLFWWindow> appwindow = window;
+		//appwindow ->display();
 
-	   g_redrawWindowEvent = true;
+		g_redrawWindowEvent = true;
 
-  } // if (! g_rotation)
+	} // if (! g_rotation)
 
-  else if ( ofGetKeyPressed( OF_KEY_CONTROL) && ofGetKeyPressed( OF_KEY_ALT) ) { //  rotate the camera
+	else if ( ofGetKeyPressed(OF_KEY_CONTROL) && ofGetKeyPressed(OF_KEY_ALT) ) { //  rotate the camera
 
-	  switch ( button ) {
-		  case OF_MOUSE_BUTTON_LEFT:
+		switch ( button ) {
+			case OF_MOUSE_BUTTON_LEFT:
 
-			  //inline static ofMatrix4x4 newRotationMatrix( float angle, const ofVec3f& axis);
-			  if ( abs(dy) > abs(dx)  ) {
-				  cout << " rotate about the x axis" << endl;
+				//inline static ofMatrix4x4 newRotationMatrix( float angle, const ofVec3f& axis);
+				if ( abs(dy) > abs(dx) ) {
+					cout << " rotate about the x axis" << endl;
 
-			      m = Matrix4::makeXRotation(dy * 0.01); // unit= degree; pitch motion: up and down
-			  }
-			  else {
-				  cout << " rotate about the y axis" << endl;
-				  m = Matrix4::makeYRotation( dx * 0.01 ); // yaw motion: left and right
-			  }
+					m = Matrix4::makeXRotation( dy * 0.01 ); // unit= degree; pitch motion: up and down
+				}
+				else {
+					cout << " rotate about the y axis" << endl;
+					m = Matrix4::makeYRotation( dx * 0.01 ); // yaw motion: left and right
+				}
 			   
-			  break;
-		  case OF_MOUSE_BUTTON_RIGHT:
-			  cout << " rotate about the z axis" << endl;
-			  m = Matrix4::makeZRotation( -dx * 0.01 ); //  rolling about the camera view direction
-			  break;
+				break;
+			case OF_MOUSE_BUTTON_RIGHT:
+				cout << " rotate about the z axis" << endl;
+				m = Matrix4::makeZRotation( -dx * 0.01 ); //  rolling about the camera view direction
+				break;
 
-		  default: 
-			  m = Matrix4::makeTranslation( Cvec3( 0.0, 0.0, 0.0)  ); 
-	  } // switch
+			default: 
+				m = Matrix4::makeTranslation( Cvec3(0.0, 0.0, 0.0) ); 
+		} // switch
 
-	  g_eyeRbt *= m;
+		g_eyeRbt *= m;
 
-	  //ofPtr<ofAppBaseWindow> 		window;  // changed by Moon Jung, 2014/4/23
+		//ofPtr<ofAppBaseWindow> window;  // changed by Moon Jung, 2014/4/23
 	  
-	   // window = ofPtr<ofAppBaseWindow>(new ofAppGLFWWindow());
-	   //ofPtr<ofAppGLFWWindow>	appwindow =  window;
-	   // 	  appwindow  ->display();
+		//window = ofPtr<ofAppBaseWindow>(new ofAppGLFWWindow());
+		//ofPtr<ofAppGLFWWindow> appwindow = window;
+		//appwindow ->display();
 
-	  g_redrawWindowEvent = true;
-  } // else if
+		g_redrawWindowEvent = true;
+	} // else if
   
   
 
-  else if (   ofGetKeyPressed( OF_KEY_SHIFT ) && !ofGetKeyPressed( OF_KEY_ALT) )   { // translate the selected object
+	else if ( ofGetKeyPressed(OF_KEY_SHIFT) && !ofGetKeyPressed(OF_KEY_ALT) )   { // translate the selected object
 
 
-     if ( g_currentPickedObject == nullptr ) { // no object is pickefd up, so no need to move
-		 return;
-	 }
+		if ( g_currentPickedObject == nullptr ) { // no object is pickefd up, so no need to move
+			return;
+		}
 	  
 
-	 switch ( button ) {
-	  case OF_MOUSE_BUTTON_LEFT:
-		   //cout  << " left button moves" << endl;
-		   m = Matrix4::makeTranslation( Cvec3( dx, dy, 0.0) * 0.01 ); 
-		   //m = Matrix4::makeTranslation( Cvec3( dx, 0.0, 0.0) * 0.01 ); 
-		   break;
-	  case OF_MOUSE_BUTTON_RIGHT:
-		  //cout  << " right button moves" << endl;
-		   m = Matrix4::makeTranslation( Cvec3( 0.0, 0.0, -dy) * 0.01 ); 
-		   break;
+		switch ( button ) {
+		case OF_MOUSE_BUTTON_LEFT:
+			//cout  << " left button moves" << endl;
+			m = Matrix4::makeTranslation( Cvec3(dx, dy, 0.0) * 0.01 ); 
+			//m = Matrix4::makeTranslation( Cvec3( dx, 0.0, 0.0) * 0.01 ); 
+			break;
+		case OF_MOUSE_BUTTON_RIGHT:
+			//cout  << " right button moves" << endl;
+			m = Matrix4::makeTranslation( Cvec3(0.0, 0.0, -dy) * 0.01 ); 
+			break;
 
-	  default: 
-		   m = Matrix4::makeTranslation( Cvec3( 0.0, 0.0, 0.0)  ); 
-	  } // switch
+		default: 
+			m = Matrix4::makeTranslation( Cvec3(0.0, 0.0, 0.0) ); 
+		} // switch
 
-	   assert( ("g_currentPickedRbtNode should not be Null", g_currentPickedObject != nullptr) );
+		assert( ("g_currentPickedRbtNode should not be Null", g_currentPickedObject != nullptr) );
 
-	  *(g_currentPickedObject->objectRbt) = *(g_currentPickedObject-> objectRbt) * m;
+		*(g_currentPickedObject->objectRbt) = *(g_currentPickedObject-> objectRbt) * m;
 
-	  if ( g_currentPickedObject->objectName =="AABB" ) {
+		if ( g_currentPickedObject->objectName =="AABB" ) {
 		  
-		  g_AABBRbt = (g_currentPickedObject->objectRbt);
+			g_AABBRbt = (g_currentPickedObject->objectRbt);
 		  	 
-	  }
+		}
 
-	   g_redrawWindowEvent = true;
+		g_redrawWindowEvent = true;
 
-    } // if ( translate )
+	} // if ( translate )
 
-    else if ( ofGetKeyPressed( OF_KEY_SHIFT) && ofGetKeyPressed( OF_KEY_ALT) ) { //  rotate the selected object
+    else if ( ofGetKeyPressed(OF_KEY_SHIFT) && ofGetKeyPressed(OF_KEY_ALT) ) { //  rotate the selected object
 	   
-          if ( g_currentPickedObject == nullptr ) { // no object is picked up, so no need to move
-		     return;
-	      }
+		if ( g_currentPickedObject == nullptr ) { // no object is picked up, so no need to move
+			return;
+		}
 
-		  switch ( button ) {
-	       case OF_MOUSE_BUTTON_LEFT:
+		switch ( button ) {
+		case OF_MOUSE_BUTTON_LEFT:
 
 			//inline static ofMatrix4x4 newRotationMatrix( float angle, const ofVec3f& axis);
-		     m = Matrix4::makeXRotation(-dy ) * Matrix4::makeZRotation( dx ); // push the sphere on the top
-		  // m = Matrix4::makeXRotation( dx); 
-		     break;
-	       case OF_MOUSE_BUTTON_RIGHT:
-		     m = Matrix4::makeYRotation( dy ); // push the sphere on the side.
-		     break;
+			m = Matrix4::makeXRotation(-dy ) * Matrix4::makeZRotation( dx ); // push the sphere on the top
+			// m = Matrix4::makeXRotation( dx); 
+			break;
+		case OF_MOUSE_BUTTON_RIGHT:
+			m = Matrix4::makeYRotation( dy ); // push the sphere on the side.
+			break;
 
-	       default: 
-		     m = Matrix4::makeTranslation( Cvec3( 0.0, 0.0, 0.0)  ); 
-	      } // switch
+		default: 
+			m = Matrix4::makeTranslation( Cvec3(0.0, 0.0, 0.0) ); 
+		} // switch
 
-		  assert( ("g_currentPickedRbtNode should not be Null", g_currentPickedObject != nullptr) );
+		assert( ("g_currentPickedRbtNode should not be Null", g_currentPickedObject != nullptr) );
 
-		  *(g_currentPickedObject->objectRbt) =  *(g_currentPickedObject-> objectRbt) * m;
+		*(g_currentPickedObject->objectRbt) = *(g_currentPickedObject-> objectRbt) * m;
 
-		  if ( g_currentPickedObject->objectName =="AABB" ) {
+		if ( g_currentPickedObject->objectName =="AABB" ) {
 		  
-		     g_AABBRbt = (g_currentPickedObject->objectRbt);
+			g_AABBRbt = (g_currentPickedObject->objectRbt);
 		  	 
-	      }
+		}
 		  
-		  g_redrawWindowEvent = true;
-       } // else if
+		g_redrawWindowEvent = true;
+	} // else if
 
    
 } // mouseDragged()
@@ -3534,60 +3530,58 @@ void ofApp::mouseMoved(int x, int y ){
 	// This callback is called every time the pressed mouse is moved a little.
 	// x, y: the current mouse position after this little  motion is finished.
 
-
-	
 }
 
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
 	
-  //cout << "mouse x,y = " << x << "," << y << endl;
+	//cout << "mouse x,y = " << x << "," << y << endl;
 
-  g_prev_mouseClickX = x;
-  g_prev_mouseClickY = g_windowHeight - y - 1;  // conversion from GLUT window-coordinate-system to OpenGL window-coordinate-system
-  //g_prev_mouseClickY = y;
+	g_prev_mouseClickX = x;
+	g_prev_mouseClickY = g_windowHeight - y - 1;  // conversion from GLUT window-coordinate-system to OpenGL window-coordinate-system
+	//g_prev_mouseClickY = y;
 
-  /*
-  cout  << "pressed mouse =" <<  button << endl;
-  cout  << "shift  modifier key pressed? = " << ofGetKeyPressed(OF_KEY_SHIFT) << endl;
-  */
+	/*
+	cout  << "pressed mouse =" <<  button << endl;
+	cout  << "shift  modifier key pressed? = " << ofGetKeyPressed(OF_KEY_SHIFT) << endl;
+	*/
 
-  g_pressed_button = button; // the pressed button has meaning for moving the picked object or the camera later
+	g_pressed_button = button; // the pressed button has meaning for moving the picked object or the camera later
 
   
-  if ( ofGetKeyPressed( OF_KEY_SHIFT ) ) { // shift +  any mouse press leads to pickin an object
-    cout  << "draw for picking " << endl;
-	// for temp debugging
+	if ( ofGetKeyPressed(OF_KEY_SHIFT) ) { // shift +  any mouse press leads to pickin an object
+		cout  << "draw for picking " << endl;
+		// for temp debugging
 	
-	drawForPicking();    
-	//    In the picking mode, you render the simplified version of the scene to the back buffer,
-   //     while maintaining the scene of the screen intact, because it is in the front buffer.
+		drawForPicking();    
+		// In the picking mode, you render the simplified version of the scene to the back buffer,
+		// while maintaining the scene of the screen intact, because it is in the front buffer.
 		                      
-   //  Read pixel operation needed for picking is performed with respect to the back buffer,
-	//  not to the front buffer
+		// Read pixel operation needed for picking is performed with respect to the back buffer,
+		// not to the front buffer
 		
-	g_currentPickedObject = g_picker.getRbtNodeAtXY( g_prev_mouseClickX, g_prev_mouseClickY );
+		g_currentPickedObject = g_picker.getRbtNodeAtXY( g_prev_mouseClickX, g_prev_mouseClickY );
 
-	 // g_currentPickedRbtNode points to one of g_objectRbt[], which has been picked.
+		// g_currentPickedRbtNode points to one of g_objectRbt[], which has been picked.
 
-     // g_currentPickedRbtNode will be NULL, if no object has been actually picked.
+		// g_currentPickedRbtNode will be NULL, if no object has been actually picked.
 
-   if ( g_currentPickedObject == nullptr ) {
+		if ( g_currentPickedObject == nullptr ) {
 
-		  cout << "no object has been picked" << endl;
-		  //g_picked_mode = false;
+			cout << "no object has been picked" << endl;
+			//g_picked_mode = false;
 
-	 }
-   else {
-          cout << "an object has been picked" << endl;
+		}
+		else {
+			cout << "an object has been picked" << endl;
 
-		 // g_picked_mode = true;
-     }
+			// g_picked_mode = true;
+		}
 
-  } // g_picking_mode
+	} // g_picking_mode
 
-  // after drawForPicking(), normal draw is called, which is in fact called every frame.
+	// after drawForPicking(), normal draw is called, which is in fact called every frame.
 
 } // mousePressEvent()
 
@@ -3595,87 +3589,86 @@ void ofApp::mousePressed(int x, int y, int button){
 
 
 //--------------------------------------------------------------
-void ofApp::keyPressed  (int key){ 
-//	OF_KEY_LEFT_CONTROL,  OF_KEY_LEFT_SHIFT,
-// OF_KEY_LEFT_ALT,
-//	OF_MOUSE_BUTTON_LEFT
- /* 
-  cout << "pressed key=" << key<< endl;
-  cout << "OF_KEY_SHIFT= " << OF_KEY_SHIFT << endl;
-  cout << "OF_KEY_CONTROL= " << OF_KEY_CONTROL << endl;
-  cout << "OF_KEY_ALT= " << OF_KEY_ALT << endl;
-*/
+void ofApp::keyPressed (int key){ 
+	// OF_KEY_LEFT_CONTROL, OF_KEY_LEFT_SHIFT,
+	// OF_KEY_LEFT_ALT,
+	// OF_MOUSE_BUTTON_LEFT
+	/* 
+	cout << "pressed key=" << key<< endl;
+	cout << "OF_KEY_SHIFT= " << OF_KEY_SHIFT << endl;
+	cout << "OF_KEY_CONTROL= " << OF_KEY_CONTROL << endl;
+	cout << "OF_KEY_ALT= " << OF_KEY_ALT << endl;
+	*/
 
-  switch (key) {
+	switch (key) {
 
-  case '1': g_renderMode =1;
-	        g_redrawWindowEvent = true;
-	      break;
-  case '2': g_renderMode = 2;
-	        g_redrawWindowEvent = true;
-	      break;
-  case '3': g_renderMode = 3;
-	        g_redrawWindowEvent = true;
-	        break;
-  case '4': g_renderMode = 4;
-	        g_redrawWindowEvent = true;
-	        break;
+	case '1': g_renderMode =1;
+		g_redrawWindowEvent = true;
+		break;
+	case '2': g_renderMode = 2;
+		g_redrawWindowEvent = true;
+		break;
+	case '3': g_renderMode = 3;
+		g_redrawWindowEvent = true;
+		break;
+	case '4': g_renderMode = 4;
+		g_redrawWindowEvent = true;
+		break;
   
-  case 'q':  renderToFBOAndDump( 1 );
-	        break;
-  case 'w':  renderToFBOAndDump( 2 );
-	        break;
-  case 'e':  renderToFBOAndDump( 3 );
-	        break;
+	case 'q':  renderToFBOAndDump( 1 );
+		break;
+	case 'w':  renderToFBOAndDump( 2 );
+		break;
+	case 'e':  renderToFBOAndDump( 3 );
+		break;
  
 
-  case OF_KEY_ESC: 
-    exit();                                  // ESC 
-  //case OF_KEY_CONTROL: 
-  //  g_camera_mode = true;
-  //	break;
+	case OF_KEY_ESC: 
+	exit();			// ESC 
+	// case OF_KEY_CONTROL: 
+	//g_camera_mode = true;
+	//break;
 
-  case 'h': 
-    cout << " ============== H E L P ==============\n\n"
-    << "h\t\thelp menu\n"
-    << "s\t\tsave screenshot\n"
-    << "f\t\tToggle flat shading on/off.\n"
-    << "ESC\t\t exit\n"
-    << "Cntrl\t\t  camera moving mode\n"
-	<< "Alt\t\t rotate the selected object or the camera\n"
-    << "Shift\t\t  picking mode\n" << endl;
-    break;
+	case 'h': 
+		cout << " ============== H E L P ==============\n\n"
+		<< "h\t\thelp menu\n"
+		<< "s\t\tsave screenshot\n"
+		<< "f\t\tToggle flat shading on/off.\n"
+		<< "ESC\t\t exit\n"
+		<< "Cntrl\t\t  camera moving mode\n"
+		<< "Alt\t\t rotate the selected object or the camera\n"
+		<< "Shift\t\t  picking mode\n" << endl;
+		break;
 
-  case 's': 
-    glFlush();
-    writePpmScreenshot(g_windowWidth, g_windowHeight, "out.ppm");
-	break;
+	case 's': 
+		glFlush();
+		writePpmScreenshot(g_windowWidth, g_windowHeight, "out.ppm");
+		break;
 
 
-  default: break;
+	default: break;
 
- } // switch
+	} // switch
 	
 } // keyPressed()
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){ 
 
+	//cout << "released key=" << key << endl;
+	switch (key) {
 
-  //cout   << "released key=" << key << endl;
-  switch (key) {
-
-   case OF_KEY_CONTROL: 
-	  g_camera_mode = false;
-	  break;
+	case OF_KEY_CONTROL: 
+		g_camera_mode = false;
+		break;
   
-   case OF_KEY_SHIFT: 
-	   g_picked_mode  = false;
-	   break;
+	case OF_KEY_SHIFT: 
+		g_picked_mode  = false;
+		break;
 
-   default: 
-	   break;
-  }
+	default: 
+		break;
+	}
 
 }
 
@@ -3695,13 +3688,11 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 void ofApp::guiEvent(ofxUIEventArgs &e)
 {
     string name = e.widget->getName();
-    if(name == "SHOW ACTIVE")
-    {
+    if(name == "SHOW ACTIVE") {
         ofxUIToggle *toggle = (ofxUIToggle *) e.widget;
         ddl->setShowCurrentSelected(toggle->getValue()); 
     }
-    else if(name == "DROPDOWN")
-    {
+    else if(name == "DROPDOWN") {
         ofxUIDropDownList *ddlist = (ofxUIDropDownList *) e.widget;
         vector<ofxUIWidget * > &selected = ddlist->getSelected(); 
 
@@ -3709,83 +3700,82 @@ void ofApp::guiEvent(ofxUIEventArgs &e)
 		                  // below.
 
 		for(int i = 0; i < selected.size(); i++) {  
-          string action_name = selected[i]->getName(); 
-		  cout << action_name << endl;
+			  string action_name = selected[i]->getName(); 
+			  cout << action_name << endl;
 		  
 
 
-	     if ( action_name == "render Scene") {
-            checkGlErrors();
-		    renderSceneToSysBuffer(); // to system framebuffer
+			if ( action_name == "render Scene") {
+				checkGlErrors();
+				renderSceneToSysBuffer(); // to system framebuffer
 
-			checkGlErrors();
-			g_drawnToBackbuffer = true;
-			g_renderMode = 1; // background scene only
+				checkGlErrors();
+				g_drawnToBackbuffer = true;
+				g_renderMode = 1; // background scene only
 		 
 		    
-	     }
-	     else if ( action_name == "dump Scene Sysbuffer to Image File" ) { // system buffer dump
-		     //glFlush();
-			 glReadBuffer(GL_FRONT);
-             writePpmScreenshot(g_windowWidth, g_windowHeight, "systembuffer.ppm");
+			}
+			else if ( action_name == "dump Scene Sysbuffer to Image File" ) { // system buffer dump
+				//glFlush();
+				glReadBuffer(GL_FRONT);
+				writePpmScreenshot(g_windowWidth, g_windowHeight, "systembuffer.ppm");
 
-			 g_drawnToBackbuffer = true;
-	     }
+				g_drawnToBackbuffer = true;
+			}
 	   
-		  else if ( action_name == "renderToFBO and Dump" ) { // FBO dump
-			  checkGlErrors();
-			 renderToFBOAndDump( g_renderMode );
-			 checkGlErrors();
+			else if ( action_name == "renderToFBO and Dump" ) { // FBO dump
+				checkGlErrors();
+				renderToFBOAndDump( g_renderMode );
+				checkGlErrors();
 	
-         }
-		  else if ( action_name == "dump SceneFBO to Image File" ) { // FBO dump
-			  checkGlErrors();
-			 printFBO(g_fboScene, g_windowWidth, g_windowHeight, "colorFBO.ppm" );
-			 checkGlErrors();
+			}
+			else if ( action_name == "dump SceneFBO to Image File" ) { // FBO dump
+				checkGlErrors();
+				printFBO(g_fboScene, g_windowWidth, g_windowHeight, "colorFBO.ppm" );
+				checkGlErrors();
 	
-         }
-		  else if ( action_name == "render Rainbow") { 
-			 checkGlErrors();
-		     renderRainbowAndSceneToScreen();
-			 checkGlErrors();
-			 g_renderMode = 3; // background + rainbow
+			}
+			else if ( action_name == "render Rainbow") { 
+				checkGlErrors();
+				renderRainbowAndSceneToScreen();
+				checkGlErrors();
+				g_renderMode = 3; // background + rainbow
 	     
-	     }
+			}
 	    
          
-		 else if ( action_name == "render Rainbow Only") { // render to FBO
-			 checkGlErrors();
-		     renderRainbowOnlyToScreen();
-			 checkGlErrors();
+			else if ( action_name == "render Rainbow Only") { // render to FBO
+				checkGlErrors();
+				renderRainbowOnlyToScreen();
+				checkGlErrors();
 
-			 g_renderMode = 2; // rainbow only
+				g_renderMode = 2; // rainbow only
 	     
-	     }
+			}
 	    
-		  else if ( action_name == "render AABBRainbow Only") { // render to FBO
-			 checkGlErrors();
-		     renderAABBRainbowOnlyToScreen();
-			 checkGlErrors();
+			else if ( action_name == "render AABBRainbow Only") { // render to FBO
+				checkGlErrors();
+				renderAABBRainbowOnlyToScreen();
+				checkGlErrors();
 
-			 g_renderMode = 4; // AABBrainbow only
+				g_renderMode = 4; // AABBrainbow only
 	     
-	     }
+			}
 	      
           
-	     else if (action_name == "draw Scene from FBO File") { // render to system buffer using dumped FBO texture
-		     drawTextureFromFBOFile(); // this will give a non gamma corrected image
-		                          // because the FBO image is not in a sRGB format.
-			 g_drawnToBackbuffer = true;
+			else if (action_name == "draw Scene from FBO File") { // render to system buffer using dumped FBO texture
+				drawTextureFromFBOFile();	// this will give a non gamma corrected image
+											// because the FBO image is not in a sRGB format.
+				g_drawnToBackbuffer = true;
 
-		 }
-	     else if (action_name  == "draw Scene from SysFramebuffer") { // render to system buffer using dumped FBO texture
-		    drawTextureFromSysBufferFile();
-			g_drawnToBackbuffer = true;
-		 } 
+			}
+			else if (action_name  == "draw Scene from SysFramebuffer") { // render to system buffer using dumped FBO texture
+				drawTextureFromSysBufferFile();
+				g_drawnToBackbuffer = true;
+			} 
 	    
 		
-
-      } // for
+		} // for
 
 
 	} // else if ("DROPDOWN")
@@ -3864,11 +3854,11 @@ void ofApp::initGLState() {
 
 	// For opengl3.x,  request an sRGB frame buffer using the call glEnable(GL FRAMEBUFFER SRGB).
     // Then we can pass linear [R, G, B] values out from the fragment shader. 
-	 //  and they will be gamma corrected into the sRGB format before begin sent to the framebuffer.
-		// Any writes to images that are not in the sRGB format should not be affected. 
-		//	So if you're writing to a floating-point image, nothing should happen.
-		//	Thus, you should be able to just turn it on and leave it that way; 
-		// OpenGL will know when you're rendering to an sRGB framebuffer.							   
+	// and they will be gamma corrected into the sRGB format before begin sent to the framebuffer.
+	// Any writes to images that are not in the sRGB format should not be affected. 
+	// So if you're writing to a floating-point image, nothing should happen.
+	// Thus, you should be able to just turn it on and leave it that way; 
+	// OpenGL will know when you're rendering to an sRGB framebuffer.							   
 	
 
 	/*
@@ -3887,24 +3877,24 @@ void ofApp::initGLState() {
 	*/
 
 	// the alpha test to accept or reject a fragment based on its alpha value
-	//If enabled, the test compares the incoming alpha value with a reference value. 
+	// If enabled, the test compares the incoming alpha value with a reference value. 
 	// The fragment is accepted or rejected depending on the result of the comparison. Both the reference value and the comparison function are set with glAlphaFunc(). 
-	//By default, the reference value is zero, the comparison function is GL_ALWAYS[ always accept the fragment ], and the alpha test is disabled
+	// By default, the reference value is zero, the comparison function is GL_ALWAYS[ always accept the fragment ], and the alpha test is disabled
 
 	// The default framebuffer has buffers like GL_FRONT​, GL_BACK​, GL_AUXi​, GL_ACCUM​, and so forth. 
 	// FBOs do not have these. Instead, FBOs have a different set of images.
 	// Each FBO image represents an attachment point, a location in the FBO where an image can be attached.
-	//   FBOs have the following attachment points:
+	// FBOs have the following attachment points:
 
-    //      GL_COLOR_ATTACHMENTi, GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT,GL_DEPTH_STENCIL_ATTACHMENT​:
+    // GL_COLOR_ATTACHMENTi, GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT,GL_DEPTH_STENCIL_ATTACHMENT​:
 		
-	//Each framebuffer object has a set of attachment points that logical buffers can be attached to. 
+	// Each framebuffer object has a set of attachment points that logical buffers can be attached to. 
 	
 	// There are three different ways to switch between framebuffers. 
 
-	//The first one is to use several different FBOs, one for each combination of logical buffers 
-	//	that you plan on using in you application. To change render targets you simply call glBindFramebuffer() 
-	//	with the FBO containing the setup you wish to render to.
+	// The first one is to use several different FBOs, one for each combination of logical buffers 
+	// that you plan on using in you application. To change render targets you simply call glBindFramebuffer() 
+	// with the FBO containing the setup you wish to render to.
 	// Another way is to use a single FBO and alter the attachments
 	// The third way is to use a single FBO, but instead of altering attachments you call glDrawBuffer() or glDrawBuffers() 
 	// to change which color attachment(s) the rendering goes to.
@@ -4193,4 +4183,3 @@ Listing 3.15 geometry.C implementations
 
 
 */
-

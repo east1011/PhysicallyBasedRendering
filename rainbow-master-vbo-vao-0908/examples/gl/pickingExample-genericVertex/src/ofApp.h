@@ -48,10 +48,11 @@ class ofApp : public ofBaseApp{
 
 		void renderRainbowAndSceneToScreen(); 
 		void renderRainbowOnlyToScreen(); 
-		void renderAABBRainbowOnlyToScreen();
+		void renderAABBRainbowAndSceneToScreen();
 		void renderSceneToScreen();
 		void renderSceneToFBO();
 		void renderRainbowAndSceneToFBO();
+		void renderAABBRainbowOnlyToScreen();
 		void renderRainbowOnlyToFBO();
 		void renderRainbowOnly();
 		void drawTextureFromFBOFile();

@@ -164,7 +164,7 @@ char g_stringFileName[100];
 
 #include "uniforms.h"
 
-
+#define PI 3.1415926535897932384626433832795028841971
 
 
 
@@ -189,6 +189,8 @@ extern Cvec4 g_light1Color;
 extern Cvec4 g_light2Color;
 extern Matrix4 g_eyeRbt ; // ClASS METHOD CALL => AN INSTANCE OF MATRIX4
 
+extern int  g_objId; // defined in ofApp.cpp
+extern Matrix4 g_SceneRbt; // the reference frame for the scene
 
 // shared_ptr< Picker > g_picker_ptr;
 // g_picker_ptr.reset( new Picker() );
@@ -925,8 +927,8 @@ void pbrtFilm(const string &type, const ParamSet &params) {
 	VERIFY_OPTIONS("Film");
 	renderOptions->FilmParams = params;
 	renderOptions->FilmName = type;
-	g_windowWidth=params.FindOneInt("yresolution",512);
-	g_windowHeight=params.FindOneInt("xresolution",512);
+	//g_windowWidth=params.FindOneInt("yresolution",512);
+	//g_windowHeight=params.FindOneInt("xresolution",512);
 	//window->resize(g_windowWidth, g_windowHeight);
 }
 
@@ -973,7 +975,7 @@ void pbrtCamera(const string &name, const ParamSet &params) {
 	renderOptions->CameraToWorld = Inverse(curTransform); // curTransform is the worldToCamera transformation
 	namedCoordinateSystems["camera"] = renderOptions->CameraToWorld;
 
-	g_frustMinFov=params.FindOneFloat("fov",60);
+	//g_frustMinFov=params.FindOneFloat("fov",60);
 	// get frameaspectratio as well
 	//window->updateFrustFovY();
 
@@ -1652,7 +1654,7 @@ void RenderOptions::GPURender(  ) {
 		
 	    //  const Transform *ObjectToWorld: the current transformation for the current shape
 
-		int objId = geoPrim->primitiveId;
+		g_objId = geoPrim->primitiveId; // primitiveId starts with 1
 
 	
 	
@@ -1704,7 +1706,7 @@ void RenderOptions::GPURender(  ) {
 
 	   // create a geometry 
 	    char meshName[100];
-		sprintf(meshName, "triMesh%d", objId );	// objId = geoPrim->primitiveId;
+		sprintf(meshName, "triMesh%d", g_objId );	// objId = geoPrim->primitiveId;
 	   shared_ptr<Geometry> triangleMesh ( new SimpleIndexedGeometryPNX(meshName, &vtxTriangleMesh[0], 
 		                                            &idxTriangleMesh[0], nverts, nindices, GL_TRIANGLES ) );
 		
@@ -1718,8 +1720,11 @@ void RenderOptions::GPURender(  ) {
 		 
 		Matrix4x4 mat =  triMesh->ObjectToWorld->GetMatrix(); 
 
-		shared_ptr<Matrix4> TriangleMeshRbt ( new SgRbtNode( &mat.m[0][0], 16 ) ); // 
-				
+		shared_ptr<Matrix4> TriangleMeshRbt ( new Matrix4( &mat.m[0][0], 16 ) ); // dynamic construction, return pointer
+		
+		// Add g_SceneRbt relative to which the object reference frame is considered.
+
+		//*TriangleMeshRbt = g_SceneRbt * (*TriangleMeshRbt) * Matrix4::makeScale( Cvec3(3.0, 3.0, 3.0) ); 
 
 		// the kind of material name:  "matte", "plastic", "translucent", "glass", "mirror", "mix", 
 		// "metal", "substrate", "uber", "subsurface", "kdsubsurface", "measured",  "shinymetal"
@@ -2781,7 +2786,7 @@ void RenderOptions::GPURender(  ) {
 		// add each primitive to the global object list
 
         char objectName[100];
-		sprintf(objectName, "triMesh%d", objId );	// objId = geoPrim->primitiveId;
+		sprintf(objectName, "triMesh%d", g_objId );	// objId = geoPrim->primitiveId;
 
 		cout << "primitive: " << objectName << endl;
 
@@ -2791,7 +2796,7 @@ void RenderOptions::GPURender(  ) {
 			
 		Cvec4 pickColor;
 
-		pickColor = g_picker.idToColor(objId+1); // objId = 0 is AABB box, so all other objects start with 1
+		pickColor = g_picker.idToColor(g_objId); // g_objId = -1 is AABB box; so all other objects start with 0
 	
 		object->pickColor = pickColor; // this st	ored pickColor will be sent to the shader Uniform variable when drawing 
 
@@ -2801,7 +2806,7 @@ void RenderOptions::GPURender(  ) {
 		g_objectPtrList.push_back( object );
 
 		//add the object and the id to the list for picking
-		g_picker.addToMap( objId+1, object );
+		g_picker.addToMap( g_objId, object );
 		  
 
 } // for each primtive
