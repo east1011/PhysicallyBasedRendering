@@ -364,9 +364,9 @@ void ofApp::setup(){
     initMaterials();
 	
 
-	initPBRTObjects();
+	//initPBRTObjects();
 
-	//initObjects(); // initObjects() is for testing. use it or initPBRTObjects()
+	initObjects(); // initObjects() is for testing. use it or initPBRTObjects()
 	initAABB();
 
 	// shader objects

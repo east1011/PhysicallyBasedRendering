@@ -362,7 +362,9 @@
     <None Include="shaders\rainbow-only-STAN-gl3.frag" />
     <None Include="shaders\rainbow-org-gl2.fshader" />
     <None Include="shaders\rainbow-RGB-only-STAN-gl3.frag" />
+    <None Include="shaders\rainbow-RGB-only-STAN-gl3.fshader" />
     <None Include="shaders\rainbow-RGB-STAN-gl3.frag" />
+    <None Include="shaders\rainbow-RGB-STAN-gl3.fshader" />
     <None Include="shaders\solid-gl2.frag" />
     <None Include="shaders\solid-gl2.fshader" />
     <None Include="shaders\solid-gl2.vshader" />

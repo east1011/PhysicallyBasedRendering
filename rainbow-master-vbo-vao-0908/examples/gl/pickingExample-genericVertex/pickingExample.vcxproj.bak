@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7FD42DF7-442E-479A-BA76-D0022F99702A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>pickingExample</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>bin</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+    <IncludePath>../../../pbrt-v2-src/pbrt-v2/src/core;../../../WildMagic5p11/GeometricTools/WildMagic5/LibCore/DataTypes;../../../WildMagic5p11/GeometricTools/WildMagic5/LibCore/Assert;../../../WildMagic5p11/GeometricTools/WildMagic5/LibCore;../../../WildMagic5p11/GeometricTools/WildMagic5/LibMathematics/Objects3D;../../../WildMagic5p11/GeometricTools/WildMagic5/LibMathematics/Objects2D;../../../WildMagic5p11/GeometricTools/WildMagic5/LibMathematics/ComputationalGeometry;../../../WildMagic5p11/GeometricTools/WildMagic5/LibMathematics/Base;../../../WildMagic5p11/GeometricTools/WildMagic5/LibMathematics/Approximation;../../../WildMagic5p11/GeometricTools/WildMagic5/LibMathematics/Algebra;../../../WildMagic5p11/GeometricTools/WildMagic5/LibMathematics/Distance;../../../WildMagic5p11/GeometricTools/WildMagic5/LibMathematics;../../../pbrt-v2-src/pbrt-v2/src;../../../pbrt-v2-src/pbrt-v2/src/3rdparty;../../../pbrt-v2-src/pbrt-v2/src/3rdparty/zlib-1.2.5;../../../pbrt-v2-src/pbrt-v2/src/3rdparty/openexr-1.7.0;../../../pbrt-v2-src/pbrt-v2/src/3rdparty/ilmbase-1.0.2;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>../../../libs/openframeworksCompiled/lib/vs;../../../pbrt-v2-src\pbrt-v2\lib;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+    <IncludePath>../../../pbrt-v2-src/pbrt-v2/src/main;../../../pbrt-v2-src/pbrt-v2/src/3rdparty/openexr-1.7.0;../../../pbrt-v2-src/pbrt-v2/src/3rdparty/limbase-1.0.2;../../../pbrt-v2-src/pbrt-v2/src/3rdparty/;../../../pbrt-v2-src/pbrt-v2/src/;../../../pbrt-v2-src/pbrt-v2/src/core;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>../../../pbrt-v2-src\pbrt-v2\lib;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>../../../pbrt-v2-src/pbrt-v2/src/core;$(IncludePath)</IncludePath>
+    <LibraryPath>../../../pbrt-v2-src\pbrt-v2\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>PBRT_PROBES_NONE;_CONSOLE;UNICODE;WIN32;WIN64;POCO_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\..\libs\openFrameworks;..\..\..\libs\openFrameworks\video;..\..\..\libs\openFrameworks\utils;..\..\..\libs\openFrameworks\types;..\..\..\libs\openFrameworks\sound;..\..\..\libs\openFrameworks\math;..\..\..\libs\openFrameworks\graphics;..\..\..\libs\openFrameworks\events;..\..\..\libs\openFrameworks\communication;..\..\..\libs\openFrameworks\app;..\..\..\libs\openFrameworks\3d;..\..\..\libs\openFrameworks\gl;%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
+      <CompileAs>Default</CompileAs>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>Wm5CoreD.lib;Wm5MathematicsD.lib;openframeworksLib_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>PocoFoundationmdd.lib;atlthunk.lib;msvcrt;libcmt;LIBC;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ShowProgress>LinkVerbose</ShowProgress>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>PBRT_PROBES_NONE;_CONSOLE;UNICODE;WIN32;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\..\libs\openFrameworks\video;..\..\..\libs\openFrameworks\utils;..\..\..\libs\openFrameworks\types;..\..\..\libs\openFrameworks\sound;..\..\..\libs\openFrameworks\math;..\..\..\libs\openFrameworks\graphics;..\..\..\libs\openFrameworks\events;..\..\..\libs\openFrameworks\communication;..\..\..\libs\openFrameworks\app;..\..\..\libs\openFrameworks\3d;..\..\..\libs\openFrameworks\gl;%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>libpbrt.lib;pbrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="addons\ofxUI\src\ofxUI2DGraph.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUI2DPad.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIBaseDraws.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIBiLabelSlider.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIButton.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUICanvas.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUICircleSlider.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIDragableLabelButton.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIDropDownList.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIEventArgs.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIFPS.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIFPSSlider.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIImage.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIImageButton.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIImageSampler.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIImageSlider.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIImageToggle.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUILabel.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUILabelButton.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUILabelToggle.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIMinimalSlider.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIMovingGraph.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIMultiImageButton.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIMultiImageToggle.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUINumberDialer.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIRadio.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIRangeSlider.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIRectangle.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIRotarySlider.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIScrollableCanvas.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUISlider.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUISortableList.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUISpacer.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUISpectrum.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUISuperCanvas.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUITabBar.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUITextArea.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUITextInput.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIToggle.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIToggleMatrix.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIValuePlotter.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIWaveform.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIWidget.cpp" />
+    <ClCompile Include="addons\ofxUI\src\ofxUIWidgetWithLabel.cpp" />
+    <ClCompile Include="addons\ofxXmlSettings\libs\tinyxml.cpp" />
+    <ClCompile Include="addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
+    <ClCompile Include="addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
+    <ClCompile Include="addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
+    <ClCompile Include="src\irradiance_sun.cpp" />
+    <ClCompile Include="src\ofApp.cpp" />
+    <ClCompile Include="src\optical_depth.cpp" />
+    <ClCompile Include="src\phaseFunction.cpp" />
+    <ClCompile Include="src\shadergeometry.cpp" />
+    <ClCompile Include="src\glsupport.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\materialshader.cpp" />
+    <ClCompile Include="src\picker_0.cpp" />
+    <ClCompile Include="src\ppm.cpp" />
+    <ClCompile Include="src\renderstates.cpp" />
+    <ClCompile Include="src\shadertexture.cpp" />
+    <ClCompile Include="src\spa.cpp" />
+    <ClCompile Include="src\spectrum_to_rgb.cpp" />
+    <ClCompile Include="src\tga.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="addons\ofxUI\src\ofxUI.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUI2DGraph.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUI2DPad.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIBaseDraws.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIBiLabelSlider.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIButton.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUICanvas.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUICircleSlider.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIDefines.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIDragableLabelButton.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIDropDownList.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIEventArgs.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIFPS.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIFPSSlider.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIImage.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIImageButton.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIImageSampler.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIImageSlider.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIImageToggle.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUILabel.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUILabelButton.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUILabelToggle.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIMinimalSlider.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIMovingGraph.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIMultiImageButton.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIMultiImageToggle.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUINumberDialer.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIOFWrapper.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIRadio.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIRangeSlider.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIRectangle.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIRotarySlider.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIScrollableCanvas.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUISlider.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUISortableList.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUISpacer.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUISpectrum.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUISuperCanvas.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUITabBar.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUITextArea.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUITextInput.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIToggle.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIToggleMatrix.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIUtils.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIValuePlotter.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIWaveform.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIWidget.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIWidgets.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIWidgetWithLabel.h" />
+    <ClInclude Include="addons\ofxUI\src\ofxUIWrapper.h" />
+    <ClInclude Include="addons\ofxXmlSettings\libs\tinyxml.h" />
+    <ClInclude Include="addons\ofxXmlSettings\src\ofxXmlSettings.h" />
+    <ClInclude Include="src\cvec.h" />
+    <ClInclude Include="src\floatComparison.h" />
+    <ClInclude Include="src\irradiance_sun.h" />
+    <ClInclude Include="src\materialshader.h" />
+    <ClInclude Include="src\ofApp.h" />
+    <ClInclude Include="src\optical_depth.h" />
+    <ClInclude Include="src\phaseFunction.h" />
+    <ClInclude Include="src\shadergeometry.h" />
+    <ClInclude Include="src\geometrymaker.h" />
+    <ClInclude Include="src\glsupport.h" />
+    <ClInclude Include="src\matrix4.h" />
+    <ClInclude Include="src\picker_0.h" />
+    <ClInclude Include="src\ppm.h" />
+    <ClInclude Include="src\renderstates.h" />
+    <ClInclude Include="src\spa.h" />
+    <ClInclude Include="src\spectrum_to_rgb.h" />
+    <ClInclude Include="src\shadertexture.h" />
+    <ClInclude Include="src\tga.h" />
+    <ClInclude Include="src\uniforms.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\ADF-gl2.frag" />
+    <None Include="shaders\adf-gl2_ (jung moon와(과) 충돌하는 사본 2014-03-15).frag" />
+    <None Include="shaders\adf-gl2_.frag" />
+    <None Include="shaders\adf-gl2__.frag" />
+    <None Include="shaders\adf-gl3_.frag" />
+    <None Include="shaders\ADF-original-gl2.frag" />
+    <None Include="shaders\basic-gl13.vshader" />
+    <None Include="shaders\basic-gl2 (2).vshader" />
+    <None Include="shaders\basic-gl2.vert" />
+    <None Include="shaders\basic-gl2.vshader" />
+    <None Include="shaders\basic-gl3.vert" />
+    <None Include="shaders\basic-gl3.vshader" />
+    <None Include="shaders\diffuse-gl2.frag" />
+    <None Include="shaders\diffuse-gl2.fshader" />
+    <None Include="shaders\diffuse-gl2.vshader" />
+    <None Include="shaders\diffuse-gl3.frag" />
+    <None Include="shaders\diffuse-gl3.fshader" />
+    <None Include="shaders\diffuse-gl3.vshader" />
+    <None Include="shaders\diffuse-no-texture-gl3.fshader" />
+    <None Include="shaders\diffuse-texture-gl3.fshader" />
+    <None Include="shaders\FBOtexture-gl3.fshader" />
+    <None Include="shaders\FullScreenQuad-gl3.fshader" />
+    <None Include="shaders\FullScreenQuad-gl3.vshader" />
+    <None Include="shaders\new-normal-gl3.fshader" />
+    <None Include="shaders\noise.frag" />
+    <None Include="shaders\noise.vert" />
+    <None Include="shaders\normal-gl2.fshader" />
+    <None Include="shaders\normal-gl2.vshader" />
+    <None Include="shaders\normal-gl3-0311.fshader" />
+    <None Include="shaders\normal-gl3-backup.fshader" />
+    <None Include="shaders\normal-gl3-moon.frag" />
+    <None Include="shaders\normal-gl3-moon.fshader" />
+    <None Include="shaders\normal-gl3-org.fshader" />
+    <None Include="shaders\normal-gl3.fshader" />
+    <None Include="shaders\normal-gl3.vshader" />
+    <None Include="shaders\pbrt-rainbow-gl3.fshader" />
+    <None Include="shaders\pick-gl2.fshader" />
+    <None Include="shaders\pick-gl3.fshader" />
+    <None Include="shaders\pick-gl3.vshader" />
+    <None Include="shaders\plastic-rainbow-gl3.fshader" />
+    <None Include="shaders\rainbow--curr-gl2.fshader" />
+    <None Include="shaders\rainbow-dwbug2-gl2.fshader" />
+    <None Include="shaders\rainbow-gl2-debug.fshader" />
+    <None Include="shaders\rainbow-gl2.fshader" />
+    <None Include="shaders\rainbow-gl3 (moon-PC%27s conflicted copy 2014-03-22).fshader" />
+    <None Include="shaders\rainbow-gl3.fshader" />
+    <None Include="shaders\rainbow-org-gl2.fshader" />
+    <None Include="shaders\solid-gl2.frag" />
+    <None Include="shaders\solid-gl2.fshader" />
+    <None Include="shaders\solid-gl2.vshader" />
+    <None Include="shaders\solid-gl3.frag" />
+    <None Include="shaders\solid-gl3.fshader" />
+    <None Include="shaders\solid-gl3.vshader" />
+    <None Include="shaders\uber-rainbow-gl3 (jung moon와(과) 충돌하는 사본 2014-04-21).fshader" />
+    <None Include="shaders\uber-rainbow-gl3 (Kim DongHyun와(과) 충돌하는 사본 2014-04-22).fshader" />
+    <None Include="shaders\uber-rainbow-gl3.fshader" />
+    <None Include="src\Fieldstone.ppm" />
+    <None Include="src\FieldstoneNormal.ppm" />
+    <None Include="src\out.ppm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\Fieldstone.bmp" />
+    <Image Include="src\FieldstoneNormal.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="shaders\adf-gl3.frag.orig.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
