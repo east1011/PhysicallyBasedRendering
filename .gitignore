@@ -141,3 +141,8 @@ Desktop.ini
 *.pbrt
 *.txt
 *.tlog
+
+*.bsc
+*.lastbuildstate
+*.idb
+*.unsuccessfulbuild
