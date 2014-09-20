@@ -9,6 +9,9 @@ char **g_argv;
 //========================================================================
 int main(int argc, char **argv ){
 
+
+
+	///asdfasdfs
 	g_argc=argc;
 	g_argv=argv;
 
