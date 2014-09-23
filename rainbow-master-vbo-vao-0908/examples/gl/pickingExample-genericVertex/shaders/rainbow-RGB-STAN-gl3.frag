@@ -83,8 +83,8 @@ const int nThetas = nThetaSteps +1; // 100 steps between theta 130 deg and theta
 
 //uniform float uPhaseFunction[nRadii * nSpectralSamples * nThetas];
 
-//float irainbow[nSpectralSamples];
-float particlePhase[nSpectralSamples];
+//float irainbow[ nSpectralSamples ];
+float particlePhase[nSpectralSamples ];
 
 // uniform block for primary spectrums
 
@@ -98,11 +98,11 @@ const float radiusEnd = 2.0e-3;		// 2 mm = 2 * e-3 m
 const float thetaStart = 130.0;
 const float thetaEnd = 142.0;
 
-const float lambdaStep = (lambdaEnd - lambdaStart) / float(nSpectralSamples -1);
-const float thetaStep = (thetaEnd - thetaStart) / float (nThetas -1);
+const float lambdaStep = ( lambdaEnd - lambdaStart) / float( nSpectralSamples -1); //lambdaStep = (700-400)/(61-1)
+const float thetaStep = ( thetaEnd - thetaStart) / float (nThetas -1);
 const float radiusStep = (radiusEnd - radiusStart) / float (nRadii -1);
 
-
+float h0 = 2;
 
 struct Ray {
 	vec3 origin;
@@ -174,8 +174,8 @@ colourSystem
 
 //colourSystem *cs = &SMPTEsystem;
 
-colourSystem g_cs = colourSystem(0.67,  0.33,  0.21,  0.71,  0.14, 0.08, IlluminantCxWhite, IlluminantCyWhite, GAMMA_REC709);
-
+//colourSystem g_cs = colourSystem(0.67, 0.33, 0.21, 0.71, 0.14, 0.08, IlluminantCxWhite, IlluminantCyWhite, GAMMA_REC709);
+colourSystem g_cs = colourSystem(0.64, 0.33, 0.30, 0.60, 0.15, 0.06, IlluminantD65xWhite, IlluminantD65yWhite, GAMMA_REC709);
 
 float cie_colour_match[ nLambdasForColorMatch * nRGB ] = 
 	float[] ( 
@@ -214,21 +214,21 @@ float [nSpectralSamples] ISpectrumSun = float[] (
 //380
 //	0.4651826, 	0.3830807, 	0.4409676, 	0.4415811, 	
 //400
-	0.5531539, 	0.7498946,	0.746196,	0.7945927,
+	0.5531539, 	0.7498946, 0.746196, 0.7945927,
 //420
-	0.8004899, 	0.7938542, 	0.7373845, 	0.7613856,  0.8335401,  0.9062264,  0.9455949,	0.9749124,
+	0.8004899, 	0.7938542, 	0.7373845, 	0.7613856,   0.8335401,  0.9062264,   0.9455949, 0.9749124,
 //460
-	0.9885056, 	0.9996937, 	0.9703307, 	0.9874594, 	1, 			0.9923742, 	0.9242011, 	0.9640443, 	0.9617534,
+	0.9885056, 	0.9996937, 	0.9703307, 	0.9874594, 	1, 	0.9923742, 	0.9242011, 	0.9640443, 	0.9617534,
 //505
 	0.9306258, 	0.9463357, 	0.9275853, 	0.8597925, 	0.9149771, 	0.9065616, 	0.9197563, 	0.9100043,
 //545
-	0.8943484,	0.8951805,	0.8915439,	0.8640333,  0.8611063,  0.8411431,  0.8347283,  0.82272,
+	0.8943484, 0.8951805, 0.8915439, 0.8640333,  	0.8611063,   0.8411431,  	0.8347283,  0.82272,
 // 585	
-	0.8433171, 	0.7949293,  0.7905713,  0.7947434,  0.7932764,  0.7953064, 	0.769975, 	0.7614744,
+   0.8433171, 	0.7949293,  	0.7905713,  0.7947434,  0.7932764,  0.7953064, 	0.769975, 	0.7614744,
 //625
-	0.7494112,  0.7195148,  0.7222514,  0.7319365,  0.7231518,  0.6976414,  0.6917001,  0.6692451,
+	0.7494112,  0.7195148,  	0.7222514,  0.7319365,  0.7231518,  0.6976414,  0.6917001,  0.6692451,
 //665
-	0.7032121,  0.6983164,  0.6871358,  0.6830449, 	0.6650319, 	0.5508773, 	0.5994822, 	0.6185095
+	0.7032121,  0.6983164,  	0.6871358,  0.6830449, 	0.6650319, 	0.5508773, 	0.5994822, 	0.6185095
 	);
 
 
@@ -301,7 +301,7 @@ int intersection_distance_no_if (
 		// the hit position is at tmin along the ray direction.
 		// Assume that the front face is hit for now  	  
     
-		normalAtFront = vec3( 0,0,1); 
+		normalAtFront =  vec3( 0,0,1); 
 
 		hitType =1;
 		return hitType;
@@ -311,7 +311,7 @@ int intersection_distance_no_if (
 }
 
     
-
+vec3 XYZToRGB(vec3 xyz);
 
 
 //Cvec3  xyz_to_rgb(struct colourSystem *cs,   const vec3 xyz) {
@@ -351,8 +351,8 @@ vec3  xyz_to_rgb( colourSystem cs, const vec3 xyz ) {
     // rgb of the desired point 
     
 	vec3 rgbColor = vec3((rx * xyz[0]) + (ry * xyz[1]) + (rz * xyz[2]), 
-						 (gx * xyz[0]) + (gy * xyz[1]) + (gz * xyz[2]), 
-						 (bx * xyz[0]) + (by * xyz[1]) + (bz * xyz[2]));
+					(gx * xyz[0]) + (gy * xyz[1]) + (gz * xyz[2]), 
+					(bx * xyz[0]) + (by * xyz[1]) + (bz * xyz[2]));
 
 	return rgbColor;
 
@@ -424,14 +424,16 @@ vec3 oldToRGB( float [nSpectralSamples] irainbow ) {
 	// cie_colour_match[][0] = xBar[]
     // cie_colour_match[][1] = yBar[]
     // cie_colour_match[][2] = zBar[]
-	// ==> cie_coulor_match [] from 380 nanometer to 780 nanometer
+	//  ==> cie_coulor_match [] from 380 nanometer to 780 nanometer
     
 	
 	// lambda: 400 ~ 700 into 60 steps (61 samples) with lamdbaStep - 5nm
 	// cie_colour_match: from 380 to 780 nm with 5 nm step
 	// Sun spectrum: from 380 to 700 ( 65 samples) with step = 5nm
-	
-	
+	float yInt = 0.0;
+
+	//float lambdaStep = (lambdaEnd - lambdaStart)/(float)(nSpectralSamples - 1);
+
 	for (int j= 0; j < nSpectralSamples; j++) {
 		
 		int k = j + 4;
@@ -440,6 +442,8 @@ vec3 oldToRGB( float [nSpectralSamples] irainbow ) {
 		yBar =  cie_colour_match[ k * 3 + 1 ];
 		zBar =  cie_colour_match[ k * 3 + 2 ];
 
+		yInt += yBar;
+
 		X += irainbow[j] * xBar * lambdaStep; 
 		Y += irainbow[j] * yBar * lambdaStep;
 		Z += irainbow[j] * zBar * lambdaStep;
@@ -447,19 +451,20 @@ vec3 oldToRGB( float [nSpectralSamples] irainbow ) {
     }
 	
 	XYZ = (X+Y+Z);
+	//vec3 xyzColor = vec3( X/yInt, Y/yInt, Z/yInt );
 	vec3 xyzColor = vec3( X/XYZ, Y/XYZ, Z/XYZ );
-
 	vec3 rgbColor = xyz_to_rgb(g_cs, xyzColor);
 
-	
-	//if (constrain_rgb(rgbColor)) {  // Colour modified to fit RGB gamut 
-	//	norm_rgb(rgbColor);
-	//	//output << rgbColor << "(Approximation)" << endl;
-	//} else {
-	//	norm_rgb(rgbColor);
-	//	//output << rgbColor << endl;
-	//}
-	
+	//vec3 rgbColor = XYZToRGB(xyzColor);
+	/*
+	if (constrain_rgb(rgbColor)) {  // Colour modified to fit RGB gamut 
+		norm_rgb(rgbColor);
+		//output << rgbColor << "(Approximation)" << endl;
+	} else {
+		norm_rgb(rgbColor);
+		//output << rgbColor << endl;
+	}
+	*/
 
 	//constrain_rgb(rgbColor);
 
@@ -561,6 +566,13 @@ float[nSpectralSamples] blueSpectrum() {
 }
 
 
+float[nSpectralSamples] clamp (float[nSpectralSamples] r) {
+
+ for ( int j=0; j < nSpectralSamples; j++ ) {
+   if (r[j] < 0 ) r[j] = 0.0;
+ }
+ return r;
+}  // clamp()
 
 float[nSpectralSamples] spectralColor(vec3 rgb) {
 // primarySpectrums
@@ -601,7 +613,7 @@ float[nSpectralSamples] spectralColor(vec3 rgb) {
 			r[j] *= .94;
 		}
 
-		return r; 
+		return clamp(r); 
 
 	} // if case (1.1)
   
@@ -629,7 +641,7 @@ float[nSpectralSamples] spectralColor(vec3 rgb) {
 			r[j] *= .94;
 		}
 
-		return r; 
+		return clamp(r); 
 		  
 	} //  case (1.2)
 
@@ -657,7 +669,7 @@ float[nSpectralSamples] spectralColor(vec3 rgb) {
 			r[j] *= .94;
 		}
 
-		return r; 
+		return clamp(r); 
 			
 	}// if case (2.1)
 
@@ -685,7 +697,7 @@ float[nSpectralSamples] spectralColor(vec3 rgb) {
 			r[j] *= .94;
 		}
 
-		return r; 
+		return clamp(r); 
 	} // if case (2.2)
 
 
@@ -709,7 +721,7 @@ float[nSpectralSamples] spectralColor(vec3 rgb) {
 			r[j] *= .94;
 		}
 
-		return r; 
+		return clamp(r); 
 	} // if case (3.1) 
 
 
@@ -737,7 +749,7 @@ float[nSpectralSamples] spectralColor(vec3 rgb) {
 			r[j] *= .94;
 		}
 
-		return r; 
+		return clamp(r); 
 
 	} // if case (3.2)
  
@@ -778,6 +790,21 @@ vec3 toXYZ(float[nSamples] spect) {
 		
 	return xyz;
 }//toXYZ
+
+/*
+
+inline void XYZToRGB(const float xyz[3], float rgb[3]) {
+    rgb[0] =  3.240479f*xyz[0] - 1.537150f*xyz[1] - 0.498535f*xyz[2];
+    rgb[1] = -0.969256f*xyz[0] + 1.875991f*xyz[1] + 0.041556f*xyz[2];
+    rgb[2] =  0.055648f*xyz[0] - 0.204043f*xyz[1] + 1.057311f*xyz[2];
+}
+
+
+inline void RGBToXYZ(const float rgb[3], float xyz[3]) {
+    xyz[0] = 0.412453f*rgb[0] + 0.357580f*rgb[1] + 0.180423f*rgb[2];
+    xyz[1] = 0.212671f*rgb[0] + 0.715160f*rgb[1] + 0.072169f*rgb[2];
+    xyz[2] = 0.019334f*rgb[0] + 0.119193f*rgb[1] + 0.950227f*rgb[2];
+}*/
 
 vec3 XYZToRGB(vec3 xyz) {
     vec3 rgb;
@@ -878,9 +905,9 @@ float computePhaseFunction( float radius, float lambda, float theta) {
   	
 	
 	
-    float z0 =  (radius - radiusStart) / (radiusEnd - radiusStart );
-	float y0 =  (lambda - lambdaStart) / (lambdaEnd - lambdaStart );
-	float x0 =  (theta - thetaStart ) / ( thetaEnd - thetaStart );
+    float z0 = (radius - radiusStart) / (radiusEnd - radiusStart );
+	float y0 = (lambda - lambdaStart) / (lambdaEnd - lambdaStart );
+	float x0 = (theta - thetaStart ) / ( thetaEnd - thetaStart );
 	
 
 
@@ -890,14 +917,23 @@ float computePhaseFunction( float radius, float lambda, float theta) {
 
 }
 
+float attenFactor(float height, float h0) {
 
-float avgPhaseFunction(float radius, float lambda, float psi) {
+	if ( height <= h0 ) {
+		return 1;
+	}
+	else {
+		return exp(-(height-h0));
+	}
+}
 
-    float particlePhase  = computePhaseFunction(radius, lambda, psi); 
+float avgPhaseFunction(float radius, float lambda, float psi, float height) {
+
+    float particlePhase = computePhaseFunction( radius, lambda, psi ); 
 
 	//float particlePhase = 1.230634e-002;
 
-    float avgPhasePerVolume = uDropDensity * particlePhase;
+    float avgPhasePerVolume = uDropDensity * attenFactor(height, h0) * particlePhase;
     return avgPhasePerVolume;
 
 }
@@ -916,7 +952,7 @@ float calculate_radiance_of_sun(float lambda) {
 			
 	float lambda_m = lambda * 1.0e-9;				// convert lambda to meters from nanometers
 	// blackbody radiation spectrum [W/m^2/nm]
-    Isun = pow( (R_Sun/R_Earth),2.0 ) * 2*pi*h*pow(c,2.0)  / ( pow(lambda_m, 5.0) * ( exp(  h*c/ ( lambda_m*k*T ) ) -1 ) ) * 1.0e-9;
+    Isun = pow( (R_Sun/R_Earth),2.0 )  * 2*pi*h*pow(c,2.0)  / (   pow(lambda_m, 5.0) * (  exp(  h*c/ ( lambda_m*k*T ) ) -1 )  ) * 1.0e-9  ;
 	    //Moon:  1.0e-9 is multiplied to convert the irradiance per meter to the irradiance per nanometer
 	    // Original had 1.0e-10.
 	float Lsun = Isun / pi; //convert the irradiance to radiance 
@@ -944,7 +980,7 @@ float[nSpectralSamples] calculate_radiance_of_sun_Lee() {
 		
 		//Lsun = calculate_radiance_of_sun( lambda );
 		//LSpectrumSun[ j ] = Lsun;		
-		LSpectrumSun[ j ] = ISpectrumSun[j] / pi;
+		LSpectrumSun[ j ] = ISpectrumSun[j] / pi; ;		
 		//lambda += lambdaStep;
 		
 	}  // for 
@@ -970,7 +1006,8 @@ float[nSpectralSamples] calculate_radiance_of_sun_Plank() {
     for ( int j = 0; j < nSpectralSamples;  j++) {
 		
 		Lsun = calculate_radiance_of_sun(lambda);
-		
+		//Lsun = calculate_radiance_of_sun( lambda );
+		//LSpectrumSun[ j ] = Lsun;		
 		LSpectrumSun[ j ] = Lsun;
 		lambda += lambdaStep;
 		
@@ -982,10 +1019,10 @@ float[nSpectralSamples] calculate_radiance_of_sun_Plank() {
 
 
 
-float[nSpectralSamples] spectralColor(vec3 rgb);
+float[nSpectralSamples] spectralColor(vec3  rgb );
 vec3 toRGB( float[nSpectralSamples] spect );
 
-float[nSpectralSamples] LSpectrumIn(float[nSpectralSamples] LSpectrumSun, 
+float[nSpectralSamples] LSpectrumIn( float[nSpectralSamples] LSpectrumSun, 
                                       vec3 currPos, vec3 dirToLight, float sigma_e) {
 
 	// attenuate the sun light Lsun0 from the entering point to AABB to Pos
@@ -1029,6 +1066,33 @@ float[nSpectralSamples] LSpectrumIn(float[nSpectralSamples] LSpectrumSun,
   
 } // LSpectrumIn()
 
+float sumOfExtinctionCoefficients(float tmax, float tmin, vec3 rayDir, float sigma_e) {
+	int N = 20;
+	float deltaT = (tmax - tmin) / float(N);
+
+	float sumExtinction = 0.0;
+
+	//for (float t = tmax; t > tmin; t-= deltaT  ) { 
+	for ( int i = N-1; i >= 0; i-- ) {
+		
+		float t = deltaT * i;
+
+		vec3 currPos = vec3(0,0,0) + rayDir * t;
+
+		// apply the exponential density of water drops depending on the height from ground
+
+		vec4 currPosGlobal = uEyeMatrix * vec4(currPos, 1.0); // the global reference frame is ON the ground
+		float heightFromGround = currPosGlobal[1]; // y component
+
+		float currPosSigma_e = sigma_e * exp(-attenFactor(heightFromGround, h0));	// assume the original sigma_e is the value on the ground where
+																					// height is zero 
+		sumExtinction += currPosSigma_e * deltaT;
+
+		//return sumExtinction; 				   
+	} // for t: all positions on the current ray	
+
+	return sumExtinction;
+}
 
 vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye, 
                               bool isPointLight, vec3 lightPosOrDir, float[nSpectralSamples] LSpectrumSun,
@@ -1105,7 +1169,7 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 			tmaxAtten = tmax; 
 		}
 	  	    
-		int N = 30;
+		int N =30;
 		float deltaT = (tmaxAtten - tmin) / float(N);
    
    
@@ -1118,13 +1182,12 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 			LSpectrumOut[j] = 0.0;
 		}
 
-
+		//float [nSpectralSamples] spectralSurfaceColor = spectralColor (surfaceColor);
 
 		// LIGHT DIRECTIONS
 		if ( isPointLight ) { // point light
       
 			vec3 lightPos = lightPosOrDir;
-			bool isWithinLoop = false;
 
 			for (float t = tmaxAtten; t >= tmin; t -= deltaT) {  // for each position on the ray
       
@@ -1143,6 +1206,16 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 				// They are ignored for computational reasons. Some scattering spectrum is computed for
 				// every ray direction (-rayDir)?? 
 	  
+	            // apply the exponential density of water drops depending on the height from ground
+
+				vec4 currPosGlobal  = uEyeMatrix * vec4( currPos, 1.0); // the global reference frame is ON the ground
+				float heightFromGround = currPosGlobal[1]; // y component
+
+				sigma_e = sigma_e * exp( -heightFromGround); // assume the original sigma_e is the value on the ground where
+				                                             // height is zero 
+			    sigma_s = sigma_s * exp( -heightFromGround);
+
+
 				// compute the scattered light scattered  along the ray
 				float psi = acos ( dot ( -rayDir, dirFromPointLight) ) * 180.0 / pi;
 		
@@ -1150,40 +1223,40 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 																	// whose scattering angle is  within these angles
 																	// contribute to the rainbow color along the current ray.
 																	// Otherwise, no color is contributed.  
+                 
+
 					float lambda = lambdaStart;
 					int   lambdaIndex = 0;	
 					for ( int j = 0; j < nSpectralSamples;  j++) {
-		
+
+		                float avgPhaseExp =  avgPhaseFunction(radius, lambda, psi, heightFromGround) * exp( - heightFromGround);
+
 						LSpectrumOut[j] += exp( - sigma_e * ( t - tmin) )
-										* sigma_s * avgPhaseFunction(radius, lambda, psi)
-										* LSpectIn[j];
+										* sigma_s * avgPhaseExp * LSpectIn[j];
 						lambda += lambdaStep;
 			   
-					
+			   
 					} // for
-		   			
-					isWithinLoop = true;
-
+		   	   
 				}   //if 
 
 				else continue; // go to the next position
 
 			} // for all positions on the current ray
 
-			if (isWithinLoop) {
-				return oldToRGB( LSpectrumOut ) * 0.7 + surfaceColor * 0.3;
-			}
-			else {
-				return surfaceColor;
-			}
-			
+			// for debugging	
+			//for ( int j =0; j < nSpectralSamples; j++) {	
+			//		LSpectrumOut[j] += spectralSurfaceColor [j]* exp( - sigma_e * ( tmaxAtten - tmin) );
+			//}
+
+			return oldToRGB( LSpectrumOut  ) + surfaceColor  * exp( - sigma_e * ( tmaxAtten - tmin) ); 
 			//return toRGB( LSpectrumOut );
 
 		} // if (point light)
 		
 		else { // directional light
 
-			vec3 dirFromSun  = lightPosOrDir;
+			vec3 dirFromSun = lightPosOrDir;
 			float psi = acos ( dot ( -rayDir, dirFromSun ) ) * 180.0 / pi;
 
 			// for debugging
@@ -1205,6 +1278,7 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 			// = exp( -sigma_e ( t_i - tmin_sun) )  Lsun( tmin_sun, dirFromLight(tmin_sun) ) 
 			// where tmin_sun is the point at which the sun light enters the volume to reach t_i.
 	  
+
 			if ( !( psi >= thetaStart  &&  psi <= thetaEnd ) ) {
 				
 				return surfaceColor; // just return the background color
@@ -1216,31 +1290,47 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 				//                                          * avgPhaseFunction( dot ( -rayDir, dirFromSun(t) ) ) 
 				//                                          * LSpectIn(t, dirFromLight(t) )
 
-		
-
 				//return LSpectrumOut;
 				//float [nSpectralSamples] LSpectIn;
 
 				float [nSpectralSamples] incrementalSpect;
 				
-				for (float t = tmaxAtten; t >= tmin; t-= deltaT  ) { 
-
+				//for (float t = tmaxAtten; t > tmin; t-= deltaT  ) { 
+				for (int i = N-1; i >= 0; i--) { 
+					
+					float t = deltaT * i;
 					//LSpectrumOut = LSpectrumOut +  exp( - sigma_e * ( t - tmin) )  * sigma_s 
 					//									 * avgPhaseFunction( dot ( -rayDir, dirFromSun(t) ) * LSpectrumIn
 				  
-					vec3 currPos = vec3(0,0,0) +  rayDir * t;
+					vec3 currPos = vec3(0,0,0) + rayDir * t;
 		 		     
 					LSpectIn = LSpectrumIn(LSpectrumSun, currPos, -dirFromSun, sigma_e);
+
+					// apply the exponential density of water drops depending on the height from ground
+
+					vec4 currPosGlobal  = uEyeMatrix * vec4(currPos, 1.0); // the global reference frame is ON the ground
+					float heightFromGround = currPosGlobal[1]; // y component
+
+					float currPosSigma_e = sigma_e * exp(-attenFactor(heightFromGround, h0)); // assume the original sigma_e is the value on the ground where
+																// height is zero 
+					float currPosSigma_s = sigma_s * exp(-attenFactor(heightFromGround, h0));
 		
-
+		         
 					float lambda = lambdaStart;
-		    		   		   
-					for ( int j =0; j < nSpectralSamples; j++) {			  
-				 
-						incrementalSpect[j] = exp( - sigma_e * ( t - tmin) ) * sigma_s  
-													* avgPhaseFunction(radius, lambda, psi) * LSpectIn[j];
+		    		
+					float sumOfExtinctionToFrontSide = sumOfExtinctionCoefficients(t, tmin, rayDir, sigma_e);
 
-				 
+					for ( int j =0; j < nSpectralSamples; j++) {	
+							  
+				        float avgPhaseExp = avgPhaseFunction(radius, lambda, psi, heightFromGround);
+						 //* exp(-attenFactor(heightFromGround, h0));
+
+						//incrementalSpect[j] = exp( - sigma_e * ( t - tmin) ) * sigma_s  
+						//							* avgPhaseExp * LSpectIn[j];
+
+						incrementalSpect[j] = exp(-sumOfExtinctionToFrontSide) * currPosSigma_s 
+													* avgPhaseExp * LSpectIn[j] * deltaT;
+
 						//incrementalSpect[j] = exp( - sigma_e * ( t - tmin) ) * sigma_s  
 						//                          * avgPhaseFunction(radius, lambda, psi) * LSpectrumSun[j];
 						//incrementalSpect[j] = exp( - sigma_e * ( t - tmin) ) * sigma_s  
@@ -1248,7 +1338,7 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 						//LSpectrumOut[j] += exp( - sigma_e * ( t - tmin) ) * sigma_s  
 						//							* avgPhaseFunction(radius, lambda, psi) * LSpectIn[j];
 			   
-						lambda += lambdaStep;				  
+						lambda += lambdaStep;			  
 					} // for each lambda	
 
 			
@@ -1256,34 +1346,31 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 						LSpectrumOut[j] += incrementalSpect[j];						  			  
 					} // for each lambda	
 
-
-		 				   
 				} // for t: all positions on the current ray	
-				
-				vec3 RGB = oldToRGB( LSpectrumOut );
 
-				float attenAmount = (tmaxAtten - tmin)/(tmax - tmin);
 
-				if ( psi >= 137.5  &&  psi <= 139.5 ) {
-					return (RGB*0.7 + surfaceColor*0.3)*attenAmount + surfaceColor*(1-attenAmount);	// the light accumulated along the current ray 
-				}
-				else {
-					return (RGB*0.2 + surfaceColor*0.8)*attenAmount + surfaceColor*(1-attenAmount);	// the light accumulated along the current ray
-				}
+				//float weight1 = (psi - 130) / (137.5 - 130);
+				//float weight2 = (142 - psi) / (142 - 140.5);
 
-				//if ( psi >= 137.5  &&  psi <= 139.5 ) {			// for debugging by Juahn
-				//	return JuahnRGB * 0.7 + surfaceColor * 0.3;	// the light accumulated along the current ray 
+				//vec3 rgb = oldToRGB( LSpectrumOut );
+
+				//if ( psi < 137.5 ) {
+				//	return rgb*(weight1) + surfaceColor * exp(-sumOfExtinctionCoefficients( tmaxAtten, tmin, rayDir, sigma_e ) );
+				//}
+				//else if ( psi > 140.5 ) {
+				//	return rgb*(weight2) + surfaceColor * exp(-sumOfExtinctionCoefficients( tmaxAtten, tmin, rayDir, sigma_e ) );
 				//}
 				//else {
-				//	return JuahnRGB * 0.2 + surfaceColor * 0.8;	// the light accumulated along the current ray
+				//	return rgb + surfaceColor * surfaceColor * exp(-sumOfExtinctionCoefficients( tmaxAtten, tmin, rayDir, sigma_e ) );
 				//}
 
-				//return oldToRGB( LSpectrumOut ) * 0.7 + surfaceColor * 0.3;	// the light accumulated along the current ray
-				//return oldToRGB( LSpectrumOut );	// the light accumulated along the current ray
+				return oldToRGB( LSpectrumOut ) 
+						+ surfaceColor * exp(-sumOfExtinctionCoefficients( tmaxAtten, tmin, rayDir, sigma_e ));
+
+
+				//return oldToRGB( LSpectrumOut ) * 0.7 + surfaceColor * 0.3; // the light accumulated along the current ray
 				//return toRGB( LSpectrumOut );
 				
-
-
 			} // else ( psi is rainbow angle)
 
 	    
@@ -1370,7 +1457,7 @@ vec3 singleScatteringAndAttenuation_stan(float radius, vec3 surfaceColor, float 
 
 			// ignore the attenuation of the sun light while it passes through the drop volume
 				
-			float particlePhase= computePhaseFunction(radius,  lambda, psi); 
+			float particlePhase= computePhaseFunction( radius,  lambda, psi); 
 		
 			//float particlePhase = 1.230634e-002;
 
@@ -1405,12 +1492,12 @@ vec3 calculate_rainbowColor (float radius, vec3 surfaceColor, float zEye,  bool 
 
 	// LSpectrumSun: radiances for wavelengths [nanometer]
 
-	rainbowRGB = singleScatteringAndAttenuation(radius, surfaceColor, zEye,
+	rainbowRGB = singleScatteringAndAttenuation(radius,  surfaceColor, zEye,
 	                          isPointLight, lightPosOrDir, LSpectrumSun,
 	                          rayDir, sigma_s, sigma_e );
     
 	return rainbowRGB;
-	
+	  
 }//calculate_rainbowColor
 
 vec3 calculate_rainbowColor_stan (float radius,  vec3 surfaceColor, float zEye, vec3 dirFromSun, vec3 rayDir, 
@@ -1426,7 +1513,7 @@ vec3 calculate_rainbowColor_stan (float radius,  vec3 surfaceColor, float zEye, 
 
 	// LSpectrumSun: radiances for wavelengths [nanometer]
 
-	rainbowRGB = singleScatteringAndAttenuation_stan(radius, surfaceColor, zEye, 
+	rainbowRGB = singleScatteringAndAttenuation_stan(radius,  surfaceColor, zEye, 
 	                          dirFromSun, LSpectrumSun, rayDir, sigma_s, sigma_e );
     return rainbowRGB;
 	 
@@ -1521,4 +1608,7 @@ void main() {
    
 	   
 } // main
+
+
+
 

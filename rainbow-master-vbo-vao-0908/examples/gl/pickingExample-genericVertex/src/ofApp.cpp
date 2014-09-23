@@ -437,11 +437,11 @@ spa_data spa;  //declare the SPA structure
 	
 	messageFile << "sunRay zenith angle = " << spa.zenith <<" sunRay azimuth" << spa.azimuth << endl;
 	
-	messageFile << "sunRay in geocentric coord (world coord system) = (" << sunRay  << endl;
+	messageFile << "sunRay in geocentric coord (world coord system) = " << sunRay  << endl;
 
 	cout << "sunRay zenith angle = " << spa.zenith <<" sunRay azimuth" << spa.azimuth << endl;
 	
-	cout << "sunRay in geocentric coord (world coord system) = (" << sunRay  << endl;
+	cout << "sunRay in geocentric coord (world coord system) = " << sunRay  << endl;
 	g_sunRayDir = Cvec3(-sunRay[1], sunRay[2], -sunRay[0]); 
 	// rename the axes to 3D graphics convention : z (up) => y, x (north) => -z, y(west) => -x
 	//                         |
@@ -452,8 +452,8 @@ spa_data spa;  //declare the SPA structure
 	// E.g: In the original coord system: (-10, 20, 5) [ azimth= south-west, polar = positive] =? (-20, 5, 10)
 	
     
-    messageFile  << "sunRay in Graphics coord = (" << g_sunRayDir << endl;
-	cout   << "sunRay in Graphics coord = (" << g_sunRayDir << endl;
+    messageFile  << "sunRay in Graphics coord = " << g_sunRayDir << endl;
+	cout   << "sunRay in Graphics coord = " << g_sunRayDir << endl;
 
 	
 }
@@ -2336,7 +2336,7 @@ void ofApp::readRainbowFBOPixels(char * fileName) {
 	   	       
 			float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
 			
-			sceneFBOFile << "(oldR, oldG, oldB) = " << red<<", "<<green<<", "<<blue<< endl;
+			sceneFBOFile << "(height) = " << red<< endl;
 
 
 			// the names of variables should be changed in each case
@@ -3631,13 +3631,13 @@ void ofApp::keyPressed (int key){
 
 	case 'h': 
 		cout << " ============== H E L P ==============\n\n"
-		<< "h\t\thelp menu\n"
-		<< "s\t\tsave screenshot\n"
-		<< "f\t\tToggle flat shading on/off.\n"
-		<< "ESC\t\t exit\n"
-		<< "Cntrl\t\t  camera moving mode\n"
-		<< "Alt\t\t rotate the selected object or the camera\n"
-		<< "Shift\t\t  picking mode\n" << endl;
+		<< "h             help menu\n"
+		<< "s             save screenshot\n"
+		<< "f             Toggle flat shading on/off.\n"
+		<< "ESC           exit\n"
+		<< "Cntrl         camera moving mode\n"
+		<< "Alt           rotate the selected object or the camera\n"
+		<< "Shift         picking mode\n" << endl;
 		break;
 
 	case 's': 
@@ -4032,7 +4032,13 @@ Effectively your projection near is mapped to 0.0 and far is mapped to 1.0, if y
  tells Opengl to use this system by saying glDepthFunc(GL_GREATER), and glCLearDepth (0.0), where
 0.0  is  the Widows coordinate depth of the far plane. 
  */
- 
+	
+
+	GLint param[1];
+	
+	glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_FRONT_LEFT,
+	GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING, param);
+	cout << "color encoding of sys buffer =" << param[0] << endl;
 
 } // initGLStates
 
