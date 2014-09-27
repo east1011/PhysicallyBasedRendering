@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"  // #include "GL/glew.h"
-#include "ofxUI.h"
+#include "ofxGui.h"
 
 #include "shadergeometry.h"
 
@@ -34,10 +34,7 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
-		ofxUICanvas *gui; 
-        ofxUIDropDownList *ddl;
-        void guiEvent(ofxUIEventArgs &e);
-
+		
 		void updateFrustFovY();
 		void initMaterials();
 
@@ -92,6 +89,26 @@ class ofApp : public ofBaseApp{
 
 		virtual void myOwnDraw(); 
 
+		///
+
+	
+	void circleResolutionChanged(int & circleResolution);
+	void ringButtonPressed();
+	void setupGui();
+	bool bHide;
+
+	ofxFloatSlider radius;
+	ofxColorSlider color;
+	ofxVec2Slider center;
+	ofxIntSlider circleResolution;
+	ofxToggle filled;
+	ofxButton twoCircles;
+	ofxButton ringButton;
+	ofxLabel screenSize;
+
+	ofxPanel gui;
+	
+	ofSoundPlayer ring;
+
 		
-			
 };

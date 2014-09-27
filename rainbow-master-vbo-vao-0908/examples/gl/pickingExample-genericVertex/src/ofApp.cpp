@@ -31,6 +31,8 @@
 #include <ctype.h>  // from pbrt for readFloatFile
 #include <stdlib.h>  // from pbrt for readFloatFile
 
+
+
 // Where is shared_ptr? 
 // 1.If your C++ implementation supports C++11 (or at least the C++11 shared_ptr),
 //	then std::shared_ptr will be defined in <memory>.
@@ -316,7 +318,7 @@ void ofApp::setup(){
 	// set up the sun light intensities and the sun direction
 	//glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA );
 	setupSun();
-
+	setupGui();
 	
 	// set up the eye position and direction relative to the g_localAABB which is created at
 	// initObjects(). Then create the eye Matrix
@@ -382,6 +384,42 @@ void ofApp::exit() {
 
 
 }
+void ofApp::setupGui() {
+
+	ofSetVerticalSync(true);
+
+	// we add this listener before setting up so the initial circle resolution is correct
+	circleResolution.addListener(this, &ofApp::circleResolutionChanged);
+	ringButton.addListener(this,&ofApp::ringButtonPressed);
+	//
+	gui.setup(); // most of the time you don't need a name
+	gui.add(filled.setup("fill", true));
+	gui.add(radius.setup( "radius", 140, 10, 300 ));
+	gui.add(center.setup("center",ofVec2f(ofGetWidth()*.5,ofGetHeight()*.5),ofVec2f(0,0),ofVec2f(ofGetWidth(),ofGetHeight())));
+	gui.add(color.setup("color",ofColor(100,100,140),ofColor(0,0),ofColor(255,255)));
+	gui.add(circleResolution.setup("circle res", 5, 3, 90));
+	gui.add(twoCircles.setup("two circles"));
+	gui.add(ringButton.setup("ring"));
+	gui.add(screenSize.setup("screen size", ""));
+
+	bHide = true;
+
+	ring.loadSound("ring.wav");
+
+}
+
+
+//--------------------------------------------------------------
+void ofApp::circleResolutionChanged(int & circleResolution){
+	ofSetCircleResolution(circleResolution);
+}
+
+//--------------------------------------------------------------
+void ofApp::ringButtonPressed(){
+	ring.play();
+}
+
+
 
 
 void ofApp::setupSun() {
@@ -808,6 +846,8 @@ static bool backgroundBackedUp = false;
 
 void ofApp::draw() {
 	myOwnDraw(); 
+
+	gui.draw();
 }
 
 void ofApp::myOwnDraw() {
@@ -3684,104 +3724,104 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
 
-
-void ofApp::guiEvent(ofxUIEventArgs &e)
-{
-    string name = e.widget->getName();
-    if(name == "SHOW ACTIVE") {
-        ofxUIToggle *toggle = (ofxUIToggle *) e.widget;
-        ddl->setShowCurrentSelected(toggle->getValue()); 
-    }
-    else if(name == "DROPDOWN") {
-        ofxUIDropDownList *ddlist = (ofxUIDropDownList *) e.widget;
-        vector<ofxUIWidget * > &selected = ddlist->getSelected(); 
-
-		g_renderMode = 0; // neither background scene or rainbow; can be changed
-		                  // below.
-
-		for(int i = 0; i < selected.size(); i++) {  
-			  string action_name = selected[i]->getName(); 
-			  cout << action_name << endl;
-		  
-
-
-			if ( action_name == "render Scene") {
-				checkGlErrors();
-				renderSceneToSysBuffer(); // to system framebuffer
-
-				checkGlErrors();
-				g_drawnToBackbuffer = true;
-				g_renderMode = 1; // background scene only
-		 
-		    
-			}
-			else if ( action_name == "dump Scene Sysbuffer to Image File" ) { // system buffer dump
-				//glFlush();
-				glReadBuffer(GL_FRONT);
-				writePpmScreenshot(g_windowWidth, g_windowHeight, "systembuffer.ppm");
-
-				g_drawnToBackbuffer = true;
-			}
-	   
-			else if ( action_name == "renderToFBO and Dump" ) { // FBO dump
-				checkGlErrors();
-				renderToFBOAndDump( g_renderMode );
-				checkGlErrors();
-	
-			}
-			else if ( action_name == "dump SceneFBO to Image File" ) { // FBO dump
-				checkGlErrors();
-				printFBO(g_fboScene, g_windowWidth, g_windowHeight, "colorFBO.ppm" );
-				checkGlErrors();
-	
-			}
-			else if ( action_name == "render Rainbow") { 
-				checkGlErrors();
-				renderRainbowAndSceneToScreen();
-				checkGlErrors();
-				g_renderMode = 3; // background + rainbow
-	     
-			}
-	    
-         
-			else if ( action_name == "render Rainbow Only") { // render to FBO
-				checkGlErrors();
-				renderRainbowOnlyToScreen();
-				checkGlErrors();
-
-				g_renderMode = 2; // rainbow only
-	     
-			}
-	    
-			else if ( action_name == "render AABBRainbow Only") { // render to FBO
-				checkGlErrors();
-				renderAABBRainbowOnlyToScreen();
-				checkGlErrors();
-
-				g_renderMode = 4; // AABBrainbow only
-	     
-			}
-	      
-          
-			else if (action_name == "draw Scene from FBO File") { // render to system buffer using dumped FBO texture
-				drawTextureFromFBOFile();	// this will give a non gamma corrected image
-											// because the FBO image is not in a sRGB format.
-				g_drawnToBackbuffer = true;
-
-			}
-			else if (action_name  == "draw Scene from SysFramebuffer") { // render to system buffer using dumped FBO texture
-				drawTextureFromSysBufferFile();
-				g_drawnToBackbuffer = true;
-			} 
-	    
-		
-		} // for
-
-
-	} // else if ("DROPDOWN")
-
-	
-} // ofApp::guiEvent
+//
+//void ofApp::guiEvent(ofxUIEventArgs &e)
+//{
+//    string name = e.widget->getName();
+//    if(name == "SHOW ACTIVE") {
+//        ofxUIToggle *toggle = (ofxUIToggle *) e.widget;
+//        ddl->setShowCurrentSelected(toggle->getValue()); 
+//    }
+//    else if(name == "DROPDOWN") {
+//        ofxUIDropDownList *ddlist = (ofxUIDropDownList *) e.widget;
+//        vector<ofxUIWidget * > &selected = ddlist->getSelected(); 
+//
+//		g_renderMode = 0; // neither background scene or rainbow; can be changed
+//		                  // below.
+//
+//		for(int i = 0; i < selected.size(); i++) {  
+//			  string action_name = selected[i]->getName(); 
+//			  cout << action_name << endl;
+//		  
+//
+//
+//			if ( action_name == "render Scene") {
+//				checkGlErrors();
+//				renderSceneToSysBuffer(); // to system framebuffer
+//
+//				checkGlErrors();
+//				g_drawnToBackbuffer = true;
+//				g_renderMode = 1; // background scene only
+//		 
+//		    
+//			}
+//			else if ( action_name == "dump Scene Sysbuffer to Image File" ) { // system buffer dump
+//				//glFlush();
+//				glReadBuffer(GL_FRONT);
+//				writePpmScreenshot(g_windowWidth, g_windowHeight, "systembuffer.ppm");
+//
+//				g_drawnToBackbuffer = true;
+//			}
+//	   
+//			else if ( action_name == "renderToFBO and Dump" ) { // FBO dump
+//				checkGlErrors();
+//				renderToFBOAndDump( g_renderMode );
+//				checkGlErrors();
+//	
+//			}
+//			else if ( action_name == "dump SceneFBO to Image File" ) { // FBO dump
+//				checkGlErrors();
+//				printFBO(g_fboScene, g_windowWidth, g_windowHeight, "colorFBO.ppm" );
+//				checkGlErrors();
+//	
+//			}
+//			else if ( action_name == "render Rainbow") { 
+//				checkGlErrors();
+//				renderRainbowAndSceneToScreen();
+//				checkGlErrors();
+//				g_renderMode = 3; // background + rainbow
+//	     
+//			}
+//	    
+//         
+//			else if ( action_name == "render Rainbow Only") { // render to FBO
+//				checkGlErrors();
+//				renderRainbowOnlyToScreen();
+//				checkGlErrors();
+//
+//				g_renderMode = 2; // rainbow only
+//	     
+//			}
+//	    
+//			else if ( action_name == "render AABBRainbow Only") { // render to FBO
+//				checkGlErrors();
+//				renderAABBRainbowOnlyToScreen();
+//				checkGlErrors();
+//
+//				g_renderMode = 4; // AABBrainbow only
+//	     
+//			}
+//	      
+//          
+//			else if (action_name == "draw Scene from FBO File") { // render to system buffer using dumped FBO texture
+//				drawTextureFromFBOFile();	// this will give a non gamma corrected image
+//											// because the FBO image is not in a sRGB format.
+//				g_drawnToBackbuffer = true;
+//
+//			}
+//			else if (action_name  == "draw Scene from SysFramebuffer") { // render to system buffer using dumped FBO texture
+//				drawTextureFromSysBufferFile();
+//				g_drawnToBackbuffer = true;
+//			} 
+//	    
+//		
+//		} // for
+//
+//
+//	} // else if ("DROPDOWN")
+//
+//	
+//} // ofApp::guiEvent
 
 void ofApp::initGLState() {
 
