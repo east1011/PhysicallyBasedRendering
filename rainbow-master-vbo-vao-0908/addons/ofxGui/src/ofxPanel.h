@@ -2,6 +2,7 @@
 
 #include "ofxGuiGroup.h"
 
+
 class ofxGuiGroup;
 
 class ofxPanel : public ofxGuiGroup {

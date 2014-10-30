@@ -231,6 +231,7 @@
     <ClCompile Include="addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
     <ClCompile Include="addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
     <ClCompile Include="src\irradiance_sun.cpp" />
+    <ClCompile Include="src\MyUI.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\optical_depth.cpp" />
     <ClCompile Include="src\phaseFunction.cpp" />
@@ -310,6 +311,7 @@
     <ClInclude Include="src\floatComparison.h" />
     <ClInclude Include="src\irradiance_sun.h" />
     <ClInclude Include="src\materialshader.h" />
+    <ClInclude Include="src\MyUI.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\optical_depth.h" />
     <ClInclude Include="src\phaseFunction.h" />

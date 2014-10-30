@@ -113,8 +113,11 @@ void ofxBaseGui::unregisterMouseEvents(){
 }
 
 void ofxBaseGui::draw(){
+
 	currentFrame = ofGetFrameNum();
 	render();
+
+
 }
 
 bool ofxBaseGui::isGuiDrawing(){

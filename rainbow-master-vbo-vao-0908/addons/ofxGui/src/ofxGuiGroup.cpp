@@ -3,6 +3,8 @@
 #include "ofxSliderGroup.h"
 #include "ofGraphics.h"
 #include "ofxLabel.h"
+#include "ofApp.h"
+
 
 ofxGuiGroup::ofxGuiGroup(){
 	minimized = false;
@@ -180,6 +182,8 @@ void ofxGuiGroup::clear(){
 }
 
 bool ofxGuiGroup::mouseMoved(ofMouseEventArgs & args){
+
+
 	ofMouseEventArgs a = args;
 	for(int i = 0; i < (int)collection.size(); i++){
 		if(collection[i]->mouseMoved(a)) return true;
@@ -192,6 +196,10 @@ bool ofxGuiGroup::mouseMoved(ofMouseEventArgs & args){
 }
 
 bool ofxGuiGroup::mousePressed(ofMouseEventArgs & args){
+
+	ofApp::setRedrawWindowEvent(true);
+
+
 	if(setValue(args.x, args.y, true)){
 		return true;
 	}
@@ -205,6 +213,10 @@ bool ofxGuiGroup::mousePressed(ofMouseEventArgs & args){
 }
 
 bool ofxGuiGroup::mouseDragged(ofMouseEventArgs & args){
+
+	ofApp::setRedrawWindowEvent(true);
+
+
 	if(setValue(args.x, args.y, false)){
 		return true;
 	}
@@ -218,6 +230,10 @@ bool ofxGuiGroup::mouseDragged(ofMouseEventArgs & args){
 }
 
 bool ofxGuiGroup::mouseReleased(ofMouseEventArgs & args){
+
+	ofApp::setRedrawWindowEvent(true);
+
+
 	bGuiActive = false;
 	for(int k = 0; k < (int)collection.size(); k++){
 		ofMouseEventArgs a = args;

@@ -324,7 +324,7 @@ void MaterialShader::draw(Geometry& geometry, const Uniforms& extraUniforms) {
 	
 
   glGetProgramiv( programDesc_->program, GL_VALIDATE_STATUS, errorLog  );
-  std::cout << endl<<  "program validation result: " << *errorLog<< endl; // TRUE or FALSE
+//  std::cout << endl<<  "program validation result: " << *errorLog<< endl; // TRUE or FALSE
 
 
   glUseProgram( programDesc_->program ); // this->programDesc_, this->uniforms_

@@ -582,9 +582,40 @@ void ofxUICanvas::update() {
 }
 
 void ofxUICanvas::draw() { // draw the canvas
+	ofxUIPushStyle();
+
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+
+    glEnable(GL_BLEND);
+#ifndef OFX_UI_TARGET_TOUCH
+    glBlendEquation(GL_FUNC_ADD);
+#endif
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    ofxUISetRectMode(OFX_UI_RECTMODE_CORNER);
+    ofxUISetLineWidth(1.0);
+
+    drawPadded();
+    drawPaddedOutline();
+    drawBack();
+    drawFill();
+    drawFillHighlight();
+    drawOutline();
+    drawOutlineHighlight();
+
+    vector<ofxUIWidget *>::reverse_iterator it = widgets.rbegin();
+    vector<ofxUIWidget *>::reverse_iterator eit = widgets.rend();
+    for(; it != eit; ++it) {
+        if((*it)->isVisible() && ((*it)->getRect()->rInside(*rect) || (*it)->isModal())) {
+            (*it)->draw();
+        }
+    }
+    ofxUIPopStyle();
+	/*
 	//return; // for debugging
 
-	if ( g_drawnToBackbuffer  = false ) return;
+	//if ( g_drawnToBackbuffer  = false ) return;
 
     ofxUIPushStyle();
 
@@ -621,8 +652,8 @@ void ofxUICanvas::draw() { // draw the canvas
     }
     ofxUIPopStyle();
 
-	g_drawnToBackbuffer = true;
-
+//	g_drawnToBackbuffer = true;
+*/
 }
 
 void ofxUICanvas::exit() {

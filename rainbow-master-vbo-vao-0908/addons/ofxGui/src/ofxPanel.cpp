@@ -9,6 +9,8 @@
 #include "ofGraphics.h"
 #include "ofImage.h"
 
+
+
 ofImage ofxPanel::loadIcon;
 ofImage ofxPanel::saveIcon;
 
@@ -113,6 +115,8 @@ void ofxPanel::render(){
 }
 
 bool ofxPanel::mouseReleased(ofMouseEventArgs & args){
+	//g_redrawWindowEvent
+
     this->bGrabbed = false;
     if(ofxGuiGroup::mouseReleased(args)) return true;
     if(isGuiDrawing() && b.inside(ofPoint(args.x,args.y))){

@@ -159,6 +159,7 @@ GLuint g_fboRainbow, g_colorTex1, g_dataTex1, g_depthTex1, g_dataTex2;  ;
 
 bool g_debugMode = true;
 
+MyUI *myGui;
 // for rainbow drawing
 // The coordinates of the AABB box relative to the  world coordinate system
 
@@ -260,6 +261,11 @@ ofApp:: ofApp() // default constructor
 }
 
 
+void ofApp::setRedrawWindowEvent(bool event){
+	g_redrawWindowEvent=event;
+
+}
+
 
 void ofApp::setup(){
 	// drop down menu settup
@@ -318,7 +324,7 @@ void ofApp::setup(){
 	// set up the sun light intensities and the sun direction
 	//glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA );
 	setupSun();
-	setupGui();
+	
 	
 	// set up the eye position and direction relative to the g_localAABB which is created at
 	// initObjects(). Then create the eye Matrix
@@ -365,6 +371,10 @@ void ofApp::setup(){
 
     initMaterials();
 	
+	//setupGui();
+	myGui = new MyUI();
+
+	myGui->setup();
 
 	initPBRTObjects();
 
@@ -386,6 +396,8 @@ void ofApp::exit() {
 }
 void ofApp::setupGui() {
 
+
+
 	ofSetVerticalSync(true);
 
 	// we add this listener before setting up so the initial circle resolution is correct
@@ -402,10 +414,38 @@ void ofApp::setupGui() {
 	gui.add(ringButton.setup("ring"));
 	gui.add(screenSize.setup("screen size", ""));
 
+	gui.add(camera.setup("camera", ""));
+	camera = "x=0 ";
+	gui.add(cameraButton.setup("camera coordinate change"));
+	cameraButton.addListener(this,&ofApp::cameraButtonPressed);
+	
+
+	gui.add(light.setup("light", ""));
+	light = " x=0, y=0 , z=0";
+	gui.add(lightButton.setup("light coordinate change")); 
+	lightButton.addListener(this,&ofApp::lightButtonPressed);
+
 	bHide = true;
 
-	ring.loadSound("ring.wav");
+	//ring.loadSound("ring.wav");
 
+}
+
+
+void ofApp::cameraButtonPressed(){
+	static int xcor;
+	xcor=0;
+	
+	cout << "---------------------camera light coordinate-------------- input x\n";
+	cin >>xcor;
+	camera = std::to_string(xcor);
+	getchar();
+}
+
+
+void ofApp::lightButtonPressed(){
+	cout << "---------------------input light coordinate --------------\n";
+	getchar();
 }
 
 
@@ -845,9 +885,16 @@ static bool backgroundBackedUp = false;
 
 
 void ofApp::draw() {
-	myOwnDraw(); 
+	ofBackgroundGradient(ofColor::white, ofColor::gray);
+	//g_drawnToBackbuffer = true;
+	myOwnDraw();
+	//ofEnableBlendMode(OF_BLENDMODE_DISABLED);
+	//glDisable(GL_BLEND);
+	
 
-	gui.draw();
+
+	//g_drawnToBackbuffer = true;
+	
 }
 
 void ofApp::myOwnDraw() {
@@ -861,11 +908,11 @@ void ofApp::myOwnDraw() {
 
 	//return; // for debugging
 
-	if ( !g_redrawWindowEvent ) return;
+	if ( g_redrawWindowEvent ) {
 		
 	cout << "I am here in myOwnDraw() to draw according to the renderMode:" << endl;
 	//renderToFBO();
-
+	
 	if ( g_renderMode == 1 ) { // background scene only
 		cout << "renderSceneToSysBuffer():"  << endl;
 		try {
@@ -918,16 +965,21 @@ void ofApp::myOwnDraw() {
 			std::cout << error.what() << endl;
 			cout  <<"renderAABBRainbowOnlyToScreen():" <<  error.what() << endl;
 		}
-
-	} 
-
 		
+	}
+		
+		g_redrawWindowEvent = false;
+		g_drawnToBackbuffer = true;
+	}
+
 	// g_renderMode == 0 => do nothing
 
-	g_redrawWindowEvent = false; //for debugging
+	 //for debugging
+//	g_redrawWindowEvent = false;
+//	g_drawnToBackbuffer = true;
+	glDisable(GL_DEPTH_TEST);
 
-	g_drawnToBackbuffer = true;
-
+	
 
 	//glutSwapBuffers();   show the back buffer (where we rendered stuff)
 	// This action will be done in ofAppGLFWWindow.cpp after ofNotifyDraw() which calls
@@ -3556,9 +3608,9 @@ void ofApp::mouseDragged(int x, int y, int button){ // call back function for ev
 void ofApp::mouseReleased(int x, int y, int button){
 
 	// no object is selected now, once the mouse is released.
-
+	
 	g_currentPickedObject = nullptr;
-
+	myGui->mouseReleased(x,y,button);
 } // mouseReleased()
 
 
@@ -3874,6 +3926,7 @@ void ofApp::initGLState() {
 	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 	glDisable(GL_BLEND);
+	
 	checkGlErrors();
 	
 	//Also note that using the constants GL_ONE (source) and GL_ZERO (destination) 

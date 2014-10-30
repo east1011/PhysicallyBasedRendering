@@ -28,6 +28,7 @@
 	#include <GLFW/glfw3native.h>
 #endif
 
+
 extern bool g_redrawWindowEvent;
 extern bool g_drawnToBackbuffer;
 extern GLint g_savedFramebuffer;
@@ -405,7 +406,8 @@ void ofAppGLFWWindow::display(void){
 		
 		if(bDoubleBuffered){
 
-			if( g_drawnToBackbuffer ) {
+			if (g_drawnToBackbuffer) {
+				printf("drawntobackbuffer\n");
 		       glfwSwapBuffers(windowP);
 			   g_drawnToBackbuffer = false;
 			}

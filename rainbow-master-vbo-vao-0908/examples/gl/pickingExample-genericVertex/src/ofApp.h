@@ -2,7 +2,7 @@
 
 #include "ofMain.h"  // #include "GL/glew.h"
 #include "ofxGui.h"
-
+#include "MyUI.h"
 #include "shadergeometry.h"
 
 
@@ -105,10 +105,19 @@ class ofApp : public ofBaseApp{
 	ofxButton twoCircles;
 	ofxButton ringButton;
 	ofxLabel screenSize;
+	ofxLabel camera;
+	ofxLabel light;
+
+
+	ofxButton cameraButton;
+	void cameraButtonPressed();
+	ofxButton lightButton;
+	void lightButtonPressed();
+
 
 	ofxPanel gui;
 	
 	ofSoundPlayer ring;
 
-		
+	static void setRedrawWindowEvent(bool event);
 };
