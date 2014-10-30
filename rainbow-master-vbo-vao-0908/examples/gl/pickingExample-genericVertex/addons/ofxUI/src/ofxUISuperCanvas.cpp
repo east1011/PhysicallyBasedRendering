@@ -24,6 +24,7 @@
 
 #include "ofxUISuperCanvas.h"
 #include "ofxUI.h"
+#include "ofApp.h"
 
 
 ofxUISuperCanvas::ofxUISuperCanvas(const ofxUISuperCanvas &other)
@@ -195,12 +196,14 @@ void ofxUISuperCanvas::touchCancelled(float x, float y, int id)
 
 void ofxUISuperCanvas::onMouseReleased(ofMouseEventArgs& data)
 {
+	ofApp::setRedrawWindowEvent(true);
     bTitleLabelHit = false;
     mouseReleased(data.x, data.y, data.button);
 }
 
 void ofxUISuperCanvas::onMousePressed(ofMouseEventArgs& data)
 {
+	ofApp::setRedrawWindowEvent(true);
     if(rect->inside(data.x, data.y) && canvasTitle->isHit(data.x, data.y))
     {
         bTitleLabelHit = true;
@@ -219,6 +222,7 @@ void ofxUISuperCanvas::onMousePressed(ofMouseEventArgs& data)
 
 void ofxUISuperCanvas::onMouseDragged(ofMouseEventArgs& data)
 {
+	ofApp::setRedrawWindowEvent(true);
     if(bTitleLabelHit)
     {
         rect->setX(data.x - hitPoint.x);

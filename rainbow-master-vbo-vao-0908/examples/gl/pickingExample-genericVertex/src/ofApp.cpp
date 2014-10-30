@@ -281,43 +281,7 @@ void ofApp::setup(){
 	//ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 	//ofEnableAlphaBlending();
 	
-	/* This GUI causes the rainbow to have a strange color, perhapse some kind of
-	   odd blending seems to happen
 
-    gui = new ofxUICanvas(300,300); // this->gui variable exists
-
-    gui->addLabel("DROPDOWN MENU", OFX_UI_FONT_MEDIUM);
-    gui->addSpacer();
-    gui->addLabel("'1' TO ADD TO LIST", OFX_UI_FONT_SMALL);
-    gui->addLabel("'2' TO DELETE FROM LIST", OFX_UI_FONT_SMALL);
-    gui->addLabel("'3' TO DELETE ALL IN LIST", OFX_UI_FONT_SMALL);
-    gui->addSpacer();
-    vector<string> names;
-    names.push_back("render Scene");   
-	names.push_back("dump Scene Sysbuffer to Image File");   
-	names.push_back("renderToFBO and Dump");  
-	names.push_back("dump SceneFBO to Image File");  
-	names.push_back("render Rainbow");
-	names.push_back("render Rainbow Only");
-	names.push_back("render AABBRainbow Only");
-	names.push_back("render OldAABBRainbow Only");
-	names.push_back("draw Scene from FBO File");
-	names.push_back("draw Scene from SysFramebuffer");
-
-
-    gui->setWidgetFontSize(OFX_UI_FONT_SMALL);
-    gui->addToggle("SHOW ACTIVE", false);
-    ddl = gui->addDropDownList("DROPDOWN", names); // this->ddl variable exists
-
-    //ddl->setAllowMultiple(true);
-    //ddl->setAutoClose(true);
-    gui->autoSizeToFitWidgets(); 
-    //gui->setDrawWidgetPadding(true);
-
-    ofAddListener(gui->newGUIEvent, this, &ofApp::guiEvent);
-
-	*/
-	
 
 
 
