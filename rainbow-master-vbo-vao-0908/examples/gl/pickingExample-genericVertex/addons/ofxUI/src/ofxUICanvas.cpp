@@ -24,6 +24,7 @@
 
 #include "ofxUICanvas.h"
 #include "ofxUI.h"
+#include "MyUI.h"
 
 extern bool g_drawnToBackbuffer;
 extern bool g_redrawWindowEvent;
@@ -860,6 +861,7 @@ void ofxUICanvas::windowResized(int w, int h) {
 
 void ofxUICanvas::keyPressed(int key)
 {
+	ofApp::setRedrawWindowEvent(true);
     vector<ofxUIWidget *>::iterator it = widgets.begin();
     vector<ofxUIWidget *>::iterator eit = widgets.end();
     for(; it != eit; ++it)

@@ -118,6 +118,6 @@ class ofApp : public ofBaseApp{
 	ofxPanel gui;
 	
 	ofSoundPlayer ring;
-
+	static void changeG_Rbt(Matrix4 m);
 	static void setRedrawWindowEvent(bool event);
 };

@@ -3574,7 +3574,7 @@ void ofApp::mouseReleased(int x, int y, int button){
 	// no object is selected now, once the mouse is released.
 	
 	g_currentPickedObject = nullptr;
-	myGui->mouseReleased(x,y,button);
+//	myGui->mouseReleased(x,y,button);
 } // mouseReleased()
 
 
@@ -3737,6 +3737,11 @@ void ofApp::gotMessage(ofMessage msg){
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
+
+}
+
+void ofApp::changeG_Rbt(Matrix4 m){
+	g_eyeRbt *= m;
 
 }
 

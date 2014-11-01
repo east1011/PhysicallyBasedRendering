@@ -1,5 +1,5 @@
 #include "MyUI.h"
-
+#include "api.h"
 //--------------------------------------------------------------
 void MyUI::setup(){
 	
@@ -11,22 +11,10 @@ void MyUI::setup(){
 
 //    ddl = NULL;
 //    textInput = NULL;
-    //img = new ofImage();
-   // img->loadImage("nerd_me.png");
-    //buffer = new float[256];
-    //for(int i = 0; i < 256; i++) { buffer[i] = ofNoise(i/100.0); }
+
     
 	setGUI1();
-	/*setGUI2();
-    setGUI3();
-    setGUI4();
-    setGUI5();*/
-    
-    //gui1->loadSettings("gui1Settings.xml");
- /*   gui2->loadSettings("gui2Settings.xml");
-    gui3->loadSettings("gui3Settings.xml");
-    gui4->loadSettings("gui4Settings.xml");
-    gui5->loadSettings("gui5Settings.xml");*/
+
 }
 
 //--------------------------------------------------------------
@@ -42,12 +30,7 @@ void MyUI::draw(){
 	ofPushStyle();
 	ofEnableBlendMode(OF_BLENDMODE_ALPHA);
     
-    
-	if(bdrawGrid)
-	{
-		ofSetColor(255, 255, 255, 25);
-		drawGrid(8,8);
-	}
+
     
 	ofPopStyle();
     
@@ -60,285 +43,384 @@ void MyUI::guiEvent(ofxUIEventArgs &e)
 	string name = e.getName();
 	int kind = e.getKind();
 	cout << "got event from: " << name << endl;
-    if(kind == OFX_UI_WIDGET_NUMBERDIALER)
-    {
-        ofxUINumberDialer *n = (ofxUINumberDialer *) e.widget;
-        cout << n->getValue() << endl;
-    }
+   
+
+	if(name=="Light position"){
+
+		if(gui_event!=NULL)
+				gui_event->disable();
+		gui_event=new ofxUISuperCanvas("Input field");
+		
+		gui_event->addLabel(name);
+		gui_event->addLabel("distanceToLight");
+		distanceToLight= gui_event->addTextInput("distanceToLight","0");
+		distanceToLight->setAutoClear(false);
+		gui_event->addLabel("heightToLight");
+		heightToLight= gui_event->addTextInput("heightToLight","0");
+		heightToLight->setAutoClear(false);
+		gui_event->addLabel("separationLight");
+		separationLight= gui_event->addTextInput("separationLight","0");
+		separationLight->setAutoClear(false);
 	
-    if(name == "SAMPLER")
-    {
-        ofxUIImageSampler *is = (ofxUIImageSampler *) e.widget;
-        ofColor clr = is->getColor();
-        red = clr.r;
-        blue = clr.b;
-        green = clr.g;
-    }
-	else if(name == "BUTTON")
-	{
-		ofxUIButton *button = (ofxUIButton *) e.getButton();
-		bdrawGrid = button->getValue();
 	}
-	else if(name == "TOGGLE")
-	{
-		ofxUIToggle *toggle = (ofxUIToggle *) e.getToggle();
-		bdrawGrid = toggle->getValue();
-        if(textInput != NULL)
+	//Pbrtlookat
+	else if(name=="Pbrtlookat"){
+		if(gui_event!=NULL)
+				gui_event->disable();
+		gui_event=new ofxUISuperCanvas("Input field");
+
+		gui_event->addLabel(name);
+		gui_event->addLabel("Position x,y,z");
+		PositionX= gui_event->addTextInput("PositionX","0");
+		PositionX->setAutoClear(false);
+		PositionY= gui_event->addTextInput("PositionY","0");
+		PositionY->setAutoClear(false);
+		PositionZ= gui_event->addTextInput("PositionZ","0");
+		PositionZ->setAutoClear(false);
+
+		gui_event->addLabel("Look x,y,z");
+		LookX= gui_event->addTextInput("LookX","0");
+		LookX->setAutoClear(false);
+		LookY= gui_event->addTextInput("LookY","0");
+		LookY->setAutoClear(false);
+		LookZ= gui_event->addTextInput("LookZ","0");
+		LookZ->setAutoClear(false);
+		
+
+		gui_event->addLabel("Up x,y,z");
+		UpX= gui_event->addTextInput("UpX","0");
+		UpX->setAutoClear(false);
+		UpY= gui_event->addTextInput("UpY","0");
+		UpY->setAutoClear(false);
+		UpZ= gui_event->addTextInput("UpZ","0");
+		UpZ->setAutoClear(false);
+
+
+
+	}
+	else if(name=="Remove input field"){
+		if(gui_event!=NULL)
+			gui_event->disable();
+	}
+	else if(name=="PositionX"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
         {
-            textInput->setFocus(bdrawGrid);
+			float PositionX;
+			
+			istringstream(ti->getTextString()) >> PositionX; 
+			g_Lookat[0][0]=PositionX;
+			cout<<PositionX;
+			cout << "ON ENTER: ";
+			
         }
-	}
-    else if(name == "RADIO VERTICAL")
-    {
-        ofxUIRadio *radio = (ofxUIRadio *) e.widget;
-        cout << radio->getName() << " value: " << radio->getValue() << " active name: " << radio->getActiveName() << endl; 
-    }
-    else if(name == "TEXT INPUT")
-    {
-        ofxUITextInput *ti = (ofxUITextInput *) e.widget;
-        if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+		//istringstream(s) >> f; 
+		
+	}else if(name=="PositionY"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
         {
+			float PositionY;
+			
+			istringstream(ti->getTextString()) >> PositionY; 
+			cout<<PositionY;
+			g_Lookat[0][1]=PositionY;
             cout << "ON ENTER: ";
         }
-        else if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_FOCUS)
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="PositionZ"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
         {
-            cout << "ON FOCUS: ";
+			float PositionZ;
+			
+			istringstream(ti->getTextString()) >> PositionZ; 
+			cout<<PositionZ;
+			g_Lookat[0][2]=PositionZ;
+            cout << "ON ENTER: ";
         }
-        else if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_UNFOCUS)
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="LookX"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
         {
-            cout << "ON BLUR: ";
+			float LookX;
+			
+			istringstream(ti->getTextString()) >> LookX; 
+			cout<<LookX;
+			g_Lookat[1][0]=LookX;
+            cout << "ON ENTER: ";
         }
-        string output = ti->getTextString();
-        cout << output << endl;
-    }
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="LookY"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float LookY;
+			
+			istringstream(ti->getTextString()) >> LookY; 
+			cout<<LookY;
+			g_Lookat[1][1]=LookY;
+            cout << "ON ENTER: ";
+        }
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="LookZ"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float LookZ;
+			
+			istringstream(ti->getTextString()) >> LookZ; 
+			cout<<LookZ;
+			g_Lookat[1][2]=LookZ;
+            cout << "ON ENTER: ";
+        }
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="UpX"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float UpX;
+			
+			istringstream(ti->getTextString()) >> UpX; 
+			cout<<UpX;
+			g_Lookat[2][0]=UpX;
+            cout << "ON ENTER: ";
+        }
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="UpY"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float UpY;
+			
+			istringstream(ti->getTextString()) >> UpY; 
+			g_Lookat[2][1]=UpY;
+			cout<<UpY;
+            cout << "ON ENTER: ";
+        }
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="UpZ"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float UpZ;
+			
+			istringstream(ti->getTextString()) >> UpZ; 
+			g_Lookat[2][2]=UpZ;
+			cout<<UpZ;
+		//	guiLookAt(g_Lookat[0][0],g_Lookat[0][1],g_Lookat[0][2],g_Lookat[1][0],g_Lookat[1][1],g_Lookat[1][2],g_Lookat[2][0],g_Lookat[2][1],g_Lookat[2][2]);
+            cout << "ON ENTER: ";
+        }
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="distanceToLight"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float distanceToLight;
+			
+			istringstream(ti->getTextString()) >> g_distanceToLight; 
+			setg_lightPos();
+            cout << "ON ENTER: ";
+        }
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="heightToLight"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {	
+			istringstream(ti->getTextString()) >> g_heightToLight; 
+			setg_lightPos();
+            cout << "ON ENTER: ";
+        }
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="separationLight"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			istringstream(ti->getTextString()) >> g_separationLight; 
+			setg_lightPos();
+		
+            cout << "ON ENTER: ";
+        }
+		//istringstream(s) >> f; 
+		
+	}
+
+
+	else if(name=="Camera translation"){
+		if(gui_event!=NULL)
+				gui_event->disable();
+		gui_event=new ofxUISuperCanvas("Input field");
+
+		gui_event->addLabel(name);
+		gui_event->addLabel("dx (Camera translation)");
+		dx= gui_event->addTextInput("dx (Camera translation)","0");
+		gui_event->addLabel("dy (Camera translation)");
+		dy= gui_event->addTextInput("dy (Camera translation)","0");
+		gui_event->addLabel("dz (Camera translation)");
+		dz= gui_event->addTextInput("dz (Camera translation)","0");
+		dz->setAutoClear(false);
+		dx->setAutoClear(false);
+		dy->setAutoClear(false);
+	}
+	else if(name=="Camera rotation"){
+		if(gui_event!=NULL)
+				gui_event->disable();
+		gui_event=new ofxUISuperCanvas("Input field");
+
+		gui_event->addLabel(name);
+		gui_event->addLabel("dx (Camera rotation)");
+		dx= gui_event->addTextInput("dx (Camera rotation)","0");
+		
+		gui_event->addLabel("dy (Camera rotation)");
+		dy= gui_event->addTextInput("dy (Camera rotation)","0");
+		
+		gui_event->addLabel("dz (Camera rotation)");
+		dz= gui_event->addTextInput("dz (Camera rotation)","0");
+		dz->setAutoClear(false);
+		dx->setAutoClear(false);
+		dy->setAutoClear(false);
+		
+	}
+
+	else if(name=="dx (Camera translation)"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float dx_temp;
+			
+			istringstream(ti->getTextString()) >> dx_temp; 
+			Matrix4 m = Matrix4::makeTranslation( Cvec3( dx_temp, 0.0,0.0) * 0.01 ); 
+			ofApp::changeG_Rbt(m);
+			cout<<dx_temp;
+            cout << "ON ENTER: ";
+
+
+        }
+		//istringstream(s) >> f; 
+		
+	}
+	else if(name=="dy (Camera translation)"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float dy_temp;
+			istringstream(ti->getTextString()) >> dy_temp; 
+			Matrix4 m = Matrix4::makeTranslation( Cvec3( 0.0, dy_temp,0.0) * 0.01 ); 
+			ofApp::changeG_Rbt(m);
+            cout << "ON ENTER: ";
+        }
+		
+	}
+	else if(name=="dz (Camera translation)"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float dz_temp;
+			istringstream(ti->getTextString()) >> dz_temp; 
+			Matrix4 m = Matrix4::makeTranslation( Cvec3( 0.0, 0.0,dz_temp) * 0.01 ); 
+			ofApp::changeG_Rbt(m);
+            cout << "ON ENTER: ";
+        }
+		
+	}
+
+	else if(name=="dx (Camera rotation)"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float dx_temp;
+			istringstream(ti->getTextString()) >> dx_temp; 
+			Matrix4 m=Matrix4::makeYRotation( dx_temp* 0.01 );
+			ofApp::changeG_Rbt(m);
+            cout << "ON ENTER: ";
+        }
+		
+	}
+	else if(name=="dy (Camera rotation)"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float dy_temp;
+			istringstream(ti->getTextString()) >> dy_temp; 
+			Matrix4 m=Matrix4::makeXRotation( dy_temp* 0.01 );
+			ofApp::changeG_Rbt(m);
+            cout << "ON ENTER: ";
+        }
+		
+	}
+	else if(name=="dz (Camera rotation)"){
+		ofxUITextInput *ti = (ofxUITextInput *) e.widget;
+		if(ti->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER)
+        {
+			float dz_temp;
+			istringstream(ti->getTextString()) >> dz_temp; 
+			Matrix4 m=Matrix4::makeZRotation( dz_temp* 0.01 );
+			ofApp::changeG_Rbt(m);
+            cout << "ON ENTER: ";
+        }
+		
+	}
+
+	if(gui_event!=NULL){
+		gui_event->setPosition(212*3,0);
+		gui_event->autoSizeToFitWidgets();
+		ofAddListener(gui_event->newGUIEvent,this,&MyUI::guiEvent);
+	}
+
+
 }
 
 //--------------------------------------------------------------
 void MyUI::exit()
 {
-    gui1->saveSettings("gui1Settings.xml");
-    gui2->saveSettings("gui2Settings.xml");
-    gui3->saveSettings("gui3Settings.xml");
-    gui4->saveSettings("gui4Settings.xml");
-    gui5->saveSettings("gui5Settings.xml");
-    
-	delete gui1;
-	delete gui2;
-    delete gui3;
-    delete gui4;
-    delete gui5;
-	delete[] buffer;
-    delete img;
+
 }
 
 //--------------------------------------------------------------
 void MyUI::keyPressed(int key){
-    if(gui2->hasKeyboardFocus())
-    {
-        return;
-    }
-	switch (key)
-	{
-		case 't':
-        {
-            if(textInput != NULL)
-            {
-                textInput->setTextString(ofGetTimestampString());
-            }
-        }
-			break;
-
-		case 'T':
-        {
-            if(tm != NULL)
-            {
-                int cols = tm->getColumnCount();
-                int rows = tm->getRowCount();
-                for(int row = 0; row < rows; row++)
-                {
-                    for(int col = 0; col < cols; col++)
-                    {
-                        cout << tm->getState(row, col) << "\t";
-                    }
-                    cout << endl;
-                }
-            }
-        }
-			break;
-
-		case 'd':
-        {
-            if(ddl != NULL)
-            {
-                vector<ofxUIWidget *> selected = ddl->getSelected();
-                for(vector<ofxUIWidget *>::iterator it = selected.begin(); it != selected.end(); ++it)
-                {
-                    ofxUILabelToggle *lt = (ofxUILabelToggle *) (*it);
-                    cout << lt->getName() << endl;
-                }
-            }
-        }
-			break;
-            
-        case 'D':
-        {
-            if(ddl != NULL)
-            {
-                vector<string> names = ddl->getSelectedNames();
-                for(vector<string>::iterator it = names.begin(); it != names.end(); ++it)
-                {
-                    cout << (*it) << endl;
-                }
-            }
-        }
-			break;
-            
-		case 'r':
-        {
-            if(textInput != NULL)
-            {
-                textInput->setFocus(!textInput->isFocused());
-            }
-        }
-			break;
-            
-		case 'f':
-			ofToggleFullscreen();
-			break;
-            
-        case 'F':
-        {
-            if(tm != NULL)
-            {
-                tm->setDrawOutlineHighLight(!tm->getDrawOutlineHighLight());
-//                tm->setDrawPaddingOutline(!tm->getDrawPaddingOutline());
-            }
-        }
-			break;
-            
-		case 'h':
-            gui1->toggleVisible();
-            gui2->toggleVisible();
-            gui3->toggleVisible();
-            gui4->toggleVisible();
-            gui5->toggleVisible();
-			break;
-            
-		case 'p':
-			bdrawPadding = !bdrawPadding;
-			gui1->setDrawWidgetPaddingOutline(bdrawPadding);
-			gui2->setDrawWidgetPaddingOutline(bdrawPadding);
-			gui3->setDrawWidgetPaddingOutline(bdrawPadding);
-			gui4->setDrawWidgetPaddingOutline(bdrawPadding);
-			gui5->setDrawWidgetPaddingOutline(bdrawPadding);
-			break;
-            
-		case '[':
-			gui1->setDrawWidgetPadding(false);
-			gui2->setDrawWidgetPadding(false);
-			gui3->setDrawWidgetPadding(false);
-			gui4->setDrawWidgetPadding(false);
-			gui5->setDrawWidgetPadding(false);
-			break;
-            
-		case ']':
-			gui1->setDrawWidgetPadding(true);
-			gui2->setDrawWidgetPadding(true);
-			gui3->setDrawWidgetPadding(true);
-			gui4->setDrawWidgetPadding(true);
-			gui5->setDrawWidgetPadding(true);
-			break;
-			
-        case '1':
-            gui1->toggleVisible();
-            break;
-            
-        case '2':
-            gui2->toggleVisible();
-            break;
-            
-        case '3':
-            gui3->toggleVisible();
-            break;
-            
-        case '4':
-            gui4->toggleVisible();
-            break;
-
-        case '5':
-            gui5->toggleVisible();
-            break;
-
-		default:
-			break;
-	}
+ 
+	cout<<"asf";
 }
 
-void MyUI::drawGrid(float x, float y)
-{
-    float w = ofGetWidth();
-    float h = ofGetHeight();
-    
-    for(int i = 0; i < h; i+=y)
-    {
-        ofLine(0,i,w,i);
-    }
-    
-    for(int j = 0; j < w; j+=x)
-    {
-        ofLine(j,0,j,h);
-    }
-}
+
 
 void MyUI::setGUI1()
 {
-    vector<string> names;
-	names.push_back("RAD1");
-	names.push_back("RAD2");
-	names.push_back("RAD3");
-	
+	gui_event=NULL;
+	ddl = NULL;
+    textInput = NULL;
 	gui1 = new ofxUISuperCanvas("PANEL 1: BASICS");
-    gui1->addSpacer();
-    gui1->addLabel("Press 'h' to Hide GUIs", OFX_UI_FONT_SMALL);
-    
-    gui1->addSpacer();
-	gui1->addLabel("H SLIDERS");
-	gui1->addSlider("RED", 0.0, 255.0, &red)->setTriggerType(OFX_UI_TRIGGER_ALL);
-	gui1->addSlider("GREEN", 0.0, 255.0, &green)->setTriggerType(OFX_UI_TRIGGER_BEGIN|OFX_UI_TRIGGER_CHANGE|OFX_UI_TRIGGER_END);
-	gui1->addSlider("BLUE", 0.0, 255.0, &blue)->setTriggerType(OFX_UI_TRIGGER_BEGIN|OFX_UI_TRIGGER_CHANGE);
-    
-    gui1->addSpacer();
-    gui1->addLabel("V SLIDERS");
-	gui1->addSlider("0", 0.0, 255.0, 150, 17, 160);
-	gui1->setWidgetPosition(OFX_UI_WIDGET_POSITION_RIGHT);
-	gui1->addSlider("1", 0.0, 255.0, 150, 17, 160);
-	gui1->addSlider("2", 0.0, 255.0, 150, 17, 160);
-	gui1->addSlider("3", 0.0, 255.0, 150, 17, 160);
-	gui1->addSlider("4", 0.0, 255.0, 150, 17, 160);
-	gui1->addSlider("5", 0.0, 255.0, 150, 17, 160);
-	gui1->addSlider("6", 0.0, 255.0, 150, 17, 160);
-	gui1->addSlider("7", 0.0, 255.0, 150, 17, 160);
-	gui1->addSlider("8", 0.0, 255.0, 150, 17, 160);
-	gui1->setWidgetPosition(OFX_UI_WIDGET_POSITION_DOWN);
-    
-    gui1->addSpacer();
-	gui1->addRadio("RADIO HORIZONTAL", names, OFX_UI_ORIENTATION_HORIZONTAL);
-	gui1->addRadio("RADIO VERTICAL", names, OFX_UI_ORIENTATION_VERTICAL);
-    
-    gui1->addSpacer();
-    gui1->setWidgetFontSize(OFX_UI_FONT_SMALL);
-	gui1->addButton("BUTTON", false);
-	gui1->addToggle( "TOGGLE", false);
-    
-    gui1->addSpacer();
-    gui1->addLabel("RANGE SLIDER");
-	gui1->addRangeSlider("RSLIDER", 0.0, 255.0, 50.0, 100.0);
-    
-    string textString = "This widget is a text area widget. Use this when you need to display a paragraph of text. It takes care of formatting the text to fit the block.";
-    gui1->addSpacer();
-    
-    gui1->addTextArea("textarea", textString, OFX_UI_FONT_SMALL);
-    
+  
+
+	vector<string> items;
+    items.push_back("Pbrtlookat");items.push_back("Light position");items.push_back("Camera translation"); items.push_back("Camera rotation"); 
+	items.push_back("Remove input field"); 
+	gui1->addDropDownList("DROP DOWN LIST", items);
+
+	
+
+
     gui1->autoSizeToFitWidgets();
 	ofAddListener(gui1->newGUIEvent,this,&MyUI::guiEvent);
 }
@@ -382,4 +464,10 @@ void MyUI::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void MyUI::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+
+void MyUI::setg_lightPos(){
+//	g_light1Pos = g_SceneRbt * Cvec4( g_separationLight/2.0, g_heightToLight, g_distanceToLight, 1.0);
+//	g_light2Pos = g_SceneRbt * Cvec4(-g_separationLight/2.0, g_heightToLight, g_distanceToLight, 1.0); 
 }
