@@ -164,11 +164,11 @@ void readAndCompileSingleShader(GLuint shaderHandle, const char *fn) {
 	 messageFile << errorMsg << endl;
 	 std::cout << errorMsg << endl;
 
-	 //throw runtime_error( errorMsg );
+
 
 	 glDeleteShader( shaderHandle );
 
-     
+     throw runtime_error( errorMsg );
 
   }
 }
@@ -233,7 +233,7 @@ void linkShader(GLuint programHandle, GLuint vs, GLuint fs, const char * vsFilen
 	 messageFile << errorMsg << endl;
 	 std::cout << errorMsg << endl;
 
-	 //throw runtime_error( errorMsg );
+	 throw runtime_error( errorMsg );
 	 
 
   }
@@ -267,6 +267,7 @@ void readAndCompileShader(GLuint programHandle, const char * vertexShaderFileNam
   catch (const runtime_error & error ) {
 	  std::cout << error.what() << endl;
 	   messageFile << "comiple shader:" << error.what() << endl;
+	   throw;
   }
 
 }

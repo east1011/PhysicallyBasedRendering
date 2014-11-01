@@ -155,7 +155,7 @@ bool g_rotation_mode = false;
 GLdouble g_clearColor[4];
 
 GLuint g_fboScene, g_colorTex, g_dataTex, g_depthTex; 
-GLuint g_fboRainbow, g_colorTex1, g_dataTex1, g_depthTex1, g_dataTex2;  ;
+GLuint g_fboRainbow, g_colorTex1, g_dataTex1, g_depthTex1, g_dataTex2, g_dataTex3, g_dataTex4;
 
 bool g_debugMode = true;
 
@@ -182,9 +182,9 @@ MyUI *myGui;
 //static const float rainbowVolumeDepth = 10;
 
 // for testing by friends 
-static const float rainbowVolumeHeight = 50; 
-//static const float rainbowVolumeWidth = 60;
-static const float rainbowVolumeWidth = 120;
+static const float rainbowVolumeHeight = 30; 
+static const float rainbowVolumeWidth = 60;
+//static const float rainbowVolumeWidth = 120;
 static const float rainbowVolumeDepth = 10;
 
 
@@ -227,10 +227,10 @@ Cvec3 g_sunRayDir ;
 
 float g_radius = 1.0e-3; // 1 mm, 1.5e-3, 2.03-3
 
-float g_dropDensity = 30000;
+float g_dropDensity = 15000*0.1;
 
-Cvec3 g_lightRGBColor;
-
+Cvec3 g_lightRGBColor, g_lightXYZColor;
+Matrix3  g_XYZtosRGB; 
 
 Picker g_picker; // default constructor
 
@@ -273,7 +273,7 @@ void ofApp::setup(){
 	//ofBackground(255, 0,0); // for debugging
 
 	ofBackground(128,200,255); // background (buffer clear color) = sky color
-     // => glClearColor(128/255, 200/255, 255/255);
+    // => glClearColor(128/255, 200/255, 255/255);
 	ofSetBackgroundAuto(true); // which is default
 
 	//ofEnableDepthTest();
@@ -284,6 +284,30 @@ void ofApp::setup(){
 
 
 
+	// A Standard Default Color Space for the Internet: sRGB
+	// http://www.color.org/sRGB.xalter
+    //  Version 1.10, November 5, 1996 
+
+	// plot the gamma curve
+
+	for (float x = 0; x < 1.0; x += 0.01 ) {
+
+
+		cout << "x=" << x <<":" << "gammaCurve =" << gammaCompresssRGB(x) << endl;
+	}
+
+	Matrix3 sRGBtoXYZ = makeConversionMatrixsRGBtoXYZ();
+	cout << "sRGBtoXYZ = " << sRGBtoXYZ << endl;
+	g_XYZtosRGB = makeConversionMatrixXYZtosRGB();
+	cout << "g_XYZtosRGB = " << g_XYZtosRGB << endl;
+
+	// {\bf M} = \begin{bmatrix}0.412383 & 0.357585 & 0.18048 \\
+	//                           0.212635 & 0.71517 & 0.072192 \\
+	//                           0.01933 & 0.119195 & 0.950528\end{bmatrix
+	 
+	// invM:\begin{bmatrix} 3.24103 & -1.53741 & -0.49862 \\ 
+	//                      -0.969242 & 1.87596 & 0.041555 \\
+	//                 	 0.055632 & -0.203979 & 1.05698 \end{bmatrix}
 
 	// set up the sun light intensities and the sun direction
 	//glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA );
@@ -456,9 +480,11 @@ spa_data spa;  //declare the SPA structure
 	//spa.function      = SPA_ALL;
 
 	
-	g_lightRGBColor = getSunLightRGBColor();
+	 getSunLightRGBColor(g_lightRGBColor, g_lightXYZColor);
+		
 
-	messageFile << "lightRGBColor =" << g_lightRGBColor << endl;
+	//messageFile << "lightRGBColor =" << g_lightRGBColor << endl;
+	 cout  << "lightXYZColor =" << g_lightXYZColor << endl;
 	cout  << "lightRGBColor =" << g_lightRGBColor << endl;
 
     //get_time_and_location(spa.year, spa.month, spa.day, spa.hour, spa.minute, spa.timezone, spa.longitude, spa.latitude);
@@ -479,11 +505,11 @@ spa_data spa;  //declare the SPA structure
 	
 	messageFile << "sunRay zenith angle = " << spa.zenith <<" sunRay azimuth" << spa.azimuth << endl;
 	
-	messageFile << "sunRay in geocentric coord (world coord system) = (" << sunRay  << endl;
+	messageFile << "sunRay in geocentric coord (world coord system) = " << sunRay  << endl;
 
 	cout << "sunRay zenith angle = " << spa.zenith <<" sunRay azimuth" << spa.azimuth << endl;
 	
-	cout << "sunRay in geocentric coord (world coord system) = (" << sunRay  << endl;
+	cout << "sunRay in geocentric coord (world coord system) = " << sunRay  << endl;
 	g_sunRayDir = Cvec3(-sunRay[1], sunRay[2], -sunRay[0]); 
 	// rename the axes to 3D graphics convention : z (up) => y, x (north) => -z, y(west) => -x
 	//                         |
@@ -494,8 +520,8 @@ spa_data spa;  //declare the SPA structure
 	// E.g: In the original coord system: (-10, 20, 5) [ azimth= south-west, polar = positive] =? (-20, 5, 10)
 	
     
-    messageFile  << "sunRay in Graphics coord = (" << g_sunRayDir << endl;
-	cout   << "sunRay in Graphics coord = (" << g_sunRayDir << endl;
+    messageFile  << "sunRay in Graphics coord = " << g_sunRayDir << endl;
+	cout   << "sunRay in Graphics coord = " << g_sunRayDir << endl;
 
 	
 }
@@ -711,105 +737,67 @@ void ofApp::setupOldCamera() {
 } // setupOldCamera()
 
 
-Cvec3  ofApp::getSunLightRGBColor() {
-	// convert the sun light to its RGB representation
+void ofApp::getSunLightRGBColor(Cvec3& g_lightRGBColor, Cvec3& g_lightXYZColor) {
+	// convert the sun light to its RGB, XYZ representation
 
-	double sunIntensity, X = 0, Y = 0, Z = 0, XYZ;
+	double  X = 0, Y = 0, Z = 0;
 	double lambda_m; // meter
+	double sunRadiance[nLambdas];
 
 	double xBar, yBar, zBar;
 
 	//const double lambdaStart = 400;   // 400 nm = 400 * e-9 m = 0.4 * e-6 m = 0.4 um
     //const double lambdaEnd = 700;
      
-
-	/* cie_colour_match[(lambda - 380) / 5][0] = xBar
-      cie_colour_match[(lambda - 380) / 5][1] = yBar
-      cie_colour_match[(lambda - 380) / 5][2] = zBar
-	  ==> cie_coulor_match [] from 380 nanometer to 780 nanometer
-    */
-	double lambda;
+	double yInt = 0.0; 
+	double lambda = lambdaStart;
 	int j;
 	
-	for (lambda = lambdaStart, j=0; j < nLambdas; lambda += lambdaStep, j++ ) {
-		// integration of cie-color-match curve over  nSpectralSampleSteps intervals,
-    	      	
-		//  cie is sampled every lambdaStep * 2
-		  
-		int i1 = int ( (lambda - 380 ) / ( lambdaStep*2 ) );
-		int i2 = int ( ( lambda + lambdaStep - 380) / (lambdaStep*2 ) );
-
-		//  messageFile << "j =" << j  << " i1=" << i1 << "i2=" << i2 << endl;
-
-		if ( i1 == i2) { 
-			xBar =  cie_colour_match[ i1][ 0]; 
-			yBar =  cie_colour_match[ i1][ 1 ];
-			zBar =  cie_colour_match[ i1 ][ 2 ];
+	for (int j= 0; j < nLambdas; j++) {
 		
-		}  
-		else { // j = i+1 => lambda is between two sample points 
-		   
-			xBar = ( cie_colour_match[ i1][ 0] + cie_colour_match[ i2 ][ 0] ) / 2.0; 
-			yBar = ( cie_colour_match[ i1 ][ 1 ] + cie_colour_match[ i2][ 1 ] ) /2.0;
-			zBar = ( cie_colour_match[ i1][ 2 ] + cie_colour_match[ i2][ 2 ] ) /2.0;
-		}
+		int k = j + 4; // from 400 nm to 700 nm
 
-		//intensity = bb_spectrum(lambda);  // You already have the function that computes the irradiance of the sun
-		/*
-		if (  definitelyLessThan (  lambda / (lambdaStep * 2) - floor ( lambda / (lambdaStep * 2) ), 
-											(2 * lambdaStep ) / 10.0, epsilon ) ) {
-		 
-			// lambda is at a cie sample lambda which is sampled every lambdaStep * 2
-		  
-			int i = int (  lambda - 380 ) / int ( lambdaStep*2 );
+		xBar =  cie_colour_match[ k ][ 0 ]; 
+		yBar =  cie_colour_match[ k][ 1 ];
+		zBar =  cie_colour_match[ k ][ 2 ];
 
-			xBar =  cie_colour_match[ i][ 0]; 
-			yBar =  cie_colour_match[ i][ 1 ];
-			zBar =  cie_colour_match[ i ][ 2 ];
+		yInt += yBar * lambdaStep ;
 		
-		}  
-		else { // lambda is between two points and interpolate between them
-
-			int i1 =  int (  lambda - lambdaStep - 380 ) / int ( lambdaStep*2 );
-			int i2 =  int (  lambda + lambdaStep  - 380 ) / int ( lambdaStep*2 );
 		
-			xBar = ( cie_colour_match[ i1][ 0] + cie_colour_match[ i2 ][ 0] ) / 2.0; 
-			yBar = ( cie_colour_match[ i1 ][ 1 ] + cie_colour_match[ i2][ 1 ] ) /2.0;
-			zBar = ( cie_colour_match[ i1][ 2 ] + cie_colour_match[ i2][ 2 ] ) /2.0;
-		}
-		*/
-
-		/*
-		xBar =  ( cie_colour_match[ ( int(lambda) - 380 ) / int( lambdaStep*2)] [0]
-							+ cie_colour_match[ ( int(lambda + lambdaStep*2) - 380 )  / int( lambdaStep*2)] [0] ) /2.0; 
-					// lambdaStep is 2.5 nanometer
-		yBar = ( cie_colour_match[ ( int(lambda) - 380 ) / int( lambdaStep*2)] [1] 
-					+ cie_colour_match[ ( int(lambda + lambdaStep*2) - 380 )  / int( lambdaStep*2)] [1] ) /2.0; 
-		zBar = ( cie_colour_match[ ( int(lambda) - 380 ) / int( lambdaStep*2)] [2] 
-					+ cie_colour_match[ ( int(lambda + lambdaStep*2) - 380 )  / int( lambdaStep*2)] [2] ) /2.0; 
-
-		//messageFile << "In dropvolume.cpp: int(lambda)- 380 =" << int(lambda) - 380 << endl;
-		*/
-
-		lambda_m = lambda * 1.0e-9;
-
-		sunIntensity = calculate_irradiance_of_sun(lambda_m);	// Isun: the return value of irradiance is per nanometer, but the function uses
+		sunRadiance[j] = calculate_radiance_of_sun(lambda);	// Isun: the return value of irradiance is per nanometer, but the function uses
 																// lambda_m in unit meter
 
-		X += sunIntensity * xBar * lambdaStep; 
-		Y += sunIntensity * yBar * lambdaStep;
-		Z += sunIntensity * zBar * lambdaStep;
+		X += sunRadiance[j] * xBar * lambdaStep; 
+		Y += sunRadiance[j] * yBar * lambdaStep;
+		Z += sunRadiance[j] * zBar * lambdaStep;
 		
-		
+		lambda += lambdaStep;
+  
     }
 	
+	lambda = lambdaStart;
+	for (int j =0; j < nLambdas; j++ ) {
 
-	XYZ = (X+Y+Z);
-	Cvec3 light_xyzColor = Cvec3( X/XYZ, Y/XYZ, Z/XYZ );
-	
-	return xyz_to_rgb(cs, light_xyzColor);
+     messageFile << "sunRadiance at lambda=" << lambda << "=" << sunRadiance[j] << endl;
+	 lambda += lambdaStep;
 
-}
+	}
+
+	messageFile.close();
+
+
+	g_lightXYZColor = Cvec3( X, Y, Z ); // the XYZ color of the absolute run radiance
+		
+	Cvec3 lightXYZRelative = g_lightXYZColor * ( 1/ Y ); //get  XYZ with relative luminance
+
+	// xyz_to_rgb(struct colourSystem *cs, const Cvec3 xyz);
+	g_lightRGBColor  = xyz_to_rgb(cs, lightXYZRelative);
+
+	cout <<" Sun absolute XYZ color =" <<g_lightXYZColor << endl;
+	cout <<" Sun relative XYZ color =" <<  lightXYZRelative << endl;
+	cout <<" Sun RGB XYZ color =" << g_lightRGBColor << endl;
+
+} // getSunLightRGBColor
 
 
 
@@ -1091,7 +1079,9 @@ void ofApp::renderRainbowOnlyToScreen() {
 
 	extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
 	// extraUniforms.put("uSunRayDir", g_sunRayDir );
-
+	extraUniforms.put("uLightRGBColor", g_lightRGBColor);
+    extraUniforms.put("uLightXYZColor", g_lightXYZColor);
+	extraUniforms.put("uXYZtosRGB", g_XYZtosRGB);
 
 	extraUniforms.put("uWindowWidth", g_windowWidth );
 	extraUniforms.put("uWindowHeight",g_windowHeight);
@@ -1202,8 +1192,9 @@ void ofApp::renderAABBRainbowOnlyToScreen() {
 
 	extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
 	// extraUniforms.put("uSunRayDir", g_sunRayDir );
-
-
+		extraUniforms.put("uLightRGBColor", g_lightRGBColor);
+		extraUniforms.put("uLightXYZColor", g_lightXYZColor);
+		extraUniforms.put("uXYZtosRGB", g_XYZtosRGB);
 	extraUniforms.put("uWindowWidth", g_windowWidth );
 	extraUniforms.put("uWindowHeight",g_windowHeight);
   
@@ -1318,8 +1309,9 @@ void ofApp::renderRainbowAndSceneToScreen( ) {
 
 	extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ));
 	// extraUniforms.put("uSunRayDir", g_sunRayDir );
-
-
+	extraUniforms.put("uLightRGBColor", g_lightRGBColor);
+	extraUniforms.put("uLightXYZColor", g_lightXYZColor);
+	extraUniforms.put("uXYZtosRGB", g_XYZtosRGB);
 	extraUniforms.put("uEyeMatrix", g_eyeRbt); // This will be used in shader to convert the
 	extraUniforms.put("uInvEyeMatrix", g_invEyeRbt); // This will be used in shader to convert the
    	   
@@ -1437,7 +1429,9 @@ void ofApp::renderRainbowOnlyToFBO() {
 
     extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
 	// extraUniforms.put("uSunRayDir", g_sunRayDir );
-
+		extraUniforms.put("uLightRGBColor", g_lightRGBColor);
+		extraUniforms.put("uLightXYZColor", g_lightXYZColor);
+		extraUniforms.put("uXYZtosRGB", g_XYZtosRGB);
 	extraUniforms.put("uRadius", g_radius );
     extraUniforms.put("uDropDensity", g_dropDensity );   
    
@@ -1560,7 +1554,9 @@ void ofApp::renderRainbowAndSceneToFBO() {
 
     extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
 	//extraUniforms.put("uSunRayDir", g_sunRayDir );
-
+		extraUniforms.put("uLightRGBColor", g_lightRGBColor);
+		extraUniforms.put("uLightXYZColor", g_lightXYZColor);
+		extraUniforms.put("uXYZtosRGB", g_XYZtosRGB);
 	extraUniforms.put("uRadius", g_radius );
     extraUniforms.put("uDropDensity", g_dropDensity );   
    
@@ -1730,7 +1726,8 @@ void ofApp::drawBackgroundStuff()  {
 	extraUniforms.put("uSunRayDir", Cvec3( g_invEyeRbt * Cvec4(g_sunRayDir,0) ) );
 	// extraUniforms.put("uSunRayDir", g_sunRayDir );
 	extraUniforms.put("uLightRGBColor", g_lightRGBColor);
-
+	extraUniforms.put("uLightXYZColor", g_lightXYZColor);
+	extraUniforms.put("uXYZtosRGB", g_XYZtosRGB);
 	extraUniforms.put("uWindowWidth", g_windowWidth);
 	extraUniforms.put("uWindowHeight",g_windowHeight);
 	
@@ -2241,13 +2238,75 @@ void ofApp::attachTexturesToRainbowFBO() {
 	glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
 	checkGlErrors();
 
+	// data texture 3
 
-	GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	//GLuint dataTex;
+	glGenTextures(1, &g_dataTex3);
+	checkGlErrors();
+	// "Bind" the generated texture as the current texture: 
+	// all future texture functions will modify this current texture 
+
+	glBindTexture(GL_TEXTURE_2D, g_dataTex3);
+
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
+ 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_windowWidth, g_windowHeight, 0, GL_RGBA,
+	GL_FLOAT, NULL);
+	checkGlErrors();
+
+	// attach the texture to the framebuffer
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3,g_dataTex3, 0); // 0 = mipmap level  
+	checkGlErrors();
+
+	glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
+	checkGlErrors();
+
+	// data texture 4
+
+	//GLuint dataTex;
+	glGenTextures(1, &g_dataTex4);
+	checkGlErrors();
+	// "Bind" the generated texture as the current texture: 
+	// all future texture functions will modify this current texture 
+
+	glBindTexture(GL_TEXTURE_2D, g_dataTex4);
+
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	checkGlErrors();
+ 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, g_windowWidth, g_windowHeight, 0, GL_RGBA,
+	GL_FLOAT, NULL);
+	checkGlErrors();
+
+	// attach the texture to the framebuffer
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4,g_dataTex4, 0); // 0 = mipmap level  
+	checkGlErrors();
+
+	glBindTexture(GL_TEXTURE_2D,0);  // why unbind the texture object?
+	checkGlErrors();
+
+
+	GLuint attachments[5] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
 	//GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
 	//,  Max=8: GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT1,    GL_COLOR_ATTACHMENT1,  
 	//	GL_COLOR_ATTACHMENT5,  GL_COLOR_ATTACHMENT6,  GL_COLOR_ATTACHMENT7};
 	  
-	glDrawBuffers(3, attachments);		// drawing color and depth all together? - need to check
+	glDrawBuffers(5, attachments);		// drawing color and depth all together? - need to check
 	checkGlErrors();
 	//DrawBuffer is per-framebuffer state, and will default to COLOR_ATTACHMENT0 for non-zero FBOs.
 	 
@@ -2324,8 +2383,10 @@ void ofApp::readRainbowFBOPixels(char * fileName) {
 	unsigned char *pixels = new unsigned char [ g_windowWidth * g_windowHeight * 4 ];
 	
 	float *depths = new float [g_windowHeight * g_windowWidth];
-	float *floatPixels = new float [g_windowHeight * g_windowWidth * 4];
+	float *floatPixels1 = new float [g_windowHeight * g_windowWidth * 4];
 	float *floatPixels2 = new float [g_windowHeight * g_windowWidth * 4];
+	float *floatPixels3 = new float [g_windowHeight * g_windowWidth * 4];
+	float *floatPixels4 = new float [g_windowHeight * g_windowWidth * 4];
 	//float *depth = new float [1];
 	//float *floatPixel = new float [4];
  
@@ -2341,10 +2402,17 @@ void ofApp::readRainbowFBOPixels(char * fileName) {
 	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels); // fragColor
 
 	glReadBuffer(GL_COLOR_ATTACHMENT1); // spect1
-	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels); //
+	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels1); //
 
 	glReadBuffer(GL_COLOR_ATTACHMENT2); // spect2
 	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels2); //
+
+	glReadBuffer(GL_COLOR_ATTACHMENT3); // spect3
+	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels3); //
+
+	glReadBuffer(GL_COLOR_ATTACHMENT4); // spect4
+	glReadPixels(0,0, g_windowWidth, g_windowHeight, GL_RGBA, GL_FLOAT, floatPixels4); //
+
 	//glReadPixels simply returns bytes in the order R, G, B, R, G, B, ... 
 	//(based on your setting of GL_RGB) from the bottom left of the screen going up to the top right. From the OpenGL documentation:
 	//From there you can either reference a pixel's component location 
@@ -2361,51 +2429,40 @@ void ofApp::readRainbowFBOPixels(char * fileName) {
 
 	cout << "colorReadFormat=" << colorReadFormat << " colorReadType=" << colorReadType << endl;
 	*/
-	sceneFBOFile << "The RGBA value of each pixel (i,j) may be background colors or value of some variables in the case of true fragments." << endl;
+	//sceneFBOFile << "The RGBA value of each pixel (i,j) may be background colors or value of some variables in the case of true fragments." << endl;
    
 	    
 	for (int j = 0; j < g_windowHeight; j++ )
 	// print jth row
 		for ( int i = 0; i < g_windowWidth ; i++) { // print ith column
 	
-			//ostream& operator<< (unsigned int val);
-			//glReadPixels(i,j, 1,1, GL_DEPTH_COMPONENT, GL_FLOAT, depth ); 
-			//float zWin0 =	 depths[i + j* g_windowWidth ]; 
-			//float zWin1 =	 depth[0]; 
-			sceneFBOFile << endl;
+			float red1 = floatPixels1[ (j* g_windowWidth + i) *4 + 0 ]; 
+			float green1 = floatPixels1[ (j* g_windowWidth + i) *4 + 1 ]; 
+			float blue1 = floatPixels1[ (j* g_windowWidth + i) *4 + 2 ]; 
+			float alpha1 = floatPixels1[ (j* g_windowWidth + i) *4 + 3 ]; 
 
-			sceneFBOFile  << "At " << "(" <<  i   << "," <<  j  << "):" ;  
-	    
-			//float zNDC = zWin0 * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
-	   	       
-			//float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
-		
+			sceneFBOFile << red1 << " " << green1 << " " << blue1 << " " << alpha1 << " ";  //XYZColor.012, Y
+
+			float red2 = floatPixels2[ (j* g_windowWidth + i) *4 + 0 ]; 
+			float green2 = floatPixels2[ (j* g_windowWidth + i) *4 + 1 ]; 
+			float blue2 = floatPixels2[ (j* g_windowWidth + i) *4 + 2 ]; 
+			float alpha2 = floatPixels2[ (j* g_windowWidth + i) *4 + 3 ]; 
 	  
-			//sceneFBOFile  << "-zEye= " << -zEye <<  endl;  // -200 = FAR PLANE
-	
-			float red = floatPixels[ (j* g_windowWidth + i) *4 + 0 ]; 
-			float green = floatPixels[ (j* g_windowWidth + i) *4 + 1 ]; 
-			float blue = floatPixels[ (j* g_windowWidth + i) *4 + 2 ]; 
-			float alpha= floatPixels[ (j* g_windowWidth + i) *4 + 3 ]; 
-	  
-			float zNDC = red * 2.0 - 1.0; // ( zWin = 1/2 zNDC + 1/2 by Viewport transformation: zWin in [0,1] )
-	   	       
-			float zEye = -g_projectionMatrix(2,3) / ( zNDC + g_projectionMatrix(2,2) ); 
-			
-			sceneFBOFile << "(oldR, oldG, oldB) = " << red<<", "<<green<<", "<<blue<< endl;
+			sceneFBOFile << red2 << " " << green2 << " " << blue2 << " " <<  alpha2 << " ";  //cumDropDensity, cumAttenFact, opticalDepth, exp(-opticalDepth)
 
+			float red3 = floatPixels3[ (j* g_windowWidth + i) *4 + 0 ]; 
+			float green3 = floatPixels3[ (j* g_windowWidth + i) *4 + 1 ]; 
+			float blue3 = floatPixels3[ (j* g_windowWidth + i) *4 + 2 ]; 
+			float alpha3= floatPixels3[ (j* g_windowWidth + i) *4 + 3 ]; 
 
-			// the names of variables should be changed in each case
-			//sceneFBOFile << "-Eye= " << zEye <<  endl;  // -200 = FAR PLANE, -5 = near plane
-			//sceneFBOFile << "(zWin, zNDC, zEye, A) = " << Cvec4f( red, green, blue, alpha) << endl;
-	
-			red = floatPixels2[ (j* g_windowWidth + i) *4 + 0 ]; 
-			green = floatPixels2[ (j* g_windowWidth + i) *4 + 1 ]; 
-			blue = floatPixels2[ (j* g_windowWidth + i) *4 + 2 ]; 
-			alpha= floatPixels2[ (j* g_windowWidth + i) *4 + 3 ]; 
-	  
-			//sceneFBOFile << "(zEye, tmin, tmax, A) = " << Cvec4f( red, green, blue, alpha) << endl;
+			sceneFBOFile << red3 <<" " << green3 <<  " " <<  blue3 <<  " ";  //rainbowColor.012
 
+			float red4 = floatPixels4[ (j* g_windowWidth + i) *4 + 0 ]; 
+			float green4 = floatPixels4[ (j* g_windowWidth + i) *4 + 1 ]; 
+			float blue4 = floatPixels4[ (j* g_windowWidth + i) *4 + 2 ]; 
+			float alpha4 = floatPixels4[ (j* g_windowWidth + i) *4 + 3 ]; 
+
+			sceneFBOFile << red4 <<" " << green4 << " " << blue4 << endl;  //surfaceColor.012
 
 		}
 
@@ -2426,9 +2483,9 @@ void ofApp::readSceneFBOPixels(char * fileName) {
 	
 	unsigned char *pixels = new unsigned char [ g_windowWidth * g_windowHeight * 4 ];
  
-	float *depths = new float [  g_windowHeight * g_windowWidth];
-	float *floatPixels = new float [ g_windowHeight *g_windowWidth *  4];
-	float *floatPixels2 = new float [ g_windowHeight *g_windowWidth *  4];
+	float *depths = new float [ g_windowHeight * g_windowWidth];
+	float *floatPixels = new float [ g_windowHeight *g_windowWidth * 4];
+	float *floatPixels2 = new float [ g_windowHeight *g_windowWidth * 4];
 	//float *depth = new float [1];
 	//float *floatPixel = new float [ 4];
  
@@ -2657,7 +2714,7 @@ void ofApp::initMaterials() {
 	    g_bumpFloorMat->getUniforms().put("uTexColor", shared_ptr<ShaderImageTexture2D_RGB_RGB>(new ShaderImageTexture2D_RGB_RGB("sourceimages/sourceimages/Fieldstone.ppm", true)));
 	    g_bumpFloorMat->getUniforms().put("uTexNormal", shared_ptr<ShaderImageTexture2D_RGB_RGB>(new ShaderImageTexture2D_RGB_RGB("sourceimages/sourceimages/FieldstoneNormal.ppm", false)));
 
-	    g_bumpFloorMat->getUniforms().put("uMaterialColor", Cvec4f(0.5, 0.5, 0.5,1.0));
+	    g_bumpFloorMat->getUniforms().put("uMaterialColor", Cvec4f(0.5, 0.5, 0.5, 1.0));
 
 	}
 	catch (const runtime_error & error ) {
@@ -2682,7 +2739,7 @@ void ofApp::initMaterials() {
 	//g_arcballMat->getRenderStates().polygonMode(GL_FRONT_AND_BACK, GL_POINT);
 	// copy solid prototype, and set to color white
 	g_lightMat.reset(new MaterialShader(solidMat));
-	g_lightMat->getUniforms().put("uMaterialColor", Cvec4f(1, 1, 1,1));
+	g_lightMat->getUniforms().put("uMaterialColor", Cvec4f(1, 1, 1, 1));
 	// pick shader
 	g_pickingMat.reset(new MaterialShader("basic+pick", "shaders/basic-gl3.vshader", "shaders/pick-gl3.fshader") );
 
@@ -3094,10 +3151,11 @@ void ofApp::initRainbow() {
 	shared_ptr<Geometry> nearPlaneQuadGeometry ( new SimpleIndexedGeometryPNTBX("rainbow", &vtxQuad[0], &idxQuad[0], vbLen, ibLen, GL_TRIANGLES ) );
 
 	// rainbow shader
-
 	//MaterialShader rainbowAndSceneMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-gl3.fshader");
    
-	MaterialShader rainbowAndSceneMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-RGB-STAN-gl3.frag");
+	MaterialShader rainbowAndSceneMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-RGB-STAN-gl3-0927.frag");
+
+	//MaterialShader rainbowAndSceneMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-RGB-STAN-gl3_Juahn0926.frag");
 	//MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-old-org-gl3.fshader");
 	//MaterialShader rainbowMat ("basic+rainbow", "shaders/FullScreenQuad-gl3.vshader", "shaders/FBOtexture-gl3.fshader");
 	//MaterialShader rainbowOnlyMat ("rainbow+rainbow", "shaders/rainbow-gl3.vshader", "shaders/rainbow-8-22-gl3.fshader");
@@ -3128,7 +3186,7 @@ void ofApp::initRainbow() {
 	PrimarySpectrum::initPrimarySpectrums(XYZSpectrums, primarySpectrums);
 
 	// rainbow mat
-	g_rainbowAndSceneMat.reset(new MaterialShader( rainbowAndSceneMat) );
+	g_rainbowAndSceneMat.reset(new MaterialShader(rainbowAndSceneMat) );
 	g_rainbowAndSceneMat->getUniforms().put("uXYZSpectrums", 
 			shared_ptr<ShaderImageTexture1D_RF_RF>(new ShaderImageTexture1D_RF_RF(XYZWidth, XYZSpectrums)));
 
@@ -3687,13 +3745,13 @@ void ofApp::keyPressed (int key){
 
 	case 'h': 
 		cout << " ============== H E L P ==============\n\n"
-		<< "h\t\thelp menu\n"
-		<< "s\t\tsave screenshot\n"
-		<< "f\t\tToggle flat shading on/off.\n"
-		<< "ESC\t\t exit\n"
-		<< "Cntrl\t\t  camera moving mode\n"
-		<< "Alt\t\t rotate the selected object or the camera\n"
-		<< "Shift\t\t  picking mode\n" << endl;
+		<< "h             help menu\n"
+		<< "s             save screenshot\n"
+		<< "f             Toggle flat shading on/off.\n"
+		<< "ESC           exit\n"
+		<< "Cntrl         camera moving mode\n"
+		<< "Alt           rotate the selected object or the camera\n"
+		<< "Shift         picking mode\n" << endl;
 		break;
 
 	case 's': 
@@ -4094,7 +4152,13 @@ Effectively your projection near is mapped to 0.0 and far is mapped to 1.0, if y
  tells Opengl to use this system by saying glDepthFunc(GL_GREATER), and glCLearDepth (0.0), where
 0.0  is  the Widows coordinate depth of the far plane. 
  */
- 
+	
+
+	GLint param[1];
+	
+	glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_FRONT_LEFT,
+	GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING, param);
+	cout << "color encoding of sys buffer =" << param[0] << endl;
 
 } // initGLStates
 

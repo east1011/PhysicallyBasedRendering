@@ -501,5 +501,490 @@ inline Matrix4 linFact(const Matrix4& m) {
   // TODO
 }
 
+// Matrix3
+
+
+
+// Forward declaration of Matrix4 and transpose since those are used below
+class Matrix3;
+
+//std::ofstream& operator<< (std::ofstream& os, const Matrix4& m);
+
+Matrix3 transpose(const Matrix3& m);
+
+// A 3x3 Matrix.
+// To get the element at ith row and jth column, use a(i,j)
+
+class Matrix3 {
+  double d_[9]; // layout is row-major, whereas in Open
+
+public:
+
+ Matrix3() { // default   constructor identity matrix construction
+
+ for (int i = 0; i < 9; ++i) {
+      d_[i] = 0;
+    }
+ for (int i = 0; i < 3; ++i) {
+      (*this)(i,i) = 1;
+    }
+  }
+
+ 
+ Matrix3(const float *a, int num) {
+   for (int i = 0; i < num; ++i) {
+      d_[i] = a[i];
+    }
+ }
+ // copy constructor and assignment constructor
+ //Matrix4 (const Matrix4 &other); we use the default copy constructor
+// Matrix4 &operator= (const Matrix4 &other);
+
+ Matrix3(const double a) {
+    for (int i = 0; i < 9; ++i) {
+      d_[i] = a;
+    }
+  }
+
+
+  Matrix3(float t00, float t01, float t02, 
+              float t10, float t11, float t12,
+              float t20, float t21, float t22
+              ){
+		d_[0]=t00;
+		d_[1]=t01;
+		d_[2]=t02;
+		
+		d_[3]=t10;
+		d_[4]=t11;
+		d_[5]=t12;
+		
+		d_[6]=t20;
+		d_[7]=t21;
+		d_[8]=t22;
+		
+		
+
+   }
+
+  Matrix3( Cvec3 c0, Cvec3 c1, Cvec3 c2 ){
+	  // set columun vector c_i to column j_i
+
+		d_[0]=c0[0];
+		d_[1]=c1[0];
+		d_[2]=c2[0];
+		
+		d_[3]=c0[1];
+		d_[4]=c1[1];
+		d_[5]=c2[1];
+		
+		d_[6]=c0[2];
+		d_[7]=c1[2];
+		d_[8]=c2[2];
+		
+		
+
+   }
+
+  double &operator () (const int row, const int col) {
+    return d_[ row * 3  + col];
+  }
+
+  const double &operator () (const int row, const int col) const {
+    return d_[ row * 3 + col];
+  }
+
+  double& operator [] (const int i) {
+    return d_[i];
+  }
+
+  const double& operator [] (const int i) const {
+    return d_[i];
+  }
+
+ 
+
+  template <class T>
+  Matrix3& readFromColumnMajorMatrix(const T m[]) {
+    for (int i = 0; i < 9; ++i) {
+      d_[i] = m[i];
+    }
+    return *this = transpose(*this);
+  }
+
+  template <class T>
+  void writeToColumnMajorMatrix( T m[]) const {
+    Matrix3 t = transpose(*this);
+    for (int i = 0; i < 9; ++i) {
+      m[i] = T( t.d_[i] );
+    }
+  }
+
+  Matrix3 & operator = (const Matrix3& m) { 
+	for (int i = 0; i < 9; ++i) {
+      d_[i] = m.d_[i];
+    }
+    return *this;   
+   
+  }
+  Matrix3& operator += (const Matrix3& m) {
+    for (int i = 0; i < 9; ++i) {
+      d_[i] += m.d_[i];
+    }
+    return *this;
+  }
+
+  Matrix3& operator -= (const Matrix3& m) {
+    for (int i = 0; i < 9; ++i) {
+      d_[i] -= m.d_[i];
+    }
+    return *this;
+  }
+
+  Matrix3& operator *= (const double a) {
+    for (int i = 0; i <9; ++i) {
+      d_[i] *= a;
+    }
+    return *this;
+  }
+
+  Matrix3& operator *= (const Matrix3& a) {
+    return *this = *this * a;
+  }
+
+  Matrix3 operator + (const Matrix3& a) const {
+    return Matrix3(*this) += a;
+  }
+
+  Matrix3 operator - (const Matrix3& a) const {
+    return Matrix3(*this) -= a;
+  }
+
+  Matrix3 operator * (const double a) const {
+    return Matrix3(*this) *= a;
+  }
+
+Cvec3 operator * (const Cvec3& v) const {
+    Cvec3 r(0); // r = 0
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        r[i] += (*this)(i,j) * v(j);
+      }
+    }
+    return r;
+  }
+
+Cvec3f operator * (const Cvec3f& v) const {
+    Cvec3f r(0); // r = 0
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        r[i] += (*this)(i,j) * v(j);
+      }
+    }
+    return r;
+  }
+
+  Matrix3 operator * (const Matrix3& m) const {
+    Matrix3 r(0); // r = 0
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        for (int k = 0; k < 3; ++k) {
+          r(i,k) += (*this)(i,j) * m(j,k);
+        }
+      }
+    }
+    return r;
+  }
+
+   static Matrix3 makeScale(const Cvec3& s) {
+    Matrix3 r;
+    for (int i = 0; i < 3; ++i) {
+      r(i,i) = s[i];
+    }
+    return r;
+  }
+
+  
+// ordinary function ( not a member) which can access the private members of the class
+     
+friend std::ostream& operator<< (std::ostream& os, const Matrix3& m) {
+	
+	
+	os <<  "[" <<   m(0,0) <<  setw(15) << m(0,1) << setw(15) << m(0,2)  <<  setw(15)  <<  "]" << endl;
+	os <<  "[" <<  m(1,0) <<  setw(15) <<m(1,1) << setw(15) << m(1,2)  << setw(15) <<  "]" << endl;
+	os <<  "[" <<  m(2,0) <<  setw(15) << m(2,1) << setw(15) <<m(2,2)  <<  setw(15) << "]" << endl;
+	
+
+	return os;
+	
+} 
+
+}; // class Matrix3
+
+
+inline double norm2(const Matrix3& m) {
+  double r = 0;
+  for (int i = 0; i < 9; ++i) {
+    r += m[i]*m[i];
+  }
+  return r;
+}
+
+
+//http://www.ryanjuckett.com/programming/rgb-color-space-conversion/
+
+// computes inverse of  matrix3. 
+inline  Matrix3 inv( const Matrix3& m) {
+  Matrix3 r;                                              // default constructor initializes it to identity
+  
+   // calculate the minors for the first row
+  double  minor00 = m(1,1)*m(2,2) - m(1,2)*m(2,1);
+  double  minor01 = m(1,2)*m(2,0) - m(1,0)*m(2,2);
+  double  minor02 = m(1,0)*m(2,1) - m(1,1)*m(2,0);
+  
+    // calculate the determinant
+  double det =   m(0,0) * minor00
+                        + m(0,1) * minor01
+                        + m(0,2) * minor02;
+  
+  // check non-singular matrix
+  assert(std::abs(det) > CS175_EPS3);
+
+  // the inverse of inMat is (1 / determinant) * adjoint(inMat)
+    double  invDet = 1.0f / det;
+    r(0,0) = invDet * minor00;
+    r(0,1) = invDet * (m(2,1)* m(0,2) - m(2,2)*m(0,1) );
+    r(0,2) = invDet * ( m(0,1) * m(1,2) - m(0,2)* m(1,1) );
+  
+    r(1,0) = invDet * minor01;
+    r(1,1)  = invDet * ( m(2,2)* m(0,0) - m(2,0)* m(0,2) );
+    r(1,2) = invDet * ( m(0,2) * m(1,0) - m(0,0) * m(1,2) );
+  
+    r(2,0)  = invDet * minor02;
+    r(2,1)  = invDet * ( m(2,0) * m(0,1)  - m(2,1) * m(0,0) );
+    r(2,2) = invDet * ( m(0,0) * m(1,1)  - m(0,1) * m(1,0) );
+
+  
+  return r;
+}
+
+inline Matrix3 transpose(const Matrix3& m) {
+  Matrix3 r(0);
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      r(i,j) = m(j,i);
+    }
+  }
+  return r;
+}
+
+
+// GAMMA Correction: 
+// the electron guns of a CRT monitor have a non-linear output and must be supplied with gamma corrected 
+// input such that the appropriate real-world luminance is created.
+
+ 
+
+//******************************************************************************
+// Convert an sRGB color channel to a linear sRGB color channel.
+//******************************************************************************
+inline float gammaExpandsRGB(float nonlinear) // expand = decoding
+{    
+    return   ( nonlinear <= 0.04045f )
+           ? ( nonlinear / 12.92f )
+           : ( pow( (nonlinear+0.055f)/1.055f, 2.4f ) );
+}
+  
+//******************************************************************************
+// Convert a linear sRGB color channel to a sRGB color channel.
+//******************************************************************************
+inline float gammaCompresssRGB(float linear) // gamma compress = gamma encoding = gamma correction = linear^{1/g), where g > 1.
+{    
+    return   ( linear <= 0.0031308f )
+           ? ( 12.92f * linear )
+           : ( 1.055f * pow( linear, 1.0f/2.4f ) - 0.055f );
+}
+  
+//******************************************************************************
+// Convert an sRGB color to a linear sRGB color.
+//******************************************************************************
+inline Cvec3  gammaExpandsRGB(Cvec3  pColor)
+{   Cvec3 c;
+   c [0]  = gammaExpandsRGB( pColor  [0] );
+   c [1]  = gammaExpandsRGB( pColor[1] );
+   c [2]  = gammaExpandsRGB( pColor [2] );
+   return c;
+
+}
+  
+//******************************************************************************
+// Convert a linear sRGB color to an sRGB color.
+//******************************************************************************
+inline Cvec3 gammaCompresssRGB(Cvec3 pColor)
+{
+	Cvec3 c;
+    c[0]  = gammaCompresssRGB( pColor[0]);
+    c[1]  = gammaCompresssRGB( pColor[1] );
+    c[2]  = gammaCompresssRGB( pColor[2] );
+}
+
+
+//
+
+
+
+//******************************************************************************
+// Convert a linear sRGB color to an sRGB color 
+//******************************************************************************
+inline Matrix3  makeConversionMatrixRGBtoXYZ
+(
+    
+    const Cvec2  & red_xy,   // xy chromaticity coordinates of the red primary
+    const Cvec2  & green_xy, // xy chromaticity coordinates of the green primary
+    const Cvec2  & blue_xy,  // xy chromaticity coordinates of the blue primary
+    const Cvec2 & white_xy  // xy chromaticity coordinates of the white point
+)
+{
+    // generate xyz chromaticity coordinates (x + y + z = 1) from xy coordinates
+    Cvec3 r ( red_xy[0],   red_xy[1],   1.0f - (red_xy[0] + red_xy[1]) );
+    Cvec3 g ( green_xy[0], green_xy[1], 1.0f - (green_xy[0] + green_xy[1]) );
+    Cvec3 b  ( blue_xy[0],  blue_xy[1],  1.0f - (blue_xy[0] + blue_xy[1]) );
+    Cvec3 w ( white_xy[0], white_xy[1], 1.0f - (white_xy[0] + white_xy[1]) );
+  
+    // Convert white xyz coordinate to XYZ coordinate by letting that the white
+    // point has  XYZ relative luminance of 1.0. Relative luminance is the Y
+    // component of and XYZ color.
+    //   XYZ = xyz * (Y / y) => XYZ = xyz / y = (x/y, 1, z/y)
+    w[0]  /= white_xy[1];
+    w[1]  /= white_xy[1];
+    w[2]  /= white_xy[1];
+  
+    // Solve for the transformation matrix 'M' from RGB to XYZ
+    // * We know that the columns of M are equal to the unknown XYZ values of r, g and b.
+    // * We know that the XYZ values of r, g and b are each a scaled version of the known
+    //   corresponding xyz chromaticity values.
+    // * We know the XYZ value of white based on its xyz value and the assigned relative
+    //   luminance of 1.0.
+    // * We know the RGB value of white is (1,1,1).
+    //                  
+    //   white_XYZ = M * white_RGB
+    //
+    //       [r.x g.x b.x]
+    //   N = [r.y g.y b.y]
+    //       [r.z g.z b.z]
+    //
+    //       [sR 0  0 ]
+    //   S = [0  sG 0 ]
+    //       [0  0  sB]
+    //
+    //   M = N * S
+    //   white_XYZ = N * S * white_RGB
+    //   N^-1 * white_XYZ = S * white_RGB = (sR,sG,sB)
+    //
+    // We now have an equation for the components of the scale matrix 'S' and
+    // can compute 'M' from 'N' and 'S'
+  
+    Matrix3 N (r, g, b );
+  
+    Matrix3  invN = inv( N );
+	  
+    Cvec3 scale = invN *  w;
+  
+	Matrix3 S = Matrix3::makeScale( scale );
+    Matrix3 M = N * S;
+	
+	return M;
+} // makeConversionMatrixRGBtoXYZ
+ 
+
+//******************************************************************************
+// Example of using the color space conversion functions
+//******************************************************************************
+inline Matrix3 makeConversionMatrixsRGBtoXYZ()
+{
+    // define chromaticity coordinates for sRGB space
+    Cvec2  sRGB_red_xy (0.64f, 0.33f );
+    Cvec2  sRGB_green_xy ( 0.30f, 0.60f );
+    Cvec2  sRGB_blue_xy  ( 0.15f, 0.06f );
+    Cvec2  sRGB_white_xy ( 0.3127f, 0.3290f );
+  
+    // generate conversion matrix from linear sRGB space to XYZ space
+    Matrix3 sRGBtoXYZ = makeConversionMatrixRGBtoXYZ(
+                                         sRGB_red_xy,
+                                         sRGB_green_xy,
+                                         sRGB_blue_xy,
+                                         sRGB_white_xy );
+    return sRGBtoXYZ;
+
+	/*
+    // generate conversion matrix from XYZ space to linear sRGB space
+    Matrix3 g_XYZ_to_sRGB = inv( sRGB_to_XYZ );
+  
+    // define a color in sRGB space
+    Cvec3 myColor ( 0.2f, 0.5f, 0.8f );
+  
+    // convert form sRGB to XYZ
+    // convert from gamma-corrected sRGB to linear sRGB
+    Cvec3 linsRGB =gammaExpandsRGB( myColor );
+  
+        // convert from linear sRGB to XYZ
+    Cvec3 XYZ  = sRGB_to_XYZ * linsRGB;
+      
+    // convert form XYZ back to sRGB
+            // convert from XYZ to linear sRGB
+    linsRGB = g_XYZ_to_sRGB * XYZ;
+  
+        // convert from linear sRGB to gamma-corrected sRGB
+     Cvec3 sRGB = gammaCompresssRGB( linsRGB  );
+    */
+
+} // makeConversionMatrixRGBtoXYZ
+
+inline Matrix3 makeConversionMatrixXYZtosRGB()
+{
+    // define chromaticity coordinates for sRGB space
+    Cvec2  sRGB_red_xy  ( 0.64f, 0.33f );
+    Cvec2  sRGB_green_xy ( 0.30f, 0.60f );
+    Cvec2  sRGB_blue_xy  ( 0.15f, 0.06f );
+    Cvec2  sRGB_white_xy ( 0.3127f, 0.3290f );
+  
+    // generate conversion matrix from linear sRGB space to XYZ space
+    Matrix3 sRGBtoXYZ = makeConversionMatrixRGBtoXYZ(
+                                         sRGB_red_xy,
+                                         sRGB_green_xy,
+                                         sRGB_blue_xy,
+                                         sRGB_white_xy );
+    
+
+	
+    // generate conversion matrix from XYZ space to linear sRGB space
+    Matrix3 XYZtosRGB = inv( sRGBtoXYZ );
+    
+	return XYZtosRGB;
+
+	/*
+    // define a color in sRGB space
+    Cvec3 myColor ( 0.2f, 0.5f, 0.8f );
+  
+    // convert form sRGB to XYZ
+    // convert from gamma-corrected sRGB to linear sRGB
+    Cvec3 linsRGB =gammaExpandsRGB( myColor );
+  
+        // convert from linear sRGB to XYZ
+    Cvec3 XYZ  = sRGB_to_XYZ * linsRGB;
+      
+    // convert form XYZ back to sRGB
+            // convert from XYZ to linear sRGB
+    linsRGB = g_XYZ_to_sRGB * XYZ;
+  
+        // convert from linear sRGB to gamma-corrected sRGB
+     Cvec3 sRGB = gammaCompresssRGB( linsRGB  );
+    */
+
+} // makeConversionMatrixXYZtoRGB
+ 
+
+ 
+
 #endif
 

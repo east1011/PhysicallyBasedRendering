@@ -14,21 +14,24 @@
 #include "irradiance_sun.h"
 #include "cvec.h"
 
-double calculate_irradiance_of_sun (double lambda) {
+double calculate_radiance_of_sun (double lambda) {
     
     double R_Earth = 1.496e+8;
     double R_Sun = 6.95e+5;
     double h = 6.6261e-34;      // Planck's constant
     double c = 2.9979e+8;       // speed of light in vacuo
     double k = 1.3806e-23;      // Boltzmann's constant
-    double T = 5782;            // Sun's temperature in Kelvin
-    double Isun;
+    //double T = 5782;            // direct sun light 
+	double T = 6504; // D65  // diffuse sky light
+    double Lsun;
     
-    Isun = pow((R_Sun/R_Earth),2) * 2*PI*h*pow(c,2)  / ( pow(lambda, 5) * ( exp( h*c/(lambda*k*T) ) -1 ) ) * 1.0e-9  ;
+	float lambda_m = lambda * 1.0e-9;
+    //Isun = pow((R_Sun/R_Earth),2) * 2*PI*h*pow(c,2)  / ( pow(lambda, 5) * ( exp( h*c/(lambda*k*T) ) -1 ) ) * 1.0e-9  ;
+	Lsun = pow((R_Sun/R_Earth),2) * 2*h*pow(c,2)  / ( pow(lambda_m, 5) * ( exp( h*c/(lambda_m*k*T) ) -1 ) ) * 1.0e-9  ;
 	   //Moon:  1.0e-9 is multiplied to convert the irradiance per meter to the irradiance per nanometer
 	   // Original had 1.0e-10. 
     
-    return Isun;
+    return Lsun;
 }
 
 #endif

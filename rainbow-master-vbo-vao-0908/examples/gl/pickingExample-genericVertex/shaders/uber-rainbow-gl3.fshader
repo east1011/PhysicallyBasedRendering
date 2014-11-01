@@ -59,8 +59,13 @@ uniform float uRadius;
 uniform vec3  uSunRayDir;
 uniform float uDropDensity;
 
+// lights in eye space
+uniform vec3 uLight1Pos;
+uniform vec3 uLight2Pos;
 
-////
+uniform vec4 uLight1Color, uLight2Color;
+
+uniform vec4 uMaterialColor;
 uniform vec3 uLightRGBColor;
 
 
@@ -1045,6 +1050,7 @@ vec3  bsdf_f( BSDF bsdf, vec3 vPos, vec3 vNormal, vec2 vTexCoord, vec3 woW, vec3
 
 } // bsdf_f()
 
+
 vec3  Sample_L( Light light, vec3 vPos, out vec3 wi ) {
 
 if (light.lightType == LIGHT_POINT ) {
@@ -1072,6 +1078,42 @@ else {
 
 
 } // Sample_L()
+
+
+
+
+vec3  Sample_L( bool isPointLight,  vec3 vPosition, out vec3 wi ) {
+
+
+
+if ( isPointLight  ) {
+
+  // change the coordinates of light position to the view space
+  //   uLight1Pos; // in eye space
+	vec3 lightPosInEye = uLight1Pos;
+	
+	// wi is the output variable for the reflection (reverse) of the eye ray
+
+    wi = normalize( lightPosInEye - vPosition);  // the direction to the light source;
+	                                             // vPosition is a surface point  in view space
+	float dist = distance( lightPosInEye, vPosition );
+
+  
+	return vec3( uLight1Color );
+	
+}
+else  { //  parallel sun light 
+
+   wi = uSunRayDir; // the direction to the sun in eye space;
+   return uLightRGBColor;
+}
+
+
+} // Sample_L()
+
+
+
+
 
 vec3 estimateDirect( Light light, BSDF bsdf, vec3 vPos,  vec3 vNormal, vec2 vTexCoord,  vec3 wo ) {
 
@@ -1107,8 +1149,8 @@ vec3 estimateDirect( Light light, BSDF bsdf, vec3 vPos,  vec3 vNormal, vec2 vTex
 }
 
 // Lo(p, 企o) = Le(p, 企o) + int [f (p, 企o, 企i) Li(p, 企i) |cos 亥i | d企i. 
-// We evaluate  Li(p, 企i) for directions to light sources and for the directions
-// of perfect reflection and refraction. wi = the reflection direction by  the ray
+// We evaluate  Li(p, 企i) for directions to light sources and also  for the directions
+// of perfect reflection and refraction (This is ray tracing, not just ray casting). wi = the reflection direction by  the ray
 // coming from the camera
 // Spaw a tree of rays starting from each pixel on the camera, and compute the contribution
 // of each ray with its weight.
@@ -1117,36 +1159,44 @@ vec3 estimateDirect( Light light, BSDF bsdf, vec3 vPos,  vec3 vNormal, vec2 vTex
 // effects like light bouncing off a wall and illuminating a room.
 
 
-vec3 estimateDirectDiffuse( Light light, vec3 vPosition, vec3 vNormal,  vec2 vTexCoord, vec3 toV ) {   	
+vec3 estimateDirectSimplest( bool isPointLight,  vec3 vPosition, vec3 vNormal,  vec2 vTexCoord, vec3 toV ) {   	
 
-   vec3 lightDir;
+   vec3 dirToLight;
+       
+   vec3 Li = Sample_L( isPointLight, vPosition, dirToLight ); // wi = dirToLight
 
-   vec3 Li = Sample_L(light,  vPosition, lightDir ); // out lightDir
+   //return Li; // for debugging
 
-   if ( lightDir == vec3(0,0,0) ) {
+
+   if ( dirToLight == vec3(0,0,0) ) {
       return vec3(0,0,0);
 	}
 
 
    // compute diffuse color
 
-   float diffuseCoefficient = max( 0.0, dot(vNormal, lightDir) ) ;
+   float diffuseCoefficient = max( 0.0, dot(vNormal, dirToLight) ) ;
+
+  // return vec3( diffuseCoefficient); // for debugging: diffuseCoeff is very small in some portion of the sky
 
     vec3 kd =  evaluteKd( uUberMaterial, uUberMaterial.KdTextureClass, vTexCoord);
 	
    
-    Lambertian lambertian = Lambertian( kd );
-	vec3 f = lambertian.R  * INV_PI;
+   // Lambertian lambertian = Lambertian( kd ); // Lambertian(kd) sets lambertian.R  (reflectance) to kd
+	//vec3 f_s = lambertian.R  * INV_PI; // reflectance / pi => irradiance is converted to radiance
    
+   vec3 f_s = kd; // use the color of the texture as the reflection radiance 
 
-   vec3 diffuseColor = Li  * diffuseCoefficient * f;
+   return kd; // for debugging => this is good
+
+   vec3 diffuseColor = Li *2.0  * diffuseCoefficient * f_s; // f is the reflection coefficient for RGB
   
+  // return diffuseColor; // for debugging
+
    // compute specular reflection color
-
-  //vec3 toV = -normalize( vec3(vPosition) );
-  vec3 h = normalize( toV + lightDir  );
-
-   
+    
+  vec3 h = normalize( toV + dirToLight  );
+     
   float specularCoefficient  = pow( max(0.0, dot(h, vNormal) ), 30.0 );
 
   vec3 whiteLight = vec3( 0.6, 0.6, 0.6);
@@ -1158,14 +1208,18 @@ vec3 estimateDirectDiffuse( Light light, vec3 vPosition, vec3 vNormal,  vec2 vTe
 
   vec3 combinedColor = ambientColor + diffuseColor + specularColor;
 
-  
+  return specularColor; // for debugging => zero???
+
+
   return combinedColor; 
 
-  } // estimateDirectDiffuse
+  } // estimateDirectSimplest
 
 
 
 void main() {
+
+bool isPointLight = false;
 
 // prepare BSDF
 // create the tangent frame at the current interpolated position vPosition
@@ -1180,7 +1234,7 @@ vec3 L = vec3(0,0,0);
 
 //  for debugging, paint fragments red: camera is set for viewing rainbow
 
-
+/*
 
 // do just texture mapping:
 vec3 kd =  evaluteKd( uUberMaterial, uUberMaterial.KdTextureClass, vTexCoord);
@@ -1192,9 +1246,10 @@ vec3 kd =  evaluteKd( uUberMaterial, uUberMaterial.KdTextureClass, vTexCoord);
 
 fragColor = vec4(kd,1);
 
-return;
-
+return;  // RETURNNNNNNNN
+*/
 	
+/*
 for (int i = 0; i < uNumOfLights; i++ ) {
 
   Light light = uLights[i];
@@ -1206,7 +1261,25 @@ for (int i = 0; i < uNumOfLights; i++ ) {
   vec3 vNormal = normalize(vNormal);
 
  // L += estimateDirect( light, bsdf,  vPosition, vNormal,  vTexCoord, wo );  	
- L += estimateDirectDiffuse( light,  vPosition, vNormal,  vTexCoord, wo );  	
+ L += estimateDirectSimplest( light,  vPosition, vNormal,  vTexCoord, wo );  	
+}
+						   
+fragColor = vec4( L, 1.0);
+*/
+
+
+for (int i = 0; i < 1; i++ ) {
+
+  vec3  dirToEye  = normalize( - vPosition ); 
+ 
+ // vec3 toLight = normalize( lightPos - vPosition);
+  
+  vec3 vNormal = normalize(vNormal);
+
+ // L += estimateDirect( light, bsdf,  vPosition, vNormal,  vTexCoord, dirToEye );  	
+ // use the traditional pseudo physics reflection model
+
+ L += estimateDirectSimplest(isPointLight,  vPosition, vNormal,  vTexCoord, dirToEye );  	
 }
 						   
 fragColor = vec4( L, 1.0);
