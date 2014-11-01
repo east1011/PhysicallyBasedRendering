@@ -9,7 +9,7 @@
 // Helpers for creating some special geometries such as plane, cubes, and spheres
 //--------------------------------------------------------------------------------
 
-typedef Matrix4  SgRbtNode;
+typedef Matrix4 SgRbtNode;
 
 // A generic vertex structure containing position, normal, and texture information
 // Used by make* functions to pass vertex information to the caller

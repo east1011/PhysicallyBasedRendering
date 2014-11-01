@@ -5,11 +5,12 @@
 
 
 
-const int nLambdasteps = 120;
+const int nLambdaSteps = 60; // from 400 nm to 700nm with step size = 5nm
 const int nRadiusSteps = 2;
 const int nThetaSteps = 100; // 1 degree in each step between theta 130 deg and theta 142;
 
-const int nLambdas = nLambdasteps +1;
+const int nLambdas = nLambdaSteps +1;
+
 const int nRadii = nRadiusSteps +1;
 const int nThetas = nThetaSteps +1;
 
@@ -23,9 +24,9 @@ const	double thetaStart = 130.0;
 const	double thetaEnd = 142.0;
 
 // the step size of each sample; each sample is considered the center point of the step
-const double lambdaStep = ( lambdaEnd - lambdaStart) / double( nLambdas );
-const double thetaStep = ( thetaEnd - thetaStart) / double (nThetas);
-const double radiusStep = (radiusEnd - radiusStart) / double (nRadii);
+const double lambdaStep = ( lambdaEnd - lambdaStart) / double( nLambdaSteps );
+const double thetaStep = ( thetaEnd - thetaStart) / double (nThetaSteps);
+const double radiusStep = (radiusEnd - radiusStart) / double (nRadiusSteps);
 
 
 extern  double Cabs[ nRadii][nLambdas];

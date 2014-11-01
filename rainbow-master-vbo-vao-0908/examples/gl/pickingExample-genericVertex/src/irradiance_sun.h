@@ -13,6 +13,6 @@ static double pi = acos( -1.0e0);  // -1.0 const double in default; -1.0f = floa
 
 #define PI 3.1415926535897932384626433832795028841971
 
-double calculate_irradiance_of_sun (double lambda);
+double calculate_radiance_of_sun (double lambda);
 
 #endif

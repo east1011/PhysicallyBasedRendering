@@ -61,7 +61,8 @@ in vec3 vPosition;
 in mat3 vNTMat;
 
 out vec4 fragColor;
-out vec4 spect1, spect2, spect3, spect4;
+out vec4 spect1;
+out vec4 spect2;
 
 // parameters for rainbow computation
 
@@ -102,7 +103,7 @@ const float lambdaStep = ( lambdaEnd - lambdaStart) / float( nSpectralSamples -1
 const float thetaStep = ( thetaEnd - thetaStart) / float (nThetas -1);
 const float radiusStep = (radiusEnd - radiusStart) / float (nRadii -1);
 
-float h0 = 10;
+float h0 = 5;
 
 struct Ray {
 	vec3 origin;
@@ -208,13 +209,26 @@ float cie_colour_match[ nLambdasForColorMatch * nRGB ] =
         0.0001,0.0000,0.0000, 0.0001,0.0000,0.0000, 0.0000,0.0000,0.0000);
 		
 float [nSpectralSamples] ISpectrumSun = float[] (
+//wavelength (nm)	normalized irradiance (arbitrary units)
+// 700 - 400 = 300 / 5 = 60 + 1 = nSpectralSamples= 61 
+// The original wavelength starts from 380 to 700 with step 5 nm
+//380
+//	0.4651826, 	0.3830807, 	0.4409676, 	0.4415811, 	
+//400
 	0.5531539, 	0.7498946, 0.746196, 0.7945927,
+//420
 	0.8004899, 	0.7938542, 	0.7373845, 	0.7613856,   0.8335401,  0.9062264,   0.9455949, 0.9749124,
+//460
 	0.9885056, 	0.9996937, 	0.9703307, 	0.9874594, 	1, 	0.9923742, 	0.9242011, 	0.9640443, 	0.9617534,
+//505
 	0.9306258, 	0.9463357, 	0.9275853, 	0.8597925, 	0.9149771, 	0.9065616, 	0.9197563, 	0.9100043,
+//545
 	0.8943484, 0.8951805, 0.8915439, 0.8640333,  	0.8611063,   0.8411431,  	0.8347283,  0.82272,
+// 585	
    0.8433171, 	0.7949293,  	0.7905713,  0.7947434,  0.7932764,  0.7953064, 	0.769975, 	0.7614744,
+//625
 	0.7494112,  0.7195148,  	0.7222514,  0.7319365,  0.7231518,  0.6976414,  0.6917001,  0.6692451,
+//665
 	0.7032121,  0.6983164,  	0.6871358,  0.6830449, 	0.6650319, 	0.5508773, 	0.5994822, 	0.6185095
 	);
 
@@ -301,10 +315,10 @@ int intersection_distance_no_if (
 vec3 XYZToRGB(vec3 xyz);
 
 
-//Cvec3  xyz_to_rgb(struct colourSystem *cs,   const vec3 XYZ) {
+//Cvec3  xyz_to_rgb(struct colourSystem *cs,   const vec3 xyz) {
 //http://www.ryanjuckett.com/programming/rgb-color-space-conversion/
 
-vec3  xyz_to_rgb( colourSystem cs, const vec3 XYZ ) {
+vec3  xyz_to_rgb( colourSystem cs, const vec3 xyz ) {
 
     float xr, yr, zr, xg, yg, zg, xb, yb, zb;
     float xw, yw, zw;
@@ -331,14 +345,10 @@ vec3  xyz_to_rgb( colourSystem cs, const vec3 XYZ ) {
     //                       = [ ] [ a 
 	//                                  b
 	//                                     c]
-	// To find a, b,c, we use the known RGB and XYZ values of the white point, with the assumption of 
-	//  WY = 1 full luminance
+	// To find a, b,c, we use the known RGB and XYZ values of the white point
 	// w_XYZ = M w_RGB
 
     // xyz -> rgb matrix, before scaling to white. 
-	// compute w_y Cr, w_yCg, w_yCb
-	// [ x_w y_w z_w ]= M [ w_yCr w_yCg w_yCb]
-	// the inverse of M = ( without / det(A) ]
     
     rx = (yg * zb) - (yb * zg);  ry = (xb * zg) - (xg * zb);  rz = (xg * yb) - (xb * yg);
     gx = (yb * zr) - (yr * zb);  gy = (xr * zb) - (xb * zr);  gz = (xb * yr) - (xr * yb);
@@ -346,25 +356,22 @@ vec3  xyz_to_rgb( colourSystem cs, const vec3 XYZ ) {
 
     // White scaling factors.
     //  Dividing by yw scales the white luminance to unity, as conventional. 
-    // inv(M) * [x_w y_w z_w]/ w_y = [ w_y Cr w_y Cg w_y Cb] / w_y = [cR Cg Cb]
-	// 
-	   
+       
     rw = ((rx * xw) + (ry * yw) + (rz * zw)) / yw;
     gw = ((gx * xw) + (gy * yw) + (gz * zw)) / yw;
     bw = ((bx * xw) + (by * yw) + (bz * zw)) / yw;
 
     // xyz -> rgb matrix, correctly scaled to white. 
-    // get inv(MS), where S is the scale matrix of (Cr Cg Cb)
-
+    
     rx = rx / rw;  ry = ry / rw;  rz = rz / rw;
     gx = gx / gw;  gy = gy / gw;  gz = gz / gw;
     bx = bx / bw;  by = by / bw;  bz = bz / bw;
 
     // rgb of the desired point 
     
-	vec3 rgbColor = vec3((rx * XYZ[0]) + (ry * XYZ[1]) + (rz * XYZ[2]), 
-					(gx * XYZ[0]) + (gy * XYZ[1]) + (gz * XYZ[2]), 
-					(bx * XYZ[0]) + (by * XYZ[1]) + (bz * XYZ[2]));
+	vec3 rgbColor = vec3((rx * xyz[0]) + (ry * xyz[1]) + (rz * xyz[2]), 
+					(gx * xyz[0]) + (gy * xyz[1]) + (gz * xyz[2]), 
+					(bx * xyz[0]) + (by * xyz[1]) + (bz * xyz[2]));
 
 	return rgbColor;
 
@@ -454,7 +461,7 @@ vec3 oldToRGB( float [nSpectralSamples] irainbow ) {
 		yBar =  cie_colour_match[ k * 3 + 1 ];
 		zBar =  cie_colour_match[ k * 3 + 2 ];
 
-		yInt += yBar * lambdaStep ;
+		yInt += yBar;
 
 		X += irainbow[j] * xBar * lambdaStep; 
 		Y += irainbow[j] * yBar * lambdaStep;
@@ -463,21 +470,19 @@ vec3 oldToRGB( float [nSpectralSamples] irainbow ) {
     }
 	
 	XYZ = (X+Y+Z);
+	spect2 = vec4( Y, XYZ, 0.0, 0.0 );
 
-	//vec3 XYZColor = vec3( X, Y, Z);
-
-	// for debugging
+	//vec3 xyzColor = vec3( X/yInt, Y/yInt, Z/yInt );
 	vec3 xyzColor = vec3( X/XYZ, Y/XYZ, Z/XYZ );
 
-	spect1 = vec4(xyzColor, XYZ); // XYZ is zero?
+
+	//float XYZmax = 6.11689e-10;
+	//vec3 xyzColor = vec3( X/XYZmax, Y/XYZmax, Z/XYZmax );
+	vec3 rgbColor = xyz_to_rgb(g_cs, xyzColor);
 
 
-	//vec3 XYZColor = vec3( X/yInt, Y/yInt, Z/yInt );
-	//vec3 xyzColor = vec3( X/XYZ, Y/XYZ, Z/XYZ );
-	//vec3 rgbColor = xyz_to_rgb(g_cs, xyzColor);
-	
-	//vec3 rgbColor = xyz_to_rgb(g_cs, XYZColor);
-	vec3 rgbColor = XYZToRGB(xyzColor);
+
+	//vec3 rgbColor = XYZToRGB(xyzColor);
 	/*
 	if (constrain_rgb(rgbColor)) {  // Colour modified to fit RGB gamut 
 		norm_rgb(rgbColor);
@@ -489,7 +494,7 @@ vec3 oldToRGB( float [nSpectralSamples] irainbow ) {
 	*/
 
 	//constrain_rgb(rgbColor);
-
+	
 	return rgbColor;
 
 } // oldToRGB()
@@ -939,6 +944,7 @@ float computePhaseFunction( float radius, float lambda, float theta) {
 
 }
 
+
 float attenFactor(vec3 currPos) {
 	/*uniform mat4 uEyeMatrix;
 	uniform mat4 uInvEyeMatrix;
@@ -950,18 +956,13 @@ float attenFactor(vec3 currPos) {
 	uniform vec3 uAABBmin; 
 	uniform vec3 uAABBmax;
 	*/
-
-	/* e-10 = 0.0000454 which is considered very very small..
-	/* deviation / range = 1: exp(-deviation) has a neglizable value, which is exp(-10). */
-
-	float depthRangeFromCenter = 10.0/2.0; // half of the depth of the water volume
-	float heightRangeFromCenter = 30.0/2.0;
-	float widthRangeFromCenter = 60.0/2.0;
+	float w = 1.3;
+	float h = 1.3;
 
 	vec4 currPosGlobal = uEyeMatrix * vec4(currPos, 1.0); // the global reference frame is ON the ground
-	vec2  currPosHorizontal = vec2( currPosGlobal[0],  currPosGlobal[2] );
+	vec2 currPosHorizontal = vec2( currPosGlobal[0], currPosGlobal[2] );
 
-	float heightFromGround  = currPosGlobal[1];
+	float heightFromGround = currPosGlobal[1];
 
 	// Find the center of AABB box in eye space
 	// Get the min and max corners of AABB box in global space and then in eye space
@@ -973,24 +974,22 @@ float attenFactor(vec3 currPos) {
 
 	vec2 AABBCenterHorizontal = vec2( AABBCenterGlobal[0], AABBCenterGlobal[2] );
 
-	vec2 deviationHorizontal = currPosHorizontal - AABBCenterHorizontal;
-	float deviationFromCenterWidth = abs( deviationHorizontal[0] );
-	float deviationFromCenterDepth = abs( deviationHorizontal[1] );
+
+	float deviationFromCenterHorizontal = length( currPosHorizontal - AABBCenterHorizontal )/h;
 	float deviationFromHeight0;
 
 	if ( heightFromGround <= h0 ) {
 		deviationFromHeight0 = 0.0;
 	}
 	else {
-		deviationFromHeight0 = heightFromGround - h0;
+		deviationFromHeight0 = (heightFromGround - h0)/w;
 		
 	}
 
 	// get the attenuation factor from the reference point (AABBCenter, height0): decrease exponentially with the deviation
 
-	float attenuationFactor = exp( - deviationFromHeight0 / heightRangeFromCenter * 10.0 ) 
-							* exp ( - deviationFromCenterWidth / widthRangeFromCenter * 10.0 )
-							* exp ( - deviationFromCenterDepth / depthRangeFromCenter * 10.0 );
+	float attenuationFactor = exp( - deviationFromHeight0) * exp( - deviationFromCenterHorizontal);
+
 	return attenuationFactor;
 
 } // attenFactor()
@@ -1001,7 +1000,7 @@ float avgPhaseFunction(float radius, float lambda, float psi, vec3 currPos) {
     float particlePhase = computePhaseFunction( radius, lambda, psi ); 
 
 	//float particlePhase = 1.230634e-002;
-	float dropDensityAtCurrPos = uDropDensity *  attenFactor(currPos); 
+	float dropDensityAtCurrPos = uDropDensity * attenFactor(currPos); 
     float avgPhasePerVolume =  particlePhase * dropDensityAtCurrPos;
     return avgPhasePerVolume;
 
@@ -1049,7 +1048,7 @@ float[nSpectralSamples] calculate_radiance_of_sun_Lee() {
 		
 		//Lsun = calculate_radiance_of_sun( lambda );
 		//LSpectrumSun[ j ] = Lsun;		
-		LSpectrumSun[ j ] = ISpectrumSun[j]  / pi; ;		
+		LSpectrumSun[ j ] = ISpectrumSun[j] / pi; ;		
 		//lambda += lambdaStep;
 		
 	}  // for 
@@ -1077,7 +1076,7 @@ float[nSpectralSamples] calculate_radiance_of_sun_Plank() {
 		Lsun = calculate_radiance_of_sun(lambda);
 		//Lsun = calculate_radiance_of_sun( lambda );
 		//LSpectrumSun[ j ] = Lsun;		
-		LSpectrumSun[ j ] = Lsun; // 10 is multiplied because the final radiance is too weak to produce zero color
+		LSpectrumSun[ j ] = Lsun;
 		lambda += lambdaStep;
 		
 	}  // for 
@@ -1152,16 +1151,15 @@ float sumOfExtinctionCoefficients(float tmax, float tmin, vec3 rayDir, float ext
 
 		
 		float dropDensityAtCurrPos = uDropDensity * attenFactor(currPos);
-		float currPosSigma_e = extCrossSection  * dropDensityAtCurrPos;	// assume the original sigma_e is the value on the ground where
-																					// height is zero 
+		float currPosSigma_e = extCrossSection * dropDensityAtCurrPos;	// assume the original sigma_e is the value on the ground where
+																		// height is zero 
 		opticalDepth += currPosSigma_e * deltaT;
 
 		//return sumExtinction; 				   
 	} // for t: all positions on the current ray	
 
 	return opticalDepth;
-} // sumOfExtinctionCoefficients
-
+}
 
 vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye, 
                               bool isPointLight, vec3 lightPosOrDir, float[nSpectralSamples] LSpectrumSun,
@@ -1192,8 +1190,7 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 
 	// for debugging
 
-	//ivec2 pixelPos = ivec2( gl_FragCoord.xy );
-
+	ivec2 pixelPos = ivec2( gl_FragCoord.xy );
 	spect1 = vec4( 0.0, 0.0, 0.0, 0.0 );
 	spect2 = vec4( 0.0, 0.0, 0.0, 0.0 );
 
@@ -1261,7 +1258,9 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 
 		//float [nSpectralSamples] spectralSurfaceColor = spectralColor (surfaceColor);
 
-			
+
+		// for debugging
+		
 
 		// LIGHT DIRECTIONS
 		if ( isPointLight ) { // point light
@@ -1390,7 +1389,7 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 				//for (float t = tmaxAtten; t > tmin; t-= deltaT  ) { 
 				for (int i = N; i >= 1; i--) { 
 					
-					float t = tmin + deltaT * i; // t is a distance = tmax when i =N 
+					float t = tmin + deltaT * i; // t is a distance 
 					//LSpectrumOut = LSpectrumOut +  exp( - sigma_e * ( t - tmin) )  * sigma_s 
 					//									 * avgPhaseFunction( dot ( -rayDir, dirFromSun(t) ) * LSpectrumIn
 				  
@@ -1442,7 +1441,7 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 				//float weight1 = (psi - 130) / (137.5 - 130);
 				//float weight2 = (142 - psi) / (142 - 140.5);
 
-				//vec3 rgb = oldToRGB( LSpectrumOut );
+				vec3 rgb = oldToRGB( LSpectrumOut );
 
 				//if ( psi < 137.5 ) {
 				//	return rgb*(weight1) + surfaceColor * exp(-sumOfExtinctionCoefficients( tmaxAtten, tmin, rayDir, sigma_e ) );
@@ -1454,20 +1453,13 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 				//	return rgb + surfaceColor * surfaceColor * exp(-sumOfExtinctionCoefficients( tmaxAtten, tmin, rayDir, sigma_e ) );
 				//}
 				float opticalDepthFromSurface = sumOfExtinctionCoefficients( tmaxAtten, tmin, rayDir, extCrossSection );
-				
-                // for debugging
-				spect2 = vec4( tmin, tmax, opticalDepthFromSurface, exp(- opticalDepthFromSurface) );
+				spect1 = vec4( opticalDepthFromSurface, exp(-opticalDepthFromSurface), tmin, tmaxAtten );
+				//spect2 = vec4( pixelPos[0], pixelPos[1], tmin, tmaxAtten);
 
-				//return vec3(1,0,0); // for debugging; hit is OK, angles are OK
-
-				vec3 rainbowColor = oldToRGB(LSpectrumOut);
-                
-				spect3 = vec4( rainbowColor, 1.0 );
-				spect4 = vec4( surfaceColor * exp(- opticalDepthFromSurface), 1.0 );
-				
-				return rainbowColor  
+				return rgb
 						+ surfaceColor * exp(- opticalDepthFromSurface );
 
+                
 				//return oldToRGB( LSpectrumOut ) * 0.7 + surfaceColor * 0.3; // the light accumulated along the current ray
 				//return toRGB( LSpectrumOut );
 				
@@ -1475,7 +1467,6 @@ vec3 singleScatteringAndAttenuation(float radius, vec3 surfaceColor, float zEye,
 
 	    
 		} // else (DIRECTIONal light) 	  
-
 
 
 	} // else (the ray HITs the volume )
@@ -1589,11 +1580,9 @@ vec3 calculate_rainbowColor (float radius, vec3 surfaceColor, float zEye,  bool 
 	//float[nSpectralSamples] LSpectrumSun = calculate_radiance_of_sun_Lee(); 
 	float[nSpectralSamples] LSpectrumSun = calculate_radiance_of_sun_Plank(); 
 
-	//spect1 = vec4(LSpectrumSun[0], LSpectrumSun[1],LSpectrumSun[2],LSpectrumSun[3] );
-	//spect2 = vec4(LSpectrumSun[4], LSpectrumSun[5],LSpectrumSun[6],LSpectrumSun[7] );
-	// LSpectrumSun: radiances for wavelengths [nanometer]
 
-	//return vec3(0,0,0); // for debugging
+
+	// LSpectrumSun: radiances for wavelengths [nanometer]
 
 	rainbowRGB = singleScatteringAndAttenuation(radius,  surfaceColor, zEye,
 	                          isPointLight, lightPosOrDir, LSpectrumSun,

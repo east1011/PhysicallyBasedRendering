@@ -24,25 +24,25 @@ struct GlProgramDesc;
 class MaterialShader {
 public:
 
-  const string shaderName; // vertex shader name + fragment shader name
+	const string shaderName; // vertex shader name + fragment shader name
 
-  MaterialShader(const string shaderName, const std::string& vsFilename, const std::string& fsFilename);
+	MaterialShader(const string shaderName, const std::string& vsFilename, const std::string& fsFilename);
 
-  void draw( Geometry& geometry, const Uniforms& extraUniforms);
+	void draw( Geometry& geometry, const Uniforms& extraUniforms);
 
-  Uniforms& getUniforms() { return uniforms_; }
-  const Uniforms& getUniforms() const { return uniforms_; }
+	Uniforms& getUniforms() { return uniforms_; }
+	const Uniforms& getUniforms() const { return uniforms_; }
 
-  RenderStates& getRenderStates() { return renderStates_; }
-  const RenderStates& getRenderStates() const { return renderStates_; }
+	RenderStates& getRenderStates() { return renderStates_; }
+	const RenderStates& getRenderStates() const { return renderStates_; }
 
 //protected: // by Moon Jung, 2014/8/12 debugging
 
-  std::tr1::shared_ptr<GlProgramDesc> programDesc_;
+	std::tr1::shared_ptr<GlProgramDesc> programDesc_;
 
-  Uniforms uniforms_;
+	Uniforms uniforms_;
 
-  RenderStates renderStates_;
+	RenderStates renderStates_;
 };
 
 

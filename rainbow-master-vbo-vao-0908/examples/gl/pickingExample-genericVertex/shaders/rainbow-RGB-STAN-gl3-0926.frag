@@ -1,4 +1,4 @@
-#version 130
+﻿#version 130
 
 #define MAX_ITERATIONS 100
 
@@ -38,6 +38,7 @@ uniform vec4 uLight1Color, uLight2Color;
 
 uniform vec4 uMaterialColor;
 uniform vec3 uLightRGBColor;
+uniform vec3 uLightXYZColor; // Y is the relative maximum luminance, which is defined to be 1
 
 // eyePos and aabb box for rainbow
 uniform vec3 uEyeOriginInBoxFrame;
@@ -68,14 +69,14 @@ out vec4 spect1, spect2, spect3, spect4;
 float pi = acos(-1.0);  // -1.0 const float in default; -1.0f = float
 
 //const int nSpectralSampleSteps = 120;
+const int nSpectralSampleSteps = 60; // // from 400 nm to 700nm with step size = 5nm
+
 const int nThetaSteps = 100; // 100 steps between theta 130 deg and theta 142;
 
 const int nRadiusSteps  = 2;
 
-//const int nSpectralSamples = nSpectralSampleSteps +1;
+const int nSpectralSamples = nSpectralSampleSteps +1;
 
-
-const int nSpectralSamples = 61; // from 400 nm to 700nm
 const int nSamples = nSpectralSamples; // from 400 nm to 700nm
 
 const int nRadii = nRadiusSteps +1;
@@ -135,6 +136,7 @@ Ray makeRay( vec3 origin, vec3 direction) {
 const int nLambdasForColorMatch = 81;
 const int nRGB = 3;
 
+// SPECTRUM TO XYZ, RGB: code from https://www.fourmilab.ch/documents/specrend/
 
 /* A colour system is defined by the CIE x and y coordinates of
    its three primary illuminants and the x and y coordinates of
@@ -174,8 +176,8 @@ colourSystem
 
 //colourSystem *cs = &SMPTEsystem;
 
-colourSystem g_cs = colourSystem(0.67,  0.33,  0.21,  0.71,  0.14, 0.08, IlluminantCxWhite, IlluminantCyWhite, GAMMA_REC709);
-
+//colourSystem g_cs = colourSystem(0.67,  0.33,  0.21,  0.71,  0.14, 0.08, IlluminantCxWhite, IlluminantCyWhite, GAMMA_REC709);
+ colourSystem g_cs = colourSystem(0.64,   0.33,   0.30,   0.60,   0.15,   0.06,   IlluminantD65xWhite,  IlluminantD65yWhite, GAMMA_REC709);
 
 float cie_colour_match[ nLambdasForColorMatch * nRGB ] = 
 	float[] ( 
@@ -206,8 +208,12 @@ float cie_colour_match[ nLambdasForColorMatch * nRGB ] =
         0.0007,0.0002,0.0000, 0.0005,0.0002,0.0000, 0.0003,0.0001,0.0000,
         0.0002,0.0001,0.0000, 0.0002,0.0001,0.0000, 0.0001,0.0000,0.0000,
         0.0001,0.0000,0.0000, 0.0001,0.0000,0.0000, 0.0000,0.0000,0.0000);
-		
+
+//wavelength (nm)	normalized irradiance (arbitrary units)
+// 700 - 400 = 300 / 5 = 60 + 1 = nSpectralSamples= 61 
+// The original wavelength starts from 380 to 700 with step 5 nm		
 float [nSpectralSamples] ISpectrumSun = float[] (
+
 	0.5531539, 	0.7498946, 0.746196, 0.7945927,
 	0.8004899, 	0.7938542, 	0.7373845, 	0.7613856,   0.8335401,  0.9062264,   0.9455949, 0.9749124,
 	0.9885056, 	0.9996937, 	0.9703307, 	0.9874594, 	1, 	0.9923742, 	0.9242011, 	0.9640443, 	0.9617534,
@@ -297,12 +303,61 @@ int intersection_distance_no_if (
 	
 }
 
+/* Relative Luminance
+For linear color spaces such as XYZ, Yuv, xyY, etc. (but not the nonlinear color spaces YUV, YCbCr, YIQ, L*a*b*, etc.),
+ the Y or luminance component is explicitly a relative luminance. For nonlinear colorspaces such as YUV,
+  where Y represents "luma", conversion to relative luminance requires first a reconstruction of nonlinear R, G, 
+  and B values, then a linearization, then a weighted sum to compute relative luminance. For L*a*b* space, 
+  the L* component is simply a nonlinear version of the relative luminance Y.
+
+For colorspaces such as the sRGB color space and HDTV, and their YUV and other video derivatives, 
+that use the ITU-R BT.709-3 primaries, the weights to compute luminance Y from linearized R, G, and B values 
+can be found as the center row of the RGB to XYZ transformation matrix:[1]
+Y = 0.2126 R + 0.7152 G + 0.0722 B
+
+*/
+
+/*
+Details can be found in SMPTE RP  177-1993 [11].
+
+To transform from CIE  XYZ into Rec.  709 RGB (with its D65 white point), use this transform:
+
+
+
+This matrix has some negative coefficients: XYZ colours that are out of gamut for a particular
+ RGB transform to RGB where one or more RGB components is negative or greater than unity.
+
+Here's the inverse transform. Because white is normalized to unity, the middle row sums to unity:
+
+
+
+To recover primary chromaticities from such a matrix, compute little x and y for each RGB column vector.
+ To recover the white point, transform RGB=[1,  1,  1] to XYZ, then compute x and y.
+
+
+*/
     
 vec3 XYZToRGB(vec3 xyz);
+/*
+When judging the relative luminance (brightness) of different colors in well-lit situations,
+ humans tend to perceive light within the green parts of the spectrum as brighter than red or blue light of equal power. 
+ The luminosity function that describes
+ the perceived brightnesses of different wavelengths is thus roughly analogous to the spectral sensitivity of M cones.
+ */
 
+ /* Y = luminance, Z = quasi-equal to blue stimulation (S cone response), X is a mix of cone response curves chosen to be nonnegative.
+ // ==> For a given value of Y, the XZ plane will contain all possible chromaticities at that luminance.
+
+ // chromaticity:http://en.wikipedia.org/wiki/Chromaticity
+ //  In color science, the white point of an illuminant or of a display 
+ // is a neutral reference characterized by a chromaticity; all other chromaticities
+ //  may be defined in relation to this reference using polar coordinates. The hue is the angular component, 
+ // and the purity is the radial component, normalized[clarification needed] by the maximum radius for that hue.
 
 //Cvec3  xyz_to_rgb(struct colourSystem *cs,   const vec3 XYZ) {
 //http://www.ryanjuckett.com/programming/rgb-color-space-conversion/
+*/
+
 
 vec3  xyz_to_rgb( colourSystem cs, const vec3 XYZ ) {
 
@@ -438,14 +493,64 @@ vec3 oldToRGB( float [nSpectralSamples] irainbow ) {
     // cie_colour_match[][2] = zBar[]
 	//  ==> cie_coulor_match [] from 380 nanometer to 780 nanometer
     
-	
+	// A typical value of the spread for a laser = 10^{-8} nm. On the scale of hundreds of namometers, the Dirac delta is a good
+	// representation of the laser spectrum.
+
 	// lambda: 400 ~ 700 into 60 steps (61 samples) with lamdbaStep - 5nm
 	// cie_colour_match: from 380 to 780 nm with 5 nm step
 	// Sun spectrum: from 380 to 700 ( 65 samples) with step = 5nm
 	float yInt = 0.0;
 
-	//float lambdaStep = (lambdaEnd - lambdaStart)/(float)(nSpectralSamples - 1);
+	//float Ymax = 1.918420000000000e-09;
 
+	float Ymax = uLightXYZColor[1]; // The Y component of the sun (absolute) XYZ color
+	/* 
+	http://en.wikipedia.org/wiki/Talk:Relative_luminance
+	Relative luminance follows the photometric definition of luminance, but with the values normalized to 1 or 100
+	 with respect to a reference white. Ok, done. In regards to normalizing to 100, this is done in Adobe Photoshop and what is cited in Poynton's glossary for his book
+	 Like the photometric definition, it is related to the luminous flux density in a particular direction,
+	  weighted by the luminosity function (Y) of the CIE Standard Observer. The use of relative values is useful in systems 
+	  where absolute reproduction is impractical. For example, in prepress for print media, the absolute luminance of light reflecting off 
+	  the print depends on the illumination and therefore absolute reproduction cannot be assured.
+plus add explanation of how we tend to see things in ratios, and not absolute values. 
+Possibly add disambiguation information from luma (video), plus formulas to calculate luminance for sRGB color space.
+ Add links to things like Lab color space
+
+	http://en.wikipedia.org/wiki/Luminance
+
+	Luminance is often used to characterize emission or reflection from flat, diffuse surfaces.
+	 The luminance indicates how much luminous power will be detected by an eye looking at the surface from a particular angle of view. 
+	 Luminance is thus an indicator of how bright the surface will appear. In this case, the solid angle of interest is the solid angle
+	  subtended by the eye's pupil. Luminance is used in the video industry to characterize the brightness of displays. 
+	A typical computer display emits between 50 and 300 cd/m2. The sun has luminance of about 1.6×109 cd/m2 at noon.[1]
+
+	*/
+	//float lambdaStep = (lambdaEnd - lambdaStart)/(float)(nSpectralSamples - 1);
+	// Ymax = 1.918420000000000e-09
+    //  XYZmax = 5.945250000000000e-09 at: 
+
+	// camera position = [-36.3731, 1.7, 21] = 36.3 backward, 21 rightward, 1.7 high.
+	// rainbowVolumeHeight = 30; rainbowVolumeWidth = 60; rainbowVolumeDepth = 10
+	/*
+	Some color spaces separate the three dimensions of color into one luminance dimension and a pair of chromaticity dimensions.
+	 For example, the white point of an sRGB display 
+	is an x, y chromaticity of (0.3127, 0.3290), where x and y coordinates are used in the xyY space.
+
+	*/
+
+	/* X = Y/y * x, Z = Y/y * ( 1-x-y) = Y/y * z, Y = Y
+	   x = X/ ( X+ Y+Z), y = Y/ (X + Y +Z) = the projective coordinates.
+	   */
+
+  /*
+   Note that rather than specify the brightness of each primary, the curves are normalized to have constant area beneath them.
+    This area is fixed to a particular value by specifying that
+\int_0^\infty \overline{r}(\lambda)\,d\lambda= \int_0^\infty \overline{g}(\lambda)\,d\lambda= \int_0^\infty \overline{b}(\lambda)\,d\lambda 
+
+The resulting normalized color matching functions are then scaled in the r:g:b ratio of 1:4.5907:0.0601 for source luminance
+ and 72.0962:1.3791:1 for source radiant power to reproduce the true color matching functions
+
+  */
 	for (int j= 0; j < nSpectralSamples; j++) {
 		
 		int k = j + 4;
@@ -462,22 +567,19 @@ vec3 oldToRGB( float [nSpectralSamples] irainbow ) {
 		
     }
 	
-	XYZ = (X+Y+Z);
-
-	//vec3 XYZColor = vec3( X, Y, Z);
-
-	// for debugging
-	vec3 xyzColor = vec3( X/XYZ, Y/XYZ, Z/XYZ );
-
-	spect1 = vec4(xyzColor, XYZ); // XYZ is zero?
-
-
+	//XYZ = (X+Y+Z);
+	//vec3 XYZColor = vec3( X/XYZ, Y/XYZ, Z/XYZ );
+		
+    
 	//vec3 XYZColor = vec3( X/yInt, Y/yInt, Z/yInt );
-	//vec3 xyzColor = vec3( X/XYZ, Y/XYZ, Z/XYZ );
+	vec3 XYZColor = vec3( X/Ymax, Y/Ymax, Z/Ymax );
+	spect1 = vec4(XYZColor, Y); // XYZ is zero?
+
 	//vec3 rgbColor = xyz_to_rgb(g_cs, xyzColor);
 	
-	//vec3 rgbColor = xyz_to_rgb(g_cs, XYZColor);
-	vec3 rgbColor = XYZToRGB(xyzColor);
+	vec3 rgbColor = xyz_to_rgb(g_cs, XYZColor);
+
+
 	/*
 	if (constrain_rgb(rgbColor)) {  // Colour modified to fit RGB gamut 
 		norm_rgb(rgbColor);
@@ -940,58 +1042,58 @@ float computePhaseFunction( float radius, float lambda, float theta) {
 }
 
 float attenFactor(vec3 currPos) {
-	/*uniform mat4 uEyeMatrix;
-	uniform mat4 uInvEyeMatrix;
+/*uniform mat4 uEyeMatrix;
+uniform mat4 uInvEyeMatrix;
 
-	uniform mat4 uModelMatrixAABB;
-	uniform mat4 uInvModelMatrixAABB;
+uniform mat4 uModelMatrixAABB;
+uniform mat4 uInvModelMatrixAABB;
 
-	// AABB bounding box in AABB box frame whose center is the center of AABB box
-	uniform vec3 uAABBmin; 
-	uniform vec3 uAABBmax;
-	*/
+// AABB bounding box in AABB box frame whose center is the center of AABB box
+uniform vec3 uAABBmin; 
+uniform vec3 uAABBmax;
+*/
 
-	/* e-10 = 0.0000454 which is considered very very small..
-	/* deviation / range = 1: exp(-deviation) has a neglizable value, which is exp(-10). */
+/* e-10 = 0.0000454 which is considered very very small..
+/* deviation / range = 1: exp(-deviation) has a neglizable value, which is exp(-10). */
 
-	float depthRangeFromCenter = 10.0/2.0; // half of the depth of the water volume
-	float heightRangeFromCenter = 30.0/2.0;
-	float widthRangeFromCenter = 60.0/2.0;
+float depthRangeFromCenter = 10.0/2.0; // half of the depth of the water volume
+float heightRangeFromCenter = 30.0/2.0;
+float widthRangeFromCenter = 60.0/2.0;
 
-	vec4 currPosGlobal = uEyeMatrix * vec4(currPos, 1.0); // the global reference frame is ON the ground
-	vec2  currPosHorizontal = vec2( currPosGlobal[0],  currPosGlobal[2] );
+vec4 currPosGlobal = uEyeMatrix * vec4(currPos, 1.0); // the global reference frame is ON the ground
+vec2  currPosHorizontal = vec2( currPosGlobal[0],  currPosGlobal[2] );
 
-	float heightFromGround  = currPosGlobal[1];
+float heightFromGround  = currPosGlobal[1];
 
-	// Find the center of AABB box in eye space
-	// Get the min and max corners of AABB box in global space and then in eye space
+// Find the center of AABB box in eye space
+// Get the min and max corners of AABB box in global space and then in eye space
 
-	vec4 minAABBGlobal = uModelMatrixAABB * vec4(uAABBmin,1);
-	vec4 maxAABBGlobal = uModelMatrixAABB * vec4(uAABBmax,1);
+vec4 minAABBGlobal =  uModelMatrixAABB * vec4(uAABBmin,1);
+vec4 maxAABBGlobal =  uModelMatrixAABB * vec4(uAABBmax,1);
 
-	vec3 AABBCenterGlobal = ( vec3(minAABBGlobal) + vec3(maxAABBGlobal) ) / 2.0;
+vec3 AABBCenterGlobal = ( vec3(minAABBGlobal) + vec3(maxAABBGlobal) ) / 2.0;
 
-	vec2 AABBCenterHorizontal = vec2( AABBCenterGlobal[0], AABBCenterGlobal[2] );
+vec2  AABBCenterHorizontal = vec2( AABBCenterGlobal[0],  AABBCenterGlobal[2]);
 
-	vec2 deviationHorizontal = currPosHorizontal - AABBCenterHorizontal;
-	float deviationFromCenterWidth = abs( deviationHorizontal[0] );
-	float deviationFromCenterDepth = abs( deviationHorizontal[1] );
-	float deviationFromHeight0;
+vec2  deviationHorizontal = currPosHorizontal - AABBCenterHorizontal;
+float deviationFromCenterWidth  = length( deviationHorizontal[0] );
+float deviationFromCenterDepth  = length( deviationHorizontal[1] );
+float deviationFromHeight0;
 
-	if ( heightFromGround <= h0 ) {
+if ( heightFromGround <= h0 ) {
 		deviationFromHeight0 = 0.0;
-	}
-	else {
+}
+else {
 		deviationFromHeight0 = heightFromGround - h0;
 		
-	}
+}
 
-	// get the attenuation factor from the reference point (AABBCenter, height0): decrease exponentially with the deviation
+// get the attenuation factor from the reference point (AABBCenter, height0): decrease exponentially with the deviation
 
-	float attenuationFactor = exp( - deviationFromHeight0 / heightRangeFromCenter * 10.0 ) 
-							* exp ( - deviationFromCenterWidth / widthRangeFromCenter * 10.0 )
-							* exp ( - deviationFromCenterDepth / depthRangeFromCenter * 10.0 );
-	return attenuationFactor;
+float attenuationFactor = exp( - deviationFromHeight0 / heightRangeFromCenter * 10.0 ) 
+                     * exp ( - deviationFromCenterWidth / widthRangeFromCenter * 10.0)
+					 *  exp ( - deviationFromCenterDepth / depthRangeFromCenter * 10.0);
+return attenuationFactor;
 
 } // attenFactor()
 
@@ -1015,19 +1117,29 @@ float calculate_radiance_of_sun(float lambda) {
     float h = 6.6261e-34;      // Planck's constant
     float c = 2.9979e+8;       // speed of light in vacuo
     float k = 1.3806e-23;      // Boltzmann's constant
-    float T = 5782;            // Sun's temperature in Kelvin
+    //float T = 5782;            // Sun's temperature in Kelvin
+	float T = 6504 ;//  corresponding to D65 daylight white light. http://en.wikipedia.org/wiki/Illuminant_D65
+	                // max radiance \ 13 * kWsr^{-1}m^{-2}nm^{-1}, 1 W = 1 joule/sec... 
     float Isun;
 
 			
 	float lambda_m = lambda * 1.0e-9;				// convert lambda to meters from nanometers
 	// blackbody radiation spectrum [W/m^2/nm]
-    Isun = pow( (R_Sun/R_Earth),2.0 )  * 2*pi*h*pow(c,2.0)  / (   pow(lambda_m, 5.0) * (  exp(  h*c/ ( lambda_m*k*T ) ) -1 )  ) * 1.0e-9  ;
+    //Isun = pow( (R_Sun/R_Earth),2.0 )  * 2*pi*h*pow(c,2.0)  / (   pow(lambda_m, 5.0) * (  exp(  h*c/ ( lambda_m*k*T ) ) -1 )  ) * 1.0e-9  ;
 	    //Moon:  1.0e-9 is multiplied to convert the irradiance per meter to the irradiance per nanometer
 	    // Original had 1.0e-10.
-	float Lsun = Isun / pi; //convert the irradiance to radiance 
-
+	//float Lsun = Isun / pi; //convert the irradiance to radiance 
+	float Lsun  = pow( (R_Sun/R_Earth),2.0 )  * 2*h*pow(c,2.0)  / (   pow(lambda_m, 5.0) * (  exp(  h*c/ ( lambda_m*k*T ) ) -1 )  ) * 1.0e-9  ;
 	return Lsun;
-		
+
+/* 	The CIE 1931 color space chromaticity coordinates of D65 are x=0.31271, y=0.32902
+ using the standard observer and x=0.31382, y=0.33100 using the supplementary observer.
+  Normalizing for relative luminance, the XYZ tristimulus values are X=95.047, Y=100.00, Z=108.883.
+   Since D65 represents white light, its co-ordinates are also a white point, 
+   corresponding to a correlated color temperature of 6504 K. 
+Rec. 709, used in HDTV systems, truncates the CIE 1931 coordinates to x=0.3127, y=0.329.
+*/
+	
 } //calculate_radiance_of_sun()
 
 

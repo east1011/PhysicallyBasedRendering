@@ -74,6 +74,11 @@ inline void genericGlUniformMatrix4v(GLint location, int size, const Cvec<float,
   checkGlErrors();
 }
 
+inline void genericGlUniformMatrix3v(GLint location, int size, const Cvec<float, 9> *m) {
+  ::glUniformMatrix3fv(location, size, GL_FALSE, &m[0][0]);
+  checkGlErrors();
+}
+
 template<typename T, int n>
 inline GLenum getTypeForCvec();   // should replace with STATIC_ASSERT
 
@@ -147,6 +152,12 @@ public:
     return *this;
   }
 
+   Uniforms& put(const std::string& name, const Matrix3& value) {
+    valueMap[name].reset(new Matrix3sValue(&value, 1));
+    return *this;
+  }
+
+
   Uniforms& put( const std::string& name, const std::tr1::shared_ptr<ShaderTexture>& value ) {
 	 
 
@@ -193,6 +204,14 @@ public:
     valueMap[name].reset(new Matrix4sValue(values, count));
 	
 	// Matrix4sValue() converts a row-major matrix to a column-major
+
+    return *this;
+  }
+
+  Uniforms& put(const std::string& name, const Matrix3 *values, int count) {
+    valueMap[name].reset(new Matrix3sValue(values, count));
+	
+	// Matrix3sValue() converts a row-major matrix to a column-major
 
     return *this;
   }
@@ -375,6 +394,39 @@ public:
     }
 
   };  // class  Matrix4sValue 
+
+   class Matrix3sValue : public Value {
+    // we use cvecs here instead of matrix4s here since matrix4 (in glsl)
+    // doesn't allow double element (yet), and to pass the data
+    // into glUniformMatrix4fv, we need to have the internal buffer
+    // to be typed float.
+
+    std::vector< Cvec<float, 9> > ms_;
+
+  public:
+
+    Matrix3sValue(const Matrix3 *m, int size)
+      : Value( GL_FLOAT_MAT3, size ), ms_ ( size )
+    {
+      assert(size > 0);
+      for (int i = 0; i < size; ++i)
+
+        m[i].writeToColumnMajorMatrix(&ms_[i][0]);
+    }
+
+    virtual Value* clone() const {
+      return new Matrix3sValue(*this); // a copy constructor (default) is used
+    }
+
+    virtual void apply(GLint location, GLsizei count, const GLint *boundTexUnit) const { // boundTexUnit not used here
+
+      assert( count <= size ); // Value::size
+      _helper::genericGlUniformMatrix3v(location, count, &ms_[0]);
+    }
+
+  };  // class  Matrix3sValue 
+
+
 
   // vector copy constructor:
 //  vector <T> v(otherVector); or

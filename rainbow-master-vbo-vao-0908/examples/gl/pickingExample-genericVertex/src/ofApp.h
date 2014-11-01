@@ -49,10 +49,10 @@ class ofApp : public ofBaseApp{
 		void renderRainbowAndSceneToScreen(); 
 		void renderRainbowOnlyToScreen(); 
 		void renderAABBRainbowAndSceneToScreen();
+		void renderAABBRainbowOnlyToScreen();
 		void renderSceneToScreen();
 		void renderSceneToFBO();
 		void renderRainbowAndSceneToFBO();
-		void renderAABBRainbowOnlyToScreen();
 		void renderRainbowOnlyToFBO();
 		void renderRainbowOnly();
 		void drawTextureFromFBOFile();
@@ -87,7 +87,7 @@ class ofApp : public ofBaseApp{
 		void generateFBO();
 		
 		void setupFloatTexturesForVolume();
-		Cvec3  getSunLightRGBColor();		
+		void  getSunLightRGBColor(Cvec3& g_lightRGBColor, Cvec3& g_lightXYZColor);		
 		Matrix4 makeProjectionMatrix();
 
 		virtual void myOwnDraw(); 
